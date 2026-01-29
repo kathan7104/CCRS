@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Dashboard - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <header class="dashboard-header">
+            <h1>CCRS Dashboard</h1>
+            <div class="user-info">
+                <span th:text="'Hello, ' + (${userName} ?: 'User')">Hello, User</span>
+                <form th:action="@{/auth/logout}" method="post" class="logout-form">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-outline">Logout</button>
+                </form>
+            </div>
+        </header>
+        <main class="dashboard-main">
+            <p class="welcome" th:text="'Welcome, ' + (${userName} ?: 'User') + '!'">Welcome!</p>
+            <p th:if="${userEmail}" class="muted" th:text="'Signed in as ' + ${userEmail}">Signed in as user@example.com</p>
+            <section class="dashboard-section">
+                <h2>Quick links</h2>
+                <ul>
+                    <li>Course registration (coming soon)</li>
+                    <li>Fee &amp; payments (coming soon)</li>
+                    <li>Academic history (coming soon)</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

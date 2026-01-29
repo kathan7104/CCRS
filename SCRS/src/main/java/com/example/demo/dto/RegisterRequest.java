@@ -1,0 +1,71 @@
+package com.example.demo.dto;
+
+import jakarta.validation.constraints.*;
+
+/**
+ * DTO for user registration form data.
+ * Validated on submission.
+ */
+public class RegisterRequest {
+
+    @NotBlank(message = "Full name is required")
+    @Size(min = 2, max = 100)
+    private String fullName;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Valid email is required")
+    private String email;
+
+    @NotBlank(message = "Mobile number is required")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Mobile must be exactly 10 digits")
+    private String mobileNumber;
+
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$",
+             message = "Password must contain uppercase, lowercase and a digit")
+    private String password;
+
+    @NotBlank(message = "Confirm password is required")
+    private String confirmPassword;
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+}

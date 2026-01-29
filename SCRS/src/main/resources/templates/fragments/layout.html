@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${pageTitle} ?: 'CCRS'">CCRS - College Course Registration System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body>
+    <div class="layout">
+        <header class="header" th:if="${showHeader} != false">
+            <h1>CCRS</h1>
+            <p class="tagline">College Course Registration &amp; Fee Management System</p>
+        </header>
+        <main class="main">
+            <th:block th:replace="~{::content}">Page content</th:block>
+        </main>
+        <footer th:if="${showFooter} != false">
+            <p>&copy; CCRS. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
