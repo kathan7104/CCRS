@@ -60,8 +60,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/auth/login")
                 .loginProcessingUrl("/auth/login")
-                // use a custom success handler to redirect users based on role and selected login type
-                .successHandler(new com.example.demo.security.CustomAuthenticationSuccessHandler())
+                .defaultSuccessUrl("/dashboard", true)
                 .failureUrl("/auth/login?error")
                 .usernameParameter("username")
                 .passwordParameter("password")

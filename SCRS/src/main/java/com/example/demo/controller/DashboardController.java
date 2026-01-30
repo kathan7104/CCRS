@@ -19,20 +19,6 @@ public class DashboardController {
         if (userDetails != null) {
             model.addAttribute("userName", userDetails.getUser().getFullName());
             model.addAttribute("userEmail", userDetails.getUsername());
-            boolean isAuthority = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY"));
-            model.addAttribute("isAuthority", isAuthority);
-        }
-        return "dashboard";
-    }
-
-    // Separate mapping intended for college authority post-login redirect.
-    @GetMapping("/dashboard/authority")
-    public String authorityDashboard(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
-        // reuse dashboard template but set authority flag explicitely
-        if (userDetails != null) {
-            model.addAttribute("userName", userDetails.getUser().getFullName());
-            model.addAttribute("userEmail", userDetails.getUsername());
-            model.addAttribute("isAuthority", true);
         }
         return "dashboard";
     }

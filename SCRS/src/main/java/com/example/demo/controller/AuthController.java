@@ -46,23 +46,10 @@ public class AuthController {
 
     // Show the login page. If `error` is present, display a login error message.
     @GetMapping("/login")
-    public String loginPage(Model model,
-                            @RequestParam(value = "error", required = false) String error,
-                            @RequestParam(value = "type", required = false) String type,
-                            @RequestParam(value = "m", required = false) String messageKey) {
-        // Prepare the form model
+    public String loginPage(Model model, @RequestParam(value = "error", required = false) String error) {
         model.addAttribute("loginRequest", new LoginRequest());
-        // determine which login type to show: "student" or "authority". Default to student
-        String loginType = (type != null && !type.isBlank()) ? type.toUpperCase() : "STUDENT";
-        model.addAttribute("loginType", loginType);
-
-        // Display generic credential error
         if (error != null) {
             model.addAttribute("error", "Invalid email/mobile or password.");
-        }
-        // A custom message key (m=wrongRole) indicates wrong role selection during login
-        if ("wrongRole".equalsIgnoreCase(messageKey)) {
-            model.addAttribute("error", "Account does not have the selected role. Choose the correct login type.");
         }
         return "auth/login";
     }
