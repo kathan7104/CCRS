@@ -23,9 +23,12 @@ import jakarta.servlet.http.HttpServletRequest;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService,
+                          com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter) {
         this.userDetailsService = userDetailsService;
+        this.preLoginRoleValidationFilter = preLoginRoleValidationFilter;
     }
 
     // BCrypt password encoder bean used for hashing user passwords.
@@ -60,12 +63,15 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/auth/login")
                 .loginProcessingUrl("/auth/login")
-                .defaultSuccessUrl("/dashboard", true)
+                // use a custom success handler to redirect users based on role and selected login type
+                .successHandler(new com.example.demo.security.CustomAuthenticationSuccessHandler())
                 .failureUrl("/auth/login?error")
                 .usernameParameter("username")
                 .passwordParameter("password")
                 .permitAll()
             )
+            // add pre-login validation filter before the username/password processing filter
+            .addFilterBefore(preLoginRoleValidationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
             .logout(logout -> logout
                 .logoutRequestMatcher(this::logoutRequestMatcher)
                 .logoutSuccessUrl("/auth/login?logout")

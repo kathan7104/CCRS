@@ -12,12 +12,19 @@
             <h1>Login</h1>
             <p class="subtitle">College Course Registration System</p>
 
+            <!-- Top-level switch links for quick navigation between Student and Authority login. -->
+            <div class="switch-links">
+                <a th:href="@{/auth/login(type='student')}" href="/auth/login?type=student" class="switch-link" data-type="STUDENT" th:classappend="${loginType == 'STUDENT'} ? ' active' : ''">Student</a>
+                <a th:href="@{/auth/login(type='authority')}" href="/auth/login?type=authority" class="switch-link" data-type="AUTHORITY" th:classappend="${loginType == 'AUTHORITY'} ? ' active' : ''">College authority</a>
+            </div>
+
             <p th:if="${param.logout}" class="msg success">You have been logged out successfully.</p>
             <p th:if="${error}" class="msg error" th:text="${error}"></p>
             <p th:if="${success}" class="msg success" th:text="${success}"></p>
 
             <form th:action="@{/auth/login}" th:object="${loginRequest}" method="post" class="auth-form">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" name="loginType" id="loginTypeInput" th:value="${loginType}" />
                 <div class="form-group">
                     <label for="username">Email or Mobile</label>
                     <input type="text" id="username" name="username" th:field="*{username}" required
@@ -37,6 +44,37 @@
                     <a th:href="@{/auth/forgot-password}">Forgot password?</a>
                     <a th:href="@{/auth/register}">Create account</a>
                 </div>
+
+                <script>
+                    (function(){
+                        const loginTypeInput = document.getElementById('loginTypeInput');
+                        const switchLinks = document.querySelectorAll('.switch-link');
+                        const heading = document.querySelector('.auth-card h1');
+
+                        function setActive(type) {
+                            switchLinks.forEach(s => s.classList.toggle('active', s.dataset.type === type));
+                            if (loginTypeInput) loginTypeInput.value = type;
+                            if (heading) heading.textContent = type === 'AUTHORITY' ? 'Authority Login' : 'Login';
+                            // update URL without reload
+                            if (history && history.replaceState) {
+                                const url = new URL(window.location);
+                                url.searchParams.set('type', type.toLowerCase());
+                                history.replaceState(null, '', url);
+                            }
+                        }
+
+                        switchLinks.forEach(link => {
+                            link.addEventListener('click', function(e){
+                                e.preventDefault();
+                                setActive(this.dataset.type);
+                            });
+                        });
+
+                        // Initialize active state using server-provided value
+                        const initial = (loginTypeInput && loginTypeInput.value) ? loginTypeInput.value : 'STUDENT';
+                        setActive(initial);
+                    })();
+                </script>
             </form>
         </div>
     </div>

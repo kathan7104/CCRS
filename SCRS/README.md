@@ -38,7 +38,12 @@ Why this structure?
 ## How to create a college authority (dev)
 1. Open `src/main/resources/application.properties` and set `ccrs.dev.create-authority=true`.
 2. Restart the app.
-3. A demo authority user `authority@college.edu` with password `Authority123!` will be created—this is for development only.
+3. Demo authority accounts will be created for development/testing (disabled by default):
+   - Director: `director@college.edu` / `Director123!` (role: `AUTHORITY_DIRECTOR`)
+   - Admin staff: `admin@college.edu` / `Admin123!` (role: `AUTHORITY_ADMIN`)
+   - Faculty: `faculty@college.edu` / `Faculty123!` (role: `AUTHORITY_FACULTY`)
+
+Note: These are development/test accounts. Do not enable `ccrs.dev.create-authority` in production.
 
 ---
 

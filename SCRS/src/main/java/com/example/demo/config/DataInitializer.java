@@ -29,18 +29,49 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (!createAuthority) return;
 
-        String email = "authority@college.edu";
-        if (userRepository.findByEmail(email).isEmpty()) {
+        // Director (static test account)
+        String directorEmail = "director@college.edu";
+        if (userRepository.findByEmail(directorEmail).isEmpty()) {
             User u = new User();
-            u.setEmail(email);
-            u.setMobileNumber("9999999999");
-            u.setFullName("College Authority");
-            u.setPassword(passwordEncoder.encode("Authority123!"));
-            u.getRoles().add("AUTHORITY");
+            u.setEmail(directorEmail);
+            u.setMobileNumber("9000000001");
+            u.setFullName("College Director (DEMO)");
+            u.setPassword(passwordEncoder.encode("Director123!"));
+            u.getRoles().add("AUTHORITY_DIRECTOR");
             u.setEmailVerified(true);
             u.setMobileVerified(true);
             userRepository.save(u);
-            System.out.println("Created demo authority user: " + email + " (password: Authority123!)");
+            System.out.println("Created demo director account: " + directorEmail + " (password: Director123!)");
+        }
+
+        // Admin staff (managed by director)
+        String adminEmail = "admin@college.edu";
+        if (userRepository.findByEmail(adminEmail).isEmpty()) {
+            User a = new User();
+            a.setEmail(adminEmail);
+            a.setMobileNumber("9000000002");
+            a.setFullName("College Admin (DEMO)");
+            a.setPassword(passwordEncoder.encode("Admin123!"));
+            a.getRoles().add("AUTHORITY_ADMIN");
+            a.setEmailVerified(true);
+            a.setMobileVerified(true);
+            userRepository.save(a);
+            System.out.println("Created demo admin account: " + adminEmail + " (password: Admin123!)");
+        }
+
+        // Faculty / Teachers (managed by admin)
+        String facultyEmail = "faculty@college.edu";
+        if (userRepository.findByEmail(facultyEmail).isEmpty()) {
+            User f = new User();
+            f.setEmail(facultyEmail);
+            f.setMobileNumber("9000000003");
+            f.setFullName("Faculty Demo (DEMO)");
+            f.setPassword(passwordEncoder.encode("Faculty123!"));
+            f.getRoles().add("AUTHORITY_FACULTY");
+            f.setEmailVerified(true);
+            f.setMobileVerified(true);
+            userRepository.save(f);
+            System.out.println("Created demo faculty account: " + facultyEmail + " (password: Faculty123!)");
         }
     }
 }
