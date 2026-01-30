@@ -9,7 +9,7 @@
 <body>
     <div class="auth-page">
         <div class="auth-card">
-            <h1>Login</h1>
+            <h1 th:text="${loginType == 'AUTHORITY' ? 'Authority Login' : 'Login'}">Login</h1>
             <p class="subtitle">College Course Registration System</p>
 
             <p th:if="${param.logout}" class="msg success">You have been logged out successfully.</p>
@@ -18,6 +18,16 @@
 
             <form th:action="@{/auth/login}" th:object="${loginRequest}" method="post" class="auth-form">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+                <!-- Role selector: student or authority. Posted as loginType so server can validate/redirect -->
+                <div class="form-group">
+                    <label>Login as</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="loginType" value="STUDENT" th:checked="${loginType == 'STUDENT'}"/> Student</label>
+                        <label><input type="radio" name="loginType" value="AUTHORITY" th:checked="${loginType == 'AUTHORITY'}"/> College authority</label>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="username">Email or Mobile</label>
                     <input type="text" id="username" name="username" th:field="*{username}" required

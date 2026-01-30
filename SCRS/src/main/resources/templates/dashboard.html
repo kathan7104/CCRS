@@ -25,9 +25,10 @@
             <section class="dashboard-section">
                 <h2>Quick links</h2>
                 <ul>
-                    <li>Course registration (coming soon)</li>
-                    <li>Fee &amp; payments (coming soon)</li>
-                    <!-- <li>Academic history (coming soon)</li> -->
+                    <li th:if="${!isAuthority}">Course registration (coming soon)</li>
+                    <li th:if="${!isAuthority}">Fee &amp; payments (coming soon)</li>
+                    <li th:if="${isAuthority}">Manage student registrations (authority console)</li>
+                    <li th:if="${isAuthority}">College reports &amp; analytics (coming soon)</li>
                 </ul>
             </section>
         </main>
