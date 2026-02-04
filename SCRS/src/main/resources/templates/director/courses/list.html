@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Course List - CCRS</title>
+    <title>Manage Courses - CCRS</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
 </head>
 <body>
     <header class="dashboard-header">
         <h1>College Course Registration System</h1>
         <nav class="dashboard-nav">
-            <a th:href="@{/dashboard}" class="nav-link">Home</a>
-            <a th:href="@{/courses}" class="nav-link active">Courses</a>
-            <a href="#" class="nav-link disabled">Payments</a>
+            <a th:href="@{/dashboard/authority}" class="nav-link">Home</a>
+            <a th:href="@{/courses}" class="nav-link">Courses</a>
+            <a th:href="@{/director/courses}" class="nav-link active">Manage Courses</a>
         </nav>
         <div class="user-info">
-            <span style="margin-right: 1rem;">Welcome, <span th:text="${userName != null ? userName : #authentication.name}">Student</span></span>
+            <span style="margin-right: 1rem;">Welcome, <span th:text="${#authentication.name}">Director</span></span>
             <form th:action="@{/auth/logout}" method="post" style="display: inline;">
                 <button type="submit" class="btn btn-outline btn-sm">Logout</button>
             </form>
@@ -25,50 +25,49 @@
     <div class="dashboard-layout">
         <main class="dashboard-main">
             <section class="dashboard-section">
-                <h2>Available Courses</h2>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                    <h2>Department Course Catalogue</h2>
+                    <a th:href="@{/director/courses/new}" class="btn btn-primary">Add New Course</a>
+                </div>
 
                 <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
                 <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
 
-                <div th:if="${isAuthority}" style="margin: 0 0 1rem 0;">
-                    <a th:href="@{/director/courses}" class="btn btn-primary">Manage Courses</a>
-                </div>
-                
                 <div class="table-wrap">
-                    <table class="data-table" id="coursesTable">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Code</th>
                                 <th>Name</th>
                                 <th>Department</th>
                                 <th>Level</th>
-                                <th>Duration</th>
+                                <th>Capacity</th>
+                                <th>Remaining</th>
                                 <th>Credits</th>
                                 <th>Fee (INR)</th>
-                                <th>Required Qualification</th>
-                                <th>Availability</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="course : ${courses}" class="course-row">
+                            <tr th:each="course : ${courses}">
                                 <td th:text="${course.code}">CS101</td>
                                 <td th:text="${course.name}">Intro to CS</td>
                                 <td th:text="${course.department}">Engineering</td>
                                 <td th:text="${course.programLevel}">UG</td>
-                                <td th:text="${course.durationYears + ' Years'}">3 Years</td>
+                                <td th:text="${course.capacity}">120</td>
+                                <td th:text="${course.remainingSeats}">90</td>
                                 <td th:text="${course.credits}">3</td>
                                 <td th:text="${course.fee}">120000</td>
-                                <td th:text="${course.requiredQualification}">12th pass</td>
                                 <td>
-                                    <span th:if="${course.remainingSeats > 0}" class="status-badge enrolled">
-                                        <span th:text="${course.remainingSeats}">20</span> / <span th:text="${course.capacity}">50</span>
-                                    </span>
-                                    <span th:if="${course.remainingSeats == 0}" class="status-badge pending">Full</span>
+                                    <a th:href="@{/director/courses/{id}/edit(id=${course.id})}" class="btn btn-sm btn-secondary">Edit</a>
+                                    <form th:action="@{/director/courses/{id}/delete(id=${course.id})}" method="post" class="inline-form" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-outline">Delete</button>
+                                    </form>
                                 </td>
-                                <td>
-                                    <a th:href="@{/courses/{id}(id=${course.id})}" class="btn btn-sm btn-primary"
-                                       th:text="${isAuthority} ? 'View Details' : 'View & Apply'">View & Apply</a>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(courses)}">
+                                <td colspan="9" style="text-align: center; color: #666; padding: 2rem;">
+                                    No courses found. Click “Add New Course” to create one.
                                 </td>
                             </tr>
                         </tbody>

@@ -64,11 +64,11 @@
                 </div>
                 
                 <div class="actions">
-                    <a th:if="${course.remainingSeats > 0}" 
+                    <a th:if="${isStudent and course.remainingSeats > 0}" 
                        th:href="@{/courses/{id}/enroll(id=${course.id})}" 
                        class="btn btn-primary btn-large">Apply for Enrollment</a>
                        
-                    <button th:if="${course.remainingSeats <= 0}" disabled class="btn btn-disabled btn-large">Course Full</button>
+                    <button th:if="${isStudent and course.remainingSeats <= 0}" disabled class="btn btn-disabled btn-large">Course Full</button>
                 </div>
             </section>
         </main>

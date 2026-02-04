@@ -13,6 +13,7 @@
         <nav class="dashboard-nav">
             <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPath == '/dashboard' ? 'active' : ''}">Home</a>
             <a th:href="@{/courses}" class="nav-link" th:classappend="${currentPath == '/courses' ? 'active' : ''}">Courses</a>
+            <a th:if="${isAuthority}" th:href="@{/director/courses}" class="nav-link" th:classappend="${currentPath.startsWith('/director') ? 'active' : ''}">Manage Courses</a>
             <a href="#" class="nav-link disabled">Payments</a>
         </nav>
         <div class="user-info">
