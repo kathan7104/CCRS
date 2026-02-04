@@ -31,11 +31,24 @@ public class Enrollment {
     @Column(name = "finalized_at")
     private LocalDateTime finalizedAt;
 
+    @Column(length = 500)
+    private String comments;
+
+    @Column(name = "past_education_marks")
+    private Double pastEducationMarks;
+
+    @Column(name = "marksheet_path")
+    private String marksheetPath;
+    
+    @Column(name = "personal_info", length = 1000)
+    private String personalInfo; // Stored as JSON or text
+
     public enum EnrollmentStatus {
         PENDING,
         ENROLLED,
         WAITLISTED,
-        CANCELLED
+        CANCELLED,
+        COMPLETED
     }
 
     @PrePersist
@@ -89,5 +102,37 @@ public class Enrollment {
 
     public void setFinalizedAt(LocalDateTime finalizedAt) {
         this.finalizedAt = finalizedAt;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public Double getPastEducationMarks() {
+        return pastEducationMarks;
+    }
+
+    public void setPastEducationMarks(Double pastEducationMarks) {
+        this.pastEducationMarks = pastEducationMarks;
+    }
+
+    public String getMarksheetPath() {
+        return marksheetPath;
+    }
+
+    public void setMarksheetPath(String marksheetPath) {
+        this.marksheetPath = marksheetPath;
+    }
+
+    public String getPersonalInfo() {
+        return personalInfo;
+    }
+
+    public void setPersonalInfo(String personalInfo) {
+        this.personalInfo = personalInfo;
     }
 }

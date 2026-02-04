@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Course List - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1>College Course Registration System</h1>
+        <nav class="dashboard-nav">
+            <a th:href="@{/dashboard}" class="nav-link">Home</a>
+            <a th:href="@{/courses}" class="nav-link active">Courses</a>
+            <a href="#" class="nav-link disabled">Payments</a>
+        </nav>
+        <div class="user-info">
+            <span style="margin-right: 1rem;">Welcome, <span th:text="${#authentication.name}">Student</span></span>
+            <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-outline btn-sm">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <main class="dashboard-main">
+            <section class="dashboard-section">
+                <h2>Available Courses</h2>
+                
+                <div class="table-wrap">
+                    <table class="data-table" id="coursesTable">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Level</th>
+                                <th>Duration</th>
+                                <th>Credits</th>
+                                <th>Fee (INR)</th>
+                                <th>Required Qualification</th>
+                                <th>Availability</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="course : ${courses}" class="course-row">
+                                <td th:text="${course.code}">CS101</td>
+                                <td th:text="${course.name}">Intro to CS</td>
+                                <td th:text="${course.department}">Engineering</td>
+                                <td th:text="${course.programLevel}">UG</td>
+                                <td th:text="${course.durationYears + ' Years'}">3 Years</td>
+                                <td th:text="${course.credits}">3</td>
+                                <td th:text="${course.fee}">120000</td>
+                                <td th:text="${course.requiredQualification}">12th pass</td>
+                                <td>
+                                    <span th:if="${course.remainingSeats > 0}" class="status-badge enrolled">
+                                        <span th:text="${course.remainingSeats}">20</span> / <span th:text="${course.capacity}">50</span>
+                                    </span>
+                                    <span th:if="${course.remainingSeats == 0}" class="status-badge pending">Full</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/courses/{id}(id=${course.id})}" class="btn btn-sm btn-primary">View & Apply</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

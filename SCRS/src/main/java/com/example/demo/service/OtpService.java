@@ -8,6 +8,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -33,6 +41,15 @@ public class OtpService {
 
     @Value("${ccrs.otp.send-email: true}")
     private boolean sendEmailOtp;
+
+    @Value("${twilio.account-sid:}")
+    private String twilioAccountSid;
+
+    @Value("${twilio.auth-token:}")
+    private String twilioAuthToken;
+
+    @Value("${twilio.from-number:}")
+    private String twilioFromNumber;
 
     public OtpService(OtpVerificationRepository otpRepository, JavaMailSender mailSender) {
         this.otpRepository = otpRepository;
@@ -101,10 +118,40 @@ public class OtpService {
         }
     }
 
-    // Placeholder SMS sender: integrate with an SMS gateway if needed.
+    // Send OTP by SMS using Twilio REST API if configured. Falls back to logging.
+    @Async
     private void sendSmsOtp(String mobile, String otp, OtpVerification.OtpType type) {
-        // Placeholder: integrate with Twilio/other SMS gateway. For now log.
-        log.info("OTP for mobile {} ({}): {} (SMS gateway not configured)", mobile, type, otp);
+        if (twilioAccountSid == null || twilioAccountSid.isBlank()
+                || twilioAuthToken == null || twilioAuthToken.isBlank()
+                || twilioFromNumber == null || twilioFromNumber.isBlank()) {
+            log.info("OTP for mobile {} ({}): {} (SMS gateway not configured)", mobile, type, otp);
+            return;
+        }
+        try {
+            String body = "Your OTP is: " + otp + ". Valid for " + VALID_MINUTES + " minutes.";
+            String payload = "To=" + URLEncoder.encode(mobile, StandardCharsets.UTF_8)
+                    + "&From=" + URLEncoder.encode(twilioFromNumber, StandardCharsets.UTF_8)
+                    + "&Body=" + URLEncoder.encode(body, StandardCharsets.UTF_8);
+            String uri = "https://api.twilio.com/2010-04-01/Accounts/" + twilioAccountSid + "/Messages.json";
+            String auth = twilioAccountSid + ":" + twilioAuthToken;
+            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
+
+            HttpRequest req = HttpRequest.newBuilder()
+                    .uri(URI.create(uri))
+                    .header("Authorization", "Basic " + encodedAuth)
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .POST(HttpRequest.BodyPublishers.ofString(payload))
+                    .build();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+            if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
+                log.info("OTP SMS sent to {}", mobile);
+            } else {
+                log.warn("Could not send OTP SMS to {}: status={}, body={}", mobile, resp.statusCode(), resp.body());
+            }
+        } catch (Exception e) {
+            log.warn("Could not send OTP SMS to {}: {}", mobile, e.getMessage());
+        }
     }
 
     // Verify an OTP: check validity, mark used and return the record when valid.

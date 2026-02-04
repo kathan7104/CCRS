@@ -21,6 +21,9 @@ public class Course {
     @Column(nullable = false, length = 255)
     private String name;
 
+    @Column(nullable = false, length = 100)
+    private String department;
+
     @Column(nullable = false)
     private Integer capacity;
 
@@ -29,6 +32,21 @@ public class Course {
 
     @Column(nullable = false)
     private Integer credits;
+
+    @Column(nullable = false)
+    private Integer fee;
+
+    @Column(name = "program_level", nullable = false, length = 20)
+    private String programLevel;
+
+    @Column(name = "level", nullable = false, length = 20)
+    private String level;
+
+    @Column(name = "duration_years", nullable = false)
+    private Integer durationYears;
+
+    @Column(name = "required_qualification", nullable = false, length = 255)
+    private String requiredQualification;
 
     @ManyToMany
     @JoinTable(name = "course_prerequisites",
@@ -84,6 +102,14 @@ public class Course {
         this.name = name;
     }
 
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
     public Integer getCapacity() {
         return capacity;
     }
@@ -106,6 +132,46 @@ public class Course {
 
     public void setCredits(Integer credits) {
         this.credits = credits;
+    }
+
+    public Integer getFee() {
+        return fee;
+    }
+
+    public void setFee(Integer fee) {
+        this.fee = fee;
+    }
+
+    public String getProgramLevel() {
+        return programLevel;
+    }
+
+    public void setProgramLevel(String programLevel) {
+        this.programLevel = programLevel;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public Integer getDurationYears() {
+        return durationYears;
+    }
+
+    public void setDurationYears(Integer durationYears) {
+        this.durationYears = durationYears;
+    }
+
+    public String getRequiredQualification() {
+        return requiredQualification;
+    }
+
+    public void setRequiredQualification(String requiredQualification) {
+        this.requiredQualification = requiredQualification;
     }
 
     public Set<Course> getPrerequisites() {

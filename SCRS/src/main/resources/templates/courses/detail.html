@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Course Details - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <header class="dashboard-header">
+            <h1>Course Details</h1>
+            <div class="user-info">
+                 <a th:href="@{/courses}" class="btn btn-outline">Back to List</a>
+            </div>
+        </header>
+        <main class="dashboard-main">
+            <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}"></div>
+            
+            <section class="dashboard-section detail-card">
+                <h2 th:text="${course.name} + ' (' + ${course.code} + ')'" style="margin-bottom: 20px;">Course Name</h2>
+                
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="label">Credits</span>
+                        <span class="value" th:text="${course.credits}">3</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Annual Fee (INR)</span>
+                        <span class="value" th:text="${course.fee}">120000</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Department</span>
+                        <span class="value" th:text="${course.department}">Engineering</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Program Level</span>
+                        <span class="value" th:text="${course.programLevel}">UG</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Duration</span>
+                        <span class="value" th:text="${course.durationYears + ' Years'}">3 Years</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Capacity</span>
+                        <span class="value" th:text="${course.capacity}">30</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Remaining Seats</span>
+                        <span class="value" th:text="${course.remainingSeats}">15</span>
+                    </div>
+                </div>
+
+                <div class="prerequisites" style="margin-bottom: 30px;">
+                    <h3>Required Qualification</h3>
+                    <p th:text="${course.requiredQualification}">12th pass</p>
+                </div>
+
+                <div class="prerequisites" th:if="${!#lists.isEmpty(course.prerequisites)}" style="margin-bottom: 30px;">
+                    <h3>Prerequisites</h3>
+                    <ul>
+                        <li th:each="pre : ${course.prerequisites}" th:text="${pre.code} + ' - ' + ${pre.name}"></li>
+                    </ul>
+                </div>
+                
+                <div class="actions">
+                    <a th:if="${course.remainingSeats > 0}" 
+                       th:href="@{/courses/{id}/enroll(id=${course.id})}" 
+                       class="btn btn-primary btn-large">Apply for Enrollment</a>
+                       
+                    <button th:if="${course.remainingSeats <= 0}" disabled class="btn btn-disabled btn-large">Course Full</button>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
