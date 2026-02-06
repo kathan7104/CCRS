@@ -7,10 +7,6 @@ import java.util.Set;
 @Table(name = "courses", indexes = {
     @Index(name = "idx_course_code", columnList = "code")
 })
-
-/**
- * JPA entity representing Course.
- */
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,93 +56,109 @@ public class Course {
     public Course() {
     }
     public Long getId() {
+        // 1. Send the result back to the screen
         return id;
     }
     public void setId(Long id) {
         this.id = id;
     }
     public String getCode() {
+        // 1. Send the result back to the screen
         return code;
     }
     public void setCode(String code) {
         this.code = code;
     }
     public String getName() {
+        // 1. Send the result back to the screen
         return name;
     }
     public void setName(String name) {
         this.name = name;
     }
     public String getDepartment() {
+        // 1. Send the result back to the screen
         return department;
     }
     public void setDepartment(String department) {
         this.department = department;
     }
     public Integer getCapacity() {
+        // 1. Send the result back to the screen
         return capacity;
     }
     public void setCapacity(Integer capacity) {
         this.capacity = capacity;
     }
     public Integer getRemainingSeats() {
+        // 1. Send the result back to the screen
         return remainingSeats;
     }
     public void setRemainingSeats(Integer remainingSeats) {
         this.remainingSeats = remainingSeats;
     }
     public Integer getCredits() {
+        // 1. Send the result back to the screen
         return credits;
     }
     public void setCredits(Integer credits) {
         this.credits = credits;
     }
     public Integer getFee() {
+        // 1. Send the result back to the screen
         return fee;
     }
     public void setFee(Integer fee) {
         this.fee = fee;
     }
     public String getProgramLevel() {
+        // 1. Send the result back to the screen
         return programLevel;
     }
     public void setProgramLevel(String programLevel) {
         this.programLevel = programLevel;
     }
     public String getLevel() {
+        // 1. Send the result back to the screen
         return level;
     }
     public void setLevel(String level) {
         this.level = level;
     }
     public Integer getDurationYears() {
+        // 1. Send the result back to the screen
         return durationYears;
     }
     public void setDurationYears(Integer durationYears) {
         this.durationYears = durationYears;
     }
     public String getRequiredQualification() {
+        // 1. Send the result back to the screen
         return requiredQualification;
     }
     public void setRequiredQualification(String requiredQualification) {
         this.requiredQualification = requiredQualification;
     }
     public Set<Course> getPrerequisites() {
+        // 1. Send the result back to the screen
         return prerequisites;
     }
     public void setPrerequisites(Set<Course> prerequisites) {
         this.prerequisites = prerequisites;
     }
     public Long getVersion() {
+        // 1. Send the result back to the screen
         return version;
     }
     public void setVersion(Long version) {
         this.version = version;
     }
     public LocalDateTime getCreatedAt() {
+        // 1. Send the result back to the screen
         return createdAt;
     }
     public LocalDateTime getUpdatedAt() {
+        // 1. Send the result back to the screen
         return updatedAt;
     }
 }

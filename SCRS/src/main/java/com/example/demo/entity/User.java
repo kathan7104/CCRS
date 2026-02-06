@@ -7,16 +7,11 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
 @Entity
 @Table(name = "users", indexes = {
     @Index(name = "idx_user_email", columnList = "email", unique = true),
     @Index(name = "idx_user_mobile", columnList = "mobile_number", unique = true)
 })
-
-/**
- * JPA entity representing User.
- */
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,66 +64,77 @@ public class User {
         this.fullName = fullName;
     }
     public Long getId() {
+        // 1. Send the result back to the screen
         return id;
     }
     public void setId(Long id) {
         this.id = id;
     }
     public String getEmail() {
+        // 1. Send the result back to the screen
         return email;
     }
     public void setEmail(String email) {
         this.email = email;
     }
     public String getMobileNumber() {
+        // 1. Send the result back to the screen
         return mobileNumber;
     }
     public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
     }
     public String getPassword() {
+        // 1. Send the result back to the screen
         return password;
     }
     public void setPassword(String password) {
         this.password = password;
     }
     public String getFullName() {
+        // 1. Send the result back to the screen
         return fullName;
     }
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
     public boolean isEmailVerified() {
+        // 1. Send the result back to the screen
         return emailVerified;
     }
     public void setEmailVerified(boolean emailVerified) {
         this.emailVerified = emailVerified;
     }
     public boolean isMobileVerified() {
+        // 1. Send the result back to the screen
         return mobileVerified;
     }
     public void setMobileVerified(boolean mobileVerified) {
         this.mobileVerified = mobileVerified;
     }
     public boolean isActive() {
+        // 1. Send the result back to the screen
         return active;
     }
     public void setActive(boolean active) {
         this.active = active;
     }
     public LocalDateTime getCreatedAt() {
+        // 1. Send the result back to the screen
         return createdAt;
     }
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
     public LocalDateTime getUpdatedAt() {
+        // 1. Send the result back to the screen
         return updatedAt;
     }
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
     public Set<String> getRoles() {
+        // 1. Send the result back to the screen
         return roles;
     }
     public void setRoles(Set<String> roles) {

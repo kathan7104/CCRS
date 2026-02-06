@@ -1,10 +1,5 @@
 package com.example.demo.dto;
 import com.example.demo.entity.User;
-
-
-/**
- * DTO for Registration result.
- */
 public class RegistrationResult {
     private final User user;
     private final String emailOtpForDisplay;
@@ -15,12 +10,15 @@ public class RegistrationResult {
         this.mobileOtpForDisplay = mobileOtpForDisplay;
     }
     public User getUser() {
+        // 1. Send the result back to the screen
         return user;
     }
     public String getEmailOtpForDisplay() {
+        // 1. Send the result back to the screen
         return emailOtpForDisplay;
     }
     public String getMobileOtpForDisplay() {
+        // 1. Send the result back to the screen
         return mobileOtpForDisplay;
     }
 }

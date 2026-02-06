@@ -4,10 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-
-/**
- * JPA entity representing Invoice.
- */
 @Entity
 @Table(name = "invoices", indexes = {@Index(name = "idx_invoice_number", columnList = "invoice_number")})
 public class Invoice {
@@ -43,45 +39,53 @@ public class Invoice {
     public Invoice() {
     }
     public Long getId() {
+        // 1. Send the result back to the screen
         return id;
     }
     public void setId(Long id) {
         this.id = id;
     }
     public String getInvoiceNumber() {
+        // 1. Send the result back to the screen
         return invoiceNumber;
     }
     public void setInvoiceNumber(String invoiceNumber) {
         this.invoiceNumber = invoiceNumber;
     }
     public User getStudent() {
+        // 1. Send the result back to the screen
         return student;
     }
     public void setStudent(User student) {
         this.student = student;
     }
     public BigDecimal getTotalAmount() {
+        // 1. Send the result back to the screen
         return totalAmount;
     }
     public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
     }
     public InvoiceStatus getStatus() {
+        // 1. Send the result back to the screen
         return status;
     }
     public void setStatus(InvoiceStatus status) {
         this.status = status;
     }
     public LocalDateTime getIssuedAt() {
+        // 1. Send the result back to the screen
         return issuedAt;
     }
     public LocalDateTime getDueDate() {
+        // 1. Send the result back to the screen
         return dueDate;
     }
     public void setDueDate(LocalDateTime dueDate) {
         this.dueDate = dueDate;
     }
     public Set<InvoiceItem> getItems() {
+        // 1. Send the result back to the screen
         return items;
     }
     public void setItems(Set<InvoiceItem> items) {

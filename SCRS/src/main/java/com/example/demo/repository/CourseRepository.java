@@ -6,10 +6,6 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Optional;
-
-/**
- * Spring Data repository for Course.
- */
 public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> findByCode(String code);
     @Lock(LockModeType.PESSIMISTIC_WRITE)

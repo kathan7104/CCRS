@@ -8,11 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-
-/**
- * Configuration for Data Initializer.
- */
 @Configuration
 public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
@@ -27,55 +22,64 @@ public class DataInitializer implements CommandLineRunner {
         this.enrollmentRepository = enrollmentRepository;
         this.passwordEncoder = passwordEncoder;
     }
-/**
- * Configuration for Data Initializer.
- */
     @Override
     public void run(String... args) throws Exception {
         resetAndCreateSampleCourses();
+        // 1. Check a rule -> decide what to do next
         if (!createAuthority) return;
         String directorEmail = "director@college.edu";
+        // 2. Check a rule -> decide what to do next
         if (userRepository.findByEmail(directorEmail).isEmpty()) {
             User u = new User();
             u.setEmail(directorEmail);
             u.setMobileNumber("9000000001");
             u.setFullName("College Director (DEMO)");
+            // 3. Security: hide the password before saving
             u.setPassword(passwordEncoder.encode("Director123!"));
             u.getRoles().add("AUTHORITY_DIRECTOR");
             u.setEmailVerified(true);
             u.setMobileVerified(true);
+            // 4. Get or save data in the database
             userRepository.save(u);
             System.out.println("Created demo director account: " + directorEmail + " (password: Director123!)");
         }
         String adminEmail = "admin@college.edu";
+        // 5. Check a rule -> decide what to do next
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
             User a = new User();
             a.setEmail(adminEmail);
             a.setMobileNumber("9000000002");
             a.setFullName("College Admin (DEMO)");
+            // 6. Security: hide the password before saving
             a.setPassword(passwordEncoder.encode("Admin123!"));
             a.getRoles().add("AUTHORITY_ADMIN");
             a.setEmailVerified(true);
             a.setMobileVerified(true);
+            // 7. Get or save data in the database
             userRepository.save(a);
             System.out.println("Created demo admin account: " + adminEmail + " (password: Admin123!)");
         }
         String facultyEmail = "faculty@college.edu";
+        // 8. Check a rule -> decide what to do next
         if (userRepository.findByEmail(facultyEmail).isEmpty()) {
             User f = new User();
             f.setEmail(facultyEmail);
             f.setMobileNumber("9000000003");
             f.setFullName("Faculty Demo (DEMO)");
+            // 9. Security: hide the password before saving
             f.setPassword(passwordEncoder.encode("Faculty123!"));
             f.getRoles().add("AUTHORITY_FACULTY");
             f.setEmailVerified(true);
             f.setMobileVerified(true);
+            // 10. Get or save data in the database
             userRepository.save(f);
             System.out.println("Created demo faculty account: " + facultyEmail + " (password: Faculty123!)");
         }
     }
     private void resetAndCreateSampleCourses() {
+        // 1. Get or save data in the database
         enrollmentRepository.deleteAll();
+        // 2. Get or save data in the database
         courseRepository.deleteAll();
         createCourse("BBA", "Bachelor of Business Administration", "Management", 120, 120, 3, 120000, "UG", 3, "12th pass (Commerce/Any stream) with minimum 50%");
         createCourse("BCA", "Bachelor of Computer Applications", "Computer Applications", 120, 120, 3, 130000, "UG", 3, "12th pass with Mathematics/Computer Science (50%+)");
@@ -101,6 +105,7 @@ public class DataInitializer implements CommandLineRunner {
         c.setLevel(programLevel);
         c.setDurationYears(durationYears);
         c.setRequiredQualification(requiredQualification);
+        // 1. Get or save data in the database
         courseRepository.save(c);
     }
 }

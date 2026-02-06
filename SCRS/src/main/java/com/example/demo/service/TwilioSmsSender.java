@@ -12,10 +12,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-
-/**
- * Business logic for Twilio SMS Sender.
- */
 @Component
 @ConditionalOnProperty(name = "ccrs.sms.provider", havingValue = "twilio")
 public class TwilioSmsSender implements SmsSender {
@@ -26,18 +22,15 @@ public class TwilioSmsSender implements SmsSender {
     private String twilioAuthToken;
     @Value("${twilio.from-number:}")
     private String twilioFromNumber;
-/**
- * Business logic for Twilio SMS Sender.
- */
-/**
- * Business logic for Twilio SMS Sender.
- */
     @Override
     public void send(String mobile, String otp, OtpVerification.OtpType type, int validMinutes) {
+        // 1. Check a rule -> decide what to do next
         if (twilioAccountSid == null || twilioAccountSid.isBlank()
                 || twilioAuthToken == null || twilioAuthToken.isBlank()
                 || twilioFromNumber == null || twilioFromNumber.isBlank()) {
+            // 2. Note: write a log so we can track it
             log.info("OTP for mobile {} ({}): {} (SMS gateway not configured)", mobile, type, otp);
+            // 3. Send the result back to the screen
             return;
         }
         try {
@@ -56,12 +49,16 @@ public class TwilioSmsSender implements SmsSender {
                     .build();
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+            // 4. Check a rule -> decide what to do next
             if (resp.statusCode() >= 200 && resp.statusCode() < 300) {
+                // 5. Note: write a log so we can track it
                 log.info("OTP SMS sent to {}", mobile);
             } else {
+                // 6. Note: write a log so we can track it
                 log.warn("Could not send OTP SMS to {}: status={}, body={}", mobile, resp.statusCode(), resp.body());
             }
         } catch (Exception e) {
+            // 7. Note: write a log so we can track it
             log.warn("Could not send OTP SMS to {}: {}", mobile, e.getMessage());
         }
     }

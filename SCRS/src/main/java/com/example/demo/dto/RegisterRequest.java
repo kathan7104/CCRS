@@ -1,10 +1,5 @@
 package com.example.demo.dto;
 import jakarta.validation.constraints.*;
-
-
-/**
- * DTO for Register request payload.
- */
 public class RegisterRequest {
     @NotBlank(message = "Full name is required")
     @Size(min = 2, max = 100)
@@ -23,30 +18,35 @@ public class RegisterRequest {
     @NotBlank(message = "Confirm password is required")
     private String confirmPassword;
     public String getFullName() {
+        // 1. Send the result back to the screen
         return fullName;
     }
     public void setFullName(String fullName) {
         this.fullName = fullName;
     }
     public String getEmail() {
+        // 1. Send the result back to the screen
         return email;
     }
     public void setEmail(String email) {
         this.email = email;
     }
     public String getMobileNumber() {
+        // 1. Send the result back to the screen
         return mobileNumber;
     }
     public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
     }
     public String getPassword() {
+        // 1. Send the result back to the screen
         return password;
     }
     public void setPassword(String password) {
         this.password = password;
     }
     public String getConfirmPassword() {
+        // 1. Send the result back to the screen
         return confirmPassword;
     }
     public void setConfirmPassword(String confirmPassword) {

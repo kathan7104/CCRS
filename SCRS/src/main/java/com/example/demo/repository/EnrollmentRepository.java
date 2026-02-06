@@ -5,10 +5,6 @@ import com.example.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
-
-/**
- * Spring Data repository for Enrollment.
- */
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     Optional<Enrollment> findByStudentAndCourse(User student, Course course);
     boolean existsByStudentAndCourse(User student, Course course);

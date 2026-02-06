@@ -11,50 +11,33 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import jakarta.servlet.http.HttpServletRequest;
-
-
-/**
- * Configuration for Security.
- */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter;
-/**
- * Configuration for Security.
- */
     public SecurityConfig(CustomUserDetailsService userDetailsService,
                           com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter) {
         this.userDetailsService = userDetailsService;
         this.preLoginRoleValidationFilter = preLoginRoleValidationFilter;
     }
-/**
- * Configuration for Security.
- */
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // 1. Send the result back to the screen
         return new BCryptPasswordEncoder();
     }
-/**
- * Configuration for Security.
- */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
+        // 1. Send the result back to the screen
         return provider;
     }
-/**
- * Configuration for Security.
- */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        // 1. Send the result back to the screen
         return config.getAuthenticationManager();
     }
-/**
- * Configuration for Security.
- */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -81,9 +64,11 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
                 .permitAll()
             );
+        // 1. Send the result back to the screen
         return http.build();
     }
     private boolean logoutRequestMatcher(HttpServletRequest request) {
+        // 1. Send the result back to the screen
         return "POST".equalsIgnoreCase(request.getMethod())
                 && "/auth/logout".equals(request.getRequestURI());
     }

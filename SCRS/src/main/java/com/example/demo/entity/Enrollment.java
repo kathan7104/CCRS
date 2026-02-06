@@ -4,10 +4,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "enrollments", uniqueConstraints = {@UniqueConstraint(columnNames = {"student_id", "course_id"})},
         indexes = {@Index(name = "idx_enrollment_student", columnList = "student_id"),
-
-/**
- * JPA entity representing Enrollment.
- */
                 @Index(name = "idx_enrollment_course", columnList = "course_id")})
 public class Enrollment {
     @Id
@@ -48,57 +44,67 @@ public class Enrollment {
     public Enrollment() {
     }
     public Long getId() {
+        // 1. Send the result back to the screen
         return id;
     }
     public void setId(Long id) {
         this.id = id;
     }
     public User getStudent() {
+        // 1. Send the result back to the screen
         return student;
     }
     public void setStudent(User student) {
         this.student = student;
     }
     public Course getCourse() {
+        // 1. Send the result back to the screen
         return course;
     }
     public void setCourse(Course course) {
         this.course = course;
     }
     public EnrollmentStatus getStatus() {
+        // 1. Send the result back to the screen
         return status;
     }
     public void setStatus(EnrollmentStatus status) {
         this.status = status;
     }
     public LocalDateTime getRegisteredAt() {
+        // 1. Send the result back to the screen
         return registeredAt;
     }
     public LocalDateTime getFinalizedAt() {
+        // 1. Send the result back to the screen
         return finalizedAt;
     }
     public void setFinalizedAt(LocalDateTime finalizedAt) {
         this.finalizedAt = finalizedAt;
     }
     public String getComments() {
+        // 1. Send the result back to the screen
         return comments;
     }
     public void setComments(String comments) {
         this.comments = comments;
     }
     public Double getPastEducationMarks() {
+        // 1. Send the result back to the screen
         return pastEducationMarks;
     }
     public void setPastEducationMarks(Double pastEducationMarks) {
         this.pastEducationMarks = pastEducationMarks;
     }
     public String getMarksheetPath() {
+        // 1. Send the result back to the screen
         return marksheetPath;
     }
     public void setMarksheetPath(String marksheetPath) {
         this.marksheetPath = marksheetPath;
     }
     public String getPersonalInfo() {
+        // 1. Send the result back to the screen
         return personalInfo;
     }
     public void setPersonalInfo(String personalInfo) {

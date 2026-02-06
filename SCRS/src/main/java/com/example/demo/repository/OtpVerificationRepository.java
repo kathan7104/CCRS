@@ -7,11 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.Optional;
-
-
-/**
- * Spring Data repository for OTP Verification.
- */
 @Repository
 public interface OtpVerificationRepository extends JpaRepository<OtpVerification, Long> {
     @Query("SELECT o FROM OtpVerification o WHERE o.identifier = :identifier AND o.otp = :otp " +

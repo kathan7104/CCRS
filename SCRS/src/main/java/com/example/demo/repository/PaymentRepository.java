@@ -3,10 +3,6 @@ import com.example.demo.entity.Payment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.List;
-
-/**
- * Spring Data repository for Payment.
- */
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByTransactionId(String transactionId);
     List<Payment> findByInvoiceId(Long invoiceId);

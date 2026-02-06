@@ -2,10 +2,6 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-/**
- * JPA entity representing Payment.
- */
 @Entity
 @Table(name = "payments", indexes = {@Index(name = "idx_payment_tx", columnList = "transaction_id")})
 public class Payment {
@@ -44,42 +40,49 @@ public class Payment {
     public Payment() {
     }
     public Long getId() {
+        // 1. Send the result back to the screen
         return id;
     }
     public void setId(Long id) {
         this.id = id;
     }
     public Invoice getInvoice() {
+        // 1. Send the result back to the screen
         return invoice;
     }
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
     }
     public BigDecimal getAmount() {
+        // 1. Send the result back to the screen
         return amount;
     }
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
     public PaymentMethod getMethod() {
+        // 1. Send the result back to the screen
         return method;
     }
     public void setMethod(PaymentMethod method) {
         this.method = method;
     }
     public String getTransactionId() {
+        // 1. Send the result back to the screen
         return transactionId;
     }
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
     }
     public PaymentStatus getStatus() {
+        // 1. Send the result back to the screen
         return status;
     }
     public void setStatus(PaymentStatus status) {
         this.status = status;
     }
     public LocalDateTime getPaidAt() {
+        // 1. Send the result back to the screen
         return paidAt;
     }
     public void setPaidAt(LocalDateTime paidAt) {

@@ -10,10 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.Optional;
-
-/**
- * Business logic for Enrollment.
- */
 @Service
 public class EnrollmentService {
     private final CourseRepository courseRepository;
@@ -24,32 +20,39 @@ public class EnrollmentService {
         this.enrollmentRepository = enrollmentRepository;
         this.userRepository = userRepository;
     }
-/**
- * Business logic for Enrollment.
- */
     @Transactional
     public Enrollment enrollStudent(String userEmail, Long courseId, String comments, 
                                     String fullName, LocalDate dob, Double pastMarks,
                                     String highestQualification, String boardUniversity, Integer passingYear,
                                     String marksheetPath) {
+        // 1. Get or save data in the database
         User student = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        // 2. Get or save data in the database
         Course course = courseRepository.findByIdForUpdate(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("Course not found"));
+        // 3. Check a rule -> decide what to do next
         if (enrollmentRepository.existsByStudentAndCourse(student, course)) {
+            // 4. Important: stop here and report an error
             throw new IllegalStateException("Already applied/enrolled in this course");
         }
         for (Course prereq : course.getPrerequisites()) {
+            // 5. Get or save data in the database
             boolean hasCompleted = enrollmentRepository.existsByStudentAndCourseAndStatus(
                     student, prereq, Enrollment.EnrollmentStatus.COMPLETED);
+            // 6. Check a rule -> decide what to do next
             if (!hasCompleted) {
+                // 7. Important: stop here and report an error
                 throw new IllegalStateException("Prerequisite not met: " + prereq.getCode());
             }
         }
+        // 8. Check a rule -> decide what to do next
         if (course.getRemainingSeats() <= 0) {
+            // 9. Important: stop here and report an error
             throw new IllegalStateException("Course is full");
         }
         course.setRemainingSeats(course.getRemainingSeats() - 1);
+        // 10. Get or save data in the database
         courseRepository.save(course);
         Enrollment enrollment = new Enrollment();
         enrollment.setStudent(student);
@@ -63,9 +66,11 @@ public class EnrollmentService {
         );
         enrollment.setPersonalInfo(personalInfo);
         enrollment.setStatus(Enrollment.EnrollmentStatus.PENDING);
+        // 11. Send the result back to the screen
         return enrollmentRepository.save(enrollment);
     }
     private boolean checkPrerequisites(User student, Course course) {
+        // 1. Send the result back to the screen
         return true; 
     }
 }
