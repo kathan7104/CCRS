@@ -44,6 +44,8 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/", "/authenroll").hasAuthority("ROLE_STUDENT")
                 .anyRequest().authenticated()
             )
