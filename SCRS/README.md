@@ -22,8 +22,20 @@ mvnw.cmd spring-boot:run
 
 - `http://localhost:8080`
 
----
 
+---
+## New Machine Setup (Step by Step)
+
+Follow these steps when a teammate runs the project on a different PC.
+
+1. Install prerequisites. Required: JDK 17+, MySQL 8.x, Git.
+2. Clone the repo. Example: `git clone <repo-url>`
+3. Configure database in `src/main/resources/application.properties`. Update `spring.datasource.url`, `spring.datasource.username`, `spring.datasource.password`.
+4. Configure email OTP in `src/main/resources/application.properties`. Update `spring.mail.host`, `spring.mail.port`, `spring.mail.username`, `spring.mail.password`. For Gmail, enable 2-Step Verification and use an App Password.
+5. Optional SMS OTP setup in `src/main/resources/application.properties`. For mock SMS keep `ccrs.sms.provider=mock` and `ccrs.otp.send-sms=false` and check `logs/sms-otp.log`. For real SMS set `ccrs.otp.send-sms=true`, `ccrs.sms.provider=twilio`, and provide `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER` as env vars.
+6. Run the app. `mvnw.cmd clean package` then `mvnw.cmd spring-boot:run`.
+
+---
 ## What This App Can Do
 
 ### Student
@@ -98,7 +110,30 @@ twilio.from-number=${TWILIO_FROM_NUMBER:}
 
 ---
 
-## Project Structure
+
+---
+## Why OTP Works On One PC But Not Another
+
+OTP delivery depends on **local SMTP/SMS configuration**. The most common reasons it fails on a new PC:
+
+- **Email OTP is enabled but SMTP is not configured**  
+  `ccrs.otp.send-email=true` means the app tries to send real email.  
+  If `spring.mail.*` is missing, wrong, or blocked by Gmail security rules, the email fails.
+
+- **Gmail requires an App Password**  
+  Normal Gmail passwords will fail. Use a Gmail App Password.
+
+- **SMS is in mock mode**  
+  `ccrs.otp.send-sms=false` and `ccrs.sms.provider=mock` mean no real SMS is sent.  
+  The OTP is written to `logs/sms-otp.log`.
+
+If you want **dev-only OTP** without real email, set:
+
+```properties
+ccrs.otp.send-email=false
+```
+
+Then check the console logs for the OTP (or use the SMS mock file).\n## Project Structure
 
 - `config/` — Security and app configuration
 - `controller/` — MVC routes and page controllers
