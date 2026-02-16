@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Account Staff Dashboard - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-staff">
+<header class="dashboard-header">
+    <h1>Account Staff Dashboard</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/staff/dashboard}" class="nav-link active">Dashboard</a>
+        <a th:href="@{/staff/fee-structures}" class="nav-link">Fee Structures</a>
+        <a th:href="@{/staff/reports}" class="nav-link">Financial Reports</a>
+    </nav>
+    <div class="user-info">
+        <span th:text="${userName}">Staff</span>
+        <form th:action="@{/auth/logout}" method="post"><button class="btn btn-outline btn-sm" type="submit">Logout</button></form>
+    </div>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <h2>Finance Snapshot</h2>
+            <div class="metric-grid">
+                <div class="metric-card"><span class="metric-label">Configured Fee Structures</span><span class="metric-value" th:text="${feeCount}">0</span></div>
+                <div class="metric-card"><span class="metric-label">Total Revenue</span><span class="metric-value" th:text="${snapshot.totalRevenue}">0</span></div>
+                <div class="metric-card"><span class="metric-label">Unpaid Invoices</span><span class="metric-value" th:text="${snapshot.unpaidCount}">0</span></div>
+                <div class="metric-card"><span class="metric-label">Active Fee Plan</span><span class="metric-value" th:text="${activeFee != null ? activeFee.name : 'None'}">None</span></div>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

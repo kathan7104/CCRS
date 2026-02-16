@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Super User Management - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-admin">
+<header class="dashboard-header">
+    <h1>Super User Management</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/admin/dashboard}" class="nav-link">Dashboard</a>
+        <a th:href="@{/admin/enrollments}" class="nav-link">Enrollment Approval</a>
+        <a th:href="@{/admin/users}" class="nav-link active">Super Users</a>
+        <a th:href="@{/admin/reports}" class="nav-link">Financial Oversight</a>
+    </nav>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <h2>Admin, Director, and Account Staff Accounts</h2>
+                <a th:href="@{/admin/users/new}" class="btn btn-primary">Add User</a>
+            </div>
+            <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+            <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Department</th><th>Role</th><th>Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="u : ${users}">
+                        <td th:text="${u.fullName}">Name</td>
+                        <td th:text="${u.email}">email</td>
+                        <td th:text="${u.mobileNumber}">mobile</td>
+                        <td th:text="${u.department}">dept</td>
+                        <td th:text="${#strings.listJoin(u.roles, ', ')}">role</td>
+                        <td>
+                            <a th:href="@{/admin/users/{id}/edit(id=${u.id})}" class="btn btn-sm btn-secondary">Edit</a>
+                            <form th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post" class="inline-form">
+                                <button class="btn btn-sm btn-outline" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

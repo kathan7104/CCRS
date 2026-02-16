@@ -388,6 +388,48 @@ select:focus {
     margin-bottom: 0.6rem;
 }
 
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+
+.metric-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+}
+
+.metric-label {
+    display: block;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+}
+
+.metric-value {
+    display: block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    color: var(--ink);
+}
+
+body.role-admin .dashboard-header {
+    background: linear-gradient(90deg, #fff4f4, #ffffff);
+    border-bottom-color: #fecaca;
+}
+
+body.role-director .dashboard-header {
+    background: linear-gradient(90deg, #ecfeff, #ffffff);
+    border-bottom-color: #a5f3fc;
+}
+
+body.role-staff .dashboard-header {
+    background: linear-gradient(90deg, #fef9c3, #ffffff);
+    border-bottom-color: #fde047;
+}
+
 .detail-card {
     border-left: 4px solid rgba(14, 165, 165, 0.5);
 }

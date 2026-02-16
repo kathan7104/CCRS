@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Faculty Assignments - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-director">
+<header class="dashboard-header">
+    <h1 th:text="${department + ' Faculty Assignments'}">Faculty Assignments</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/director/dashboard}" class="nav-link">Dashboard</a>
+        <a th:href="@{/director/courses}" class="nav-link">Courses</a>
+        <a th:href="@{/director/users}" class="nav-link">Faculty/Students</a>
+        <a th:href="@{/director/assignments}" class="nav-link active">Assignments</a>
+    </nav>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <h2>Assign Course to Faculty</h2>
+            <form th:action="@{/director/assignments}" method="post" class="form-row">
+                <div class="form-group">
+                    <label>Faculty</label>
+                    <select name="facultyId" required>
+                        <option th:each="f : ${faculty}" th:value="${f.id}" th:text="${f.fullName + ' (' + f.email + ')'}">Faculty</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Course</label>
+                    <select name="courseId" required>
+                        <option th:each="c : ${courses}" th:value="${c.id}" th:text="${c.code + ' - ' + c.name}">Course</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" type="submit">Assign</button></div>
+            </form>
+            <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+            <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Faculty</th><th>Course</th><th>Assigned At</th><th>Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="a : ${assignments}">
+                        <td th:text="${a.faculty.fullName}">Faculty</td>
+                        <td th:text="${a.course.code + ' - ' + a.course.name}">Course</td>
+                        <td th:text="${#temporals.format(a.assignedAt, 'yyyy-MM-dd HH:mm')}">time</td>
+                        <td>
+                            <form th:action="@{/director/assignments/{id}/delete(id=${a.id})}" method="post" class="inline-form">
+                                <button class="btn btn-sm btn-outline" type="submit">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

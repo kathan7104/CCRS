@@ -34,9 +34,12 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
     }
     @GetMapping("/login")
-    public String loginPage(Model model, @RequestParam(value = "error", required = false) String error) {
+    public String loginPage(Model model,
+                            @RequestParam(value = "error", required = false) String error,
+                            @RequestParam(value = "type", required = false) String type) {
         // 1. Put data on the page so the user can see it
         model.addAttribute("loginRequest", new LoginRequest());
+        model.addAttribute("loginType", "authority".equalsIgnoreCase(type) ? "AUTHORITY" : "STUDENT");
         // 2. Check a rule -> decide what to do next
         if (error != null) {
             // 3. Put data on the page so the user can see it

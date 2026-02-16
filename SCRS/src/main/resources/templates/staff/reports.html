@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Financial Reports - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-staff">
+<header class="dashboard-header">
+    <h1>Financial Reports</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/staff/dashboard}" class="nav-link">Dashboard</a>
+        <a th:href="@{/staff/fee-structures}" class="nav-link">Fee Structures</a>
+        <a th:href="@{/staff/reports}" class="nav-link active">Financial Reports</a>
+    </nav>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <h2>Summary</h2>
+            <p>Total Revenue: <strong th:text="${snapshot.totalRevenue}">0</strong></p>
+            <p>Unpaid Invoices: <strong th:text="${snapshot.unpaidCount}">0</strong></p>
+        </section>
+        <section class="dashboard-section">
+            <h2>Unpaid Students</h2>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Invoice</th><th>Student</th><th>Email</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody>
+                    <tr th:each="row : ${unpaidRows}">
+                        <td th:text="${row.invoiceNumber}">INV</td><td th:text="${row.studentName}">Name</td><td th:text="${row.studentEmail}">email</td><td th:text="${row.amount}">0</td><td th:text="${row.status}">DUE</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="dashboard-section">
+            <h2>Payment Reconciliation</h2>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Transaction</th><th>Invoice</th><th>Student</th><th>Amount</th><th>Status</th><th>Paid At</th></tr></thead>
+                    <tbody>
+                    <tr th:each="p : ${payments}">
+                        <td th:text="${p.transactionId}">TX</td>
+                        <td th:text="${p.invoiceNumber}">INV</td>
+                        <td th:text="${p.studentName}">student</td>
+                        <td th:text="${p.amount}">0</td>
+                        <td th:text="${p.paymentStatus}">SUCCESS</td>
+                        <td th:text="${p.paidAt != null ? #temporals.format(p.paidAt, 'yyyy-MM-dd HH:mm') : '-'}">time</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

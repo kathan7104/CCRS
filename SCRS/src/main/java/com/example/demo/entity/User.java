@@ -32,6 +32,8 @@ public class User {
     @Size(max = 100)
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
+    @Column(name = "department", length = 100)
+    private String department;
     @Column(name = "email_verified")
     private boolean emailVerified = false;
     @Column(name = "mobile_verified")
@@ -97,6 +99,12 @@ public class User {
     }
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+    public String getDepartment() {
+        return department;
+    }
+    public void setDepartment(String department) {
+        this.department = department;
     }
     public boolean isEmailVerified() {
         // 1. Send the result back to the screen

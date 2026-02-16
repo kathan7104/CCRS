@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Financial Oversight - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-admin">
+<header class="dashboard-header">
+    <h1>Financial Oversight</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/admin/dashboard}" class="nav-link">Dashboard</a>
+        <a th:href="@{/admin/enrollments}" class="nav-link">Enrollment Approval</a>
+        <a th:href="@{/admin/users}" class="nav-link">Super Users</a>
+        <a th:href="@{/admin/reports}" class="nav-link active">Financial Oversight</a>
+    </nav>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <h2>Revenue Snapshot</h2>
+            <p>Total Revenue: <strong th:text="${snapshot.totalRevenue}">0</strong></p>
+            <p>Unpaid Invoices: <strong th:text="${snapshot.unpaidCount}">0</strong></p>
+        </section>
+        <section class="dashboard-section">
+            <h2>Unpaid Students</h2>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Invoice</th><th>Student</th><th>Email</th><th>Amount</th><th>Status</th></tr></thead>
+                    <tbody>
+                    <tr th:each="row : ${unpaidRows}">
+                        <td th:text="${row.invoiceNumber}">INV</td><td th:text="${row.studentName}">Name</td><td th:text="${row.studentEmail}">mail</td><td th:text="${row.amount}">0</td><td th:text="${row.status}">DUE</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Director Dashboard - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-director">
+<header class="dashboard-header">
+    <h1>Director Dashboard</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/director/dashboard}" class="nav-link active">Dashboard</a>
+        <a th:href="@{/director/courses}" class="nav-link">Courses</a>
+        <a th:href="@{/director/users}" class="nav-link">Faculty/Students</a>
+        <a th:href="@{/director/assignments}" class="nav-link">Assignments</a>
+    </nav>
+    <div class="user-info">
+        <span th:text="${userName}">Director</span>
+        <form th:action="@{/auth/logout}" method="post"><button class="btn btn-outline btn-sm" type="submit">Logout</button></form>
+    </div>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <h2 th:text="${department + ' Department Overview'}">Department Overview</h2>
+            <div class="metric-grid">
+                <div class="metric-card"><span class="metric-label">Department Courses</span><span class="metric-value" th:text="${courseCount}">0</span></div>
+                <div class="metric-card"><span class="metric-label">Students</span><span class="metric-value" th:text="${studentCount}">0</span></div>
+                <div class="metric-card"><span class="metric-label">Faculty</span><span class="metric-value" th:text="${facultyCount}">0</span></div>
+                <div class="metric-card"><span class="metric-label">Course Assignments</span><span class="metric-value" th:text="${assignmentCount}">0</span></div>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

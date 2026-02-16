@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Department Users - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-director">
+<header class="dashboard-header">
+    <h1 th:text="${department + ' Users'}">Department Users</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/director/dashboard}" class="nav-link">Dashboard</a>
+        <a th:href="@{/director/courses}" class="nav-link">Courses</a>
+        <a th:href="@{/director/users}" class="nav-link active">Faculty/Students</a>
+        <a th:href="@{/director/assignments}" class="nav-link">Assignments</a>
+    </nav>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <h2>Faculty and Students</h2>
+                <a th:href="@{/director/users/new}" class="btn btn-primary">Add Department User</a>
+            </div>
+            <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+            <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Role</th><th>Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="u : ${users}">
+                        <td th:text="${u.fullName}">Name</td>
+                        <td th:text="${u.email}">Email</td>
+                        <td th:text="${u.mobileNumber}">Mobile</td>
+                        <td th:text="${#strings.listJoin(u.roles, ', ')}">Role</td>
+                        <td>
+                            <a th:href="@{/director/users/{id}/edit(id=${u.id})}" class="btn btn-sm btn-secondary">Edit</a>
+                            <form th:action="@{/director/users/{id}/delete(id=${u.id})}" method="post" class="inline-form">
+                                <button type="submit" class="btn btn-sm btn-outline">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
