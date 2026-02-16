@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Fee Structures - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-staff">
+<header class="dashboard-header">
+    <h1>Fee Structure Management</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/staff/dashboard}" class="nav-link">Dashboard</a>
+        <a th:href="@{/staff/fee-structures}" class="nav-link active">Fee Structures</a>
+        <a th:href="@{/staff/reports}" class="nav-link">Financial Reports</a>
+    </nav>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <h2>All Fee Structures</h2>
+                <a th:href="@{/staff/fee-structures/new}" class="btn btn-primary">Add Structure</a>
+            </div>
+            <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Name</th><th>Per Credit</th><th>Lab Fee</th><th>Differential</th><th>Late Penalty</th><th>Effective</th><th>Active</th><th>Action</th></tr></thead>
+                    <tbody>
+                    <tr th:each="fee : ${fees}">
+                        <td th:text="${fee.name}">Fee</td>
+                        <td th:text="${fee.costPerCredit}">0</td>
+                        <td th:text="${fee.labFee}">0</td>
+                        <td th:text="${fee.differentialFee}">0</td>
+                        <td th:text="${fee.latePenalty}">0</td>
+                        <td th:text="${fee.effectiveFrom}">date</td>
+                        <td th:text="${fee.active ? 'Yes' : 'No'}">No</td>
+                        <td>
+                            <a th:href="@{/staff/fee-structures/{id}/edit(id=${fee.id})}" class="btn btn-sm btn-secondary">Edit</a>
+                            <form th:action="@{/staff/fee-structures/{id}/delete(id=${fee.id})}" method="post" class="inline-form">
+                                <button class="btn btn-sm btn-outline" type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="dashboard-section">
+            <h2>Audit Trail</h2>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead><tr><th>Time</th><th>Action</th><th>User</th><th>Summary</th></tr></thead>
+                    <tbody>
+                    <tr th:each="log : ${logs}">
+                        <td th:text="${#temporals.format(log.changedAt, 'yyyy-MM-dd HH:mm')}">time</td>
+                        <td th:text="${log.action}">UPDATE</td>
+                        <td th:text="${log.changedBy}">user</td>
+                        <td th:text="${log.changeSummary}">summary</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

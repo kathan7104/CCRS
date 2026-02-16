@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>User Form - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-admin">
+<header class="dashboard-header">
+    <h1>User Form</h1>
+    <nav class="dashboard-nav"><a th:href="@{/admin/users}" class="nav-link active">Back to Users</a></nav>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <form th:action="${user.id == null} ? @{/admin/users} : @{/admin/users/{id}(id=${user.id})}" method="post">
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" name="fullName" th:value="${user.fullName}" required/></div>
+                    <div class="form-group"><label>Email</label><input type="email" name="email" th:value="${user.email}" required/></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Mobile</label><input type="text" name="mobileNumber" th:value="${user.mobileNumber}" required/></div>
+                    <div class="form-group"><label>Department</label><input type="text" name="department" th:value="${user.department}" required/></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select name="role" required>
+                            <option value="AUTHORITY_ADMIN" th:selected="${selectedRole == 'AUTHORITY_ADMIN'}">Admin</option>
+                            <option value="AUTHORITY_DIRECTOR" th:selected="${selectedRole == 'AUTHORITY_DIRECTOR'}">Director</option>
+                            <option value="AUTHORITY_STAFF" th:selected="${selectedRole == 'AUTHORITY_STAFF'}">Account Staff</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label th:text="${user.id == null ? 'Password' : 'New Password (optional)'}">Password</label>
+                        <input type="password" name="password" th:required="${user.id == null}"/>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>

@@ -43,6 +43,21 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         }
         // 6. Check a rule -> decide what to do next
         if (hasAuthority && "AUTHORITY".equalsIgnoreCase(loginType)) {
+            boolean isAdmin = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_ADMIN"));
+            boolean isDirector = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_DIRECTOR"));
+            boolean isStaff = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_STAFF"));
+            if (isAdmin) {
+                response.sendRedirect("/admin/dashboard");
+                return;
+            }
+            if (isDirector) {
+                response.sendRedirect("/director/dashboard");
+                return;
+            }
+            if (isStaff) {
+                response.sendRedirect("/staff/dashboard");
+                return;
+            }
             response.sendRedirect("/dashboard/authority");
             // 7. Send the result back to the screen
             return;

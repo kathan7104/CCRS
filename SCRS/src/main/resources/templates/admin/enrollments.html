@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Enrollment Approval - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-admin">
+<header class="dashboard-header">
+    <h1>Enrollment Approval</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/admin/dashboard}" class="nav-link">Dashboard</a>
+        <a th:href="@{/admin/enrollments}" class="nav-link active">Enrollment Approval</a>
+        <a th:href="@{/admin/users}" class="nav-link">Super Users</a>
+        <a th:href="@{/admin/reports}" class="nav-link">Financial Oversight</a>
+    </nav>
+    <div class="user-info"><form th:action="@{/auth/logout}" method="post"><button class="btn btn-outline btn-sm" type="submit">Logout</button></form></div>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+            <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                        <th>Status</th>
+                        <th>Applied</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="enrollment : ${pendingEnrollments}">
+                        <td th:text="${enrollment.student.fullName}">Student</td>
+                        <td th:text="${enrollment.student.email}">mail</td>
+                        <td th:text="${enrollment.course.code + ' - ' + enrollment.course.name}">Course</td>
+                        <td><span class="status-badge pending" th:text="${enrollment.status}">PENDING</span></td>
+                        <td th:text="${#temporals.format(enrollment.registeredAt, 'yyyy-MM-dd HH:mm')}">date</td>
+                        <td>
+                            <form th:action="@{/admin/enrollments/{id}/approve(id=${enrollment.id})}" method="post" class="inline-form">
+                                <input type="text" name="note" placeholder="Note" style="max-width: 160px; margin-bottom: 0.4rem;"/>
+                                <button class="btn btn-sm btn-primary" type="submit">Approve</button>
+                            </form>
+                            <form th:action="@{/admin/enrollments/{id}/reject(id=${enrollment.id})}" method="post" class="inline-form" style="margin-top: 0.35rem;">
+                                <input type="text" name="note" placeholder="Reason" style="max-width: 160px; margin-bottom: 0.4rem;"/>
+                                <button class="btn btn-sm btn-outline" type="submit">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(pendingEnrollments)}">
+                        <td colspan="6" style="text-align: center;">No pending approvals.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

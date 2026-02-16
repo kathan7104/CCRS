@@ -34,6 +34,7 @@ public class DataInitializer implements CommandLineRunner {
             u.setEmail(directorEmail);
             u.setMobileNumber("9000000001");
             u.setFullName("College Director (DEMO)");
+            u.setDepartment("Engineering");
             // 3. Security: hide the password before saving
             u.setPassword(passwordEncoder.encode("Director123!"));
             u.getRoles().add("AUTHORITY_DIRECTOR");
@@ -50,6 +51,7 @@ public class DataInitializer implements CommandLineRunner {
             a.setEmail(adminEmail);
             a.setMobileNumber("9000000002");
             a.setFullName("College Admin (DEMO)");
+            a.setDepartment("Central");
             // 6. Security: hide the password before saving
             a.setPassword(passwordEncoder.encode("Admin123!"));
             a.getRoles().add("AUTHORITY_ADMIN");
@@ -66,6 +68,7 @@ public class DataInitializer implements CommandLineRunner {
             f.setEmail(facultyEmail);
             f.setMobileNumber("9000000003");
             f.setFullName("Faculty Demo (DEMO)");
+            f.setDepartment("Engineering");
             // 9. Security: hide the password before saving
             f.setPassword(passwordEncoder.encode("Faculty123!"));
             f.getRoles().add("AUTHORITY_FACULTY");
@@ -74,6 +77,20 @@ public class DataInitializer implements CommandLineRunner {
             // 10. Get or save data in the database
             userRepository.save(f);
             System.out.println("Created demo faculty account: " + facultyEmail + " (password: Faculty123!)");
+        }
+        String staffEmail = "staff@college.edu";
+        if (userRepository.findByEmail(staffEmail).isEmpty()) {
+            User s = new User();
+            s.setEmail(staffEmail);
+            s.setMobileNumber("9000000004");
+            s.setFullName("Account Staff (DEMO)");
+            s.setDepartment("Accounts");
+            s.setPassword(passwordEncoder.encode("Staff123!"));
+            s.getRoles().add("AUTHORITY_STAFF");
+            s.setEmailVerified(true);
+            s.setMobileVerified(true);
+            userRepository.save(s);
+            System.out.println("Created demo account staff account: " + staffEmail + " (password: Staff123!)");
         }
     }
     private void resetAndCreateSampleCourses() {

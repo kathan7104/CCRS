@@ -7,12 +7,14 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter;
@@ -47,6 +49,10 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/", "/authenroll").hasAuthority("ROLE_STUDENT")
+                .requestMatchers("/admin/**").hasAuthority("ROLE_AUTHORITY_ADMIN")
+                .requestMatchers("/director/**").hasAuthority("ROLE_AUTHORITY_DIRECTOR")
+                .requestMatchers("/staff/**").hasAuthority("ROLE_AUTHORITY_STAFF")
+                .requestMatchers("/dashboard/authority").hasAnyAuthority("ROLE_AUTHORITY_ADMIN", "ROLE_AUTHORITY_DIRECTOR", "ROLE_AUTHORITY_STAFF", "ROLE_AUTHORITY_FACULTY")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
