@@ -21,7 +21,13 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group"><label>Mobile</label><input type="text" name="mobileNumber" th:value="${user.mobileNumber}" required/></div>
-                    <div class="form-group"><label>Department</label><input type="text" name="department" th:value="${user.department}" required/></div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <select name="department" required>
+                            <option value="">Select department</option>
+                            <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${user.department == d}"></option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">

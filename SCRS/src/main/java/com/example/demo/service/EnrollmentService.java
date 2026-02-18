@@ -1,6 +1,7 @@
 package com.example.demo.service;
 import com.example.demo.entity.Course;
 import com.example.demo.entity.Enrollment;
+import com.example.demo.entity.EnrollmentDocument;
 import com.example.demo.entity.User;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.EnrollmentRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 @Service
 public class EnrollmentService {
@@ -24,7 +26,7 @@ public class EnrollmentService {
     public Enrollment enrollStudent(String userEmail, Long courseId, String comments, 
                                     String fullName, LocalDate dob, Double pastMarks,
                                     String highestQualification, String boardUniversity, Integer passingYear,
-                                    String marksheetPath) {
+                                    List<DocumentPayload> documents) {
         // 1. Get or save data in the database
         User student = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -59,7 +61,19 @@ public class EnrollmentService {
         enrollment.setCourse(course);
         enrollment.setComments(comments);
         enrollment.setPastEducationMarks(pastMarks);
-        enrollment.setMarksheetPath(marksheetPath);
+        enrollment.setMarksheetPath(null);
+        for (DocumentPayload documentPayload : documents) {
+            EnrollmentDocument document = new EnrollmentDocument();
+            document.setDocumentType(documentPayload.documentType());
+            document.setFileName(documentPayload.fileName());
+            document.setFilePath(documentPayload.filePath());
+            document.setContentType(documentPayload.contentType());
+            enrollment.addDocument(document);
+            if (enrollment.getMarksheetPath() == null
+                    && documentPayload.documentType() == EnrollmentDocument.DocumentType.MARKSHEET) {
+                enrollment.setMarksheetPath(documentPayload.filePath());
+            }
+        }
         String personalInfo = String.format(
                 "{\"fullName\": \"%s\", \"dob\": \"%s\", \"highestQualification\": \"%s\", \"boardUniversity\": \"%s\", \"passingYear\": \"%s\"}",
                 fullName, dob, highestQualification, boardUniversity, passingYear
@@ -72,5 +86,11 @@ public class EnrollmentService {
     private boolean checkPrerequisites(User student, Course course) {
         // 1. Send the result back to the screen
         return true; 
+    }
+
+    public record DocumentPayload(EnrollmentDocument.DocumentType documentType,
+                                  String fileName,
+                                  String filePath,
+                                  String contentType) {
     }
 }

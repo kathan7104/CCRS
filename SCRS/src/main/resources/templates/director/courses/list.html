@@ -27,7 +27,7 @@
         <main class="dashboard-main">
             <section class="dashboard-section">
                 <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
-                    <h2>Department Course Catalogue</h2>
+                    <h2>Program Course Catalogue</h2>
                     <a th:href="@{/director/courses/new}" class="btn btn-primary">Add New Course</a>
                 </div>
 
@@ -41,11 +41,14 @@
                                 <th>Code</th>
                                 <th>Name</th>
                                 <th>Department</th>
+                                <th>Program</th>
                                 <th>Level</th>
+                                <th>Duration (Sem)</th>
                                 <th>Capacity</th>
                                 <th>Remaining</th>
                                 <th>Credits</th>
                                 <th>Fee (INR)</th>
+                                <th>Teaching Schema</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -54,11 +57,14 @@
                                 <td th:text="${course.code}">CS101</td>
                                 <td th:text="${course.name}">Intro to CS</td>
                                 <td th:text="${course.department}">Engineering</td>
+                                <td th:text="${course.programName}">BCA</td>
                                 <td th:text="${course.programLevel}">UG</td>
+                                <td th:text="${course.durationSemesters}">6</td>
                                 <td th:text="${course.capacity}">120</td>
                                 <td th:text="${course.remainingSeats}">90</td>
                                 <td th:text="${course.credits}">3</td>
                                 <td th:text="${course.fee}">120000</td>
+                                <td th:text="${course.teachingSchema != null ? ('v' + course.teachingSchema.schemaVersion + ' - ' + course.teachingSchema.fileName) : 'Not linked'}">v1.pdf</td>
                                 <td>
                                     <a th:href="@{/director/courses/{id}/edit(id=${course.id})}" class="btn btn-sm btn-secondary">Edit</a>
                                     <form th:action="@{/director/courses/{id}/delete(id=${course.id})}" method="post" class="inline-form" style="display: inline;">
@@ -67,7 +73,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(courses)}">
-                                <td colspan="9" style="text-align: center; color: #666; padding: 2rem;">
+                                <td colspan="12" style="text-align: center; color: #666; padding: 2rem;">
                                     No courses found. Click “Add New Course” to create one.
                                 </td>
                             </tr>

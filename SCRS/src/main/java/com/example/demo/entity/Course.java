@@ -17,6 +17,10 @@ public class Course {
     private String name;
     @Column(nullable = false, length = 100)
     private String department;
+    @Column(name = "program_name", nullable = false, length = 100)
+    private String programName;
+    @Column(name = "batch_year", nullable = false)
+    private Integer batchYear;
     @Column(nullable = false)
     private Integer capacity;
     @Column(name = "remaining_seats", nullable = false)
@@ -29,8 +33,11 @@ public class Course {
     private String programLevel;
     @Column(name = "level", nullable = false, length = 20)
     private String level;
-    @Column(name = "duration_years", nullable = false)
-    private Integer durationYears;
+    @Column(name = "duration_semesters", nullable = false)
+    private Integer durationSemesters;
+    @ManyToOne
+    @JoinColumn(name = "teaching_schema_id")
+    private TeachingSchema teachingSchema;
     @Column(name = "required_qualification", nullable = false, length = 255)
     private String requiredQualification;
     @ManyToMany
@@ -83,6 +90,18 @@ public class Course {
     public void setDepartment(String department) {
         this.department = department;
     }
+    public String getProgramName() {
+        return programName;
+    }
+    public void setProgramName(String programName) {
+        this.programName = programName;
+    }
+    public Integer getBatchYear() {
+        return batchYear;
+    }
+    public void setBatchYear(Integer batchYear) {
+        this.batchYear = batchYear;
+    }
     public Integer getCapacity() {
         // 1. Send the result back to the screen
         return capacity;
@@ -125,12 +144,18 @@ public class Course {
     public void setLevel(String level) {
         this.level = level;
     }
-    public Integer getDurationYears() {
+    public Integer getDurationSemesters() {
         // 1. Send the result back to the screen
-        return durationYears;
+        return durationSemesters;
     }
-    public void setDurationYears(Integer durationYears) {
-        this.durationYears = durationYears;
+    public void setDurationSemesters(Integer durationSemesters) {
+        this.durationSemesters = durationSemesters;
+    }
+    public TeachingSchema getTeachingSchema() {
+        return teachingSchema;
+    }
+    public void setTeachingSchema(TeachingSchema teachingSchema) {
+        this.teachingSchema = teachingSchema;
     }
     public String getRequiredQualification() {
         // 1. Send the result back to the screen

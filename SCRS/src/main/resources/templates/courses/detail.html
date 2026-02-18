@@ -34,12 +34,16 @@
                         <span class="value" th:text="${course.department}">Engineering</span>
                     </div>
                     <div class="detail-item">
+                        <span class="label">Program</span>
+                        <span class="value" th:text="${course.programName}">BCA</span>
+                    </div>
+                    <div class="detail-item">
                         <span class="label">Program Level</span>
                         <span class="value" th:text="${course.programLevel}">UG</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">Duration</span>
-                        <span class="value" th:text="${course.durationYears + ' Years'}">3 Years</span>
+                        <span class="value" th:text="${course.durationSemesters + ' Semesters'}">6 Semesters</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">Capacity</span>

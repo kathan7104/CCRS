@@ -28,10 +28,13 @@
                         <strong>Credits:</strong> <span th:text="${course.credits}">3</span>
                     </p>
                     <p style="margin: 0; color: #666;">
+                        <strong>Program:</strong> <span th:text="${course.programName}">BCA</span>
+                    </p>
+                    <p style="margin: 0; color: #666;">
                         <strong>Program Level:</strong> <span th:text="${course.programLevel}">UG</span>
                     </p>
                     <p style="margin: 0; color: #666;">
-                        <strong>Duration:</strong> <span th:text="${course.durationYears + ' Years'}">3 Years</span>
+                        <strong>Duration:</strong> <span th:text="${course.durationSemesters + ' Semesters'}">6 Semesters</span>
                     </p>
                     <p style="margin: 0; color: #666;">
                         <strong>Required Qualification:</strong> <span th:text="${course.requiredQualification}">12th pass</span>
@@ -73,9 +76,32 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Upload Marksheet (PDF only)</label>
-                        <input type="file" name="marksheetFile" class="form-control" accept=".pdf" required>
-                        <small style="color: #666;">Please upload your previous semester/year marksheet.</small>
+                        <label>Upload Documents</label>
+                        <div id="documentsContainer">
+                            <div class="document-row" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.75rem; margin-bottom: 0.75rem; align-items: end;">
+                                <div>
+                                    <label style="font-size: 0.9rem;">Document Type</label>
+                                    <select name="documentTypes" class="form-control" required>
+                                        <option value="">Select document type</option>
+                                        <option value="MARKSHEET">Marksheet</option>
+                                        <option value="ID_PROOF">ID Proof</option>
+                                        <option value="ADDRESS_PROOF">Address Proof</option>
+                                        <option value="PASSPORT_PHOTO">Passport Photo</option>
+                                        <option value="CASTE_CERTIFICATE">Caste Certificate</option>
+                                        <option value="INCOME_CERTIFICATE">Income Certificate</option>
+                                        <option value="TRANSFER_CERTIFICATE">Transfer Certificate</option>
+                                        <option value="OTHER">Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 0.9rem;">Upload File</label>
+                                    <input type="file" name="documentFiles" class="form-control" required>
+                                </div>
+                                <button type="button" class="btn btn-secondary remove-document-btn" style="height: 42px;">Remove</button>
+                            </div>
+                        </div>
+                        <button type="button" id="addDocumentBtn" class="btn btn-secondary" style="margin-top: 0.5rem;">Add Document</button>
+                        <small style="color: #666;">Add one or more documents. Each row needs a document type and a file.</small>
                     </div>
 
                     <div class="form-group">
@@ -91,5 +117,95 @@
             </section>
         </main>
     </div>
+
+    <template id="documentRowTemplate">
+        <div class="document-row" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.75rem; margin-bottom: 0.75rem; align-items: end;">
+            <div>
+                <label style="font-size: 0.9rem;">Document Type</label>
+                <select name="documentTypes" class="form-control" required>
+                    <option value="">Select document type</option>
+                    <option value="MARKSHEET">Marksheet</option>
+                    <option value="ID_PROOF">ID Proof</option>
+                    <option value="ADDRESS_PROOF">Address Proof</option>
+                    <option value="PASSPORT_PHOTO">Passport Photo</option>
+                    <option value="CASTE_CERTIFICATE">Caste Certificate</option>
+                    <option value="INCOME_CERTIFICATE">Income Certificate</option>
+                    <option value="TRANSFER_CERTIFICATE">Transfer Certificate</option>
+                    <option value="OTHER">Other</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 0.9rem;">Upload File</label>
+                <input type="file" name="documentFiles" class="form-control" required>
+            </div>
+            <button type="button" class="btn btn-secondary remove-document-btn" style="height: 42px;">Remove</button>
+        </div>
+    </template>
+
+    <script>
+        (function () {
+            const container = document.getElementById('documentsContainer');
+            const addDocumentBtn = document.getElementById('addDocumentBtn');
+            const rowTemplate = document.getElementById('documentRowTemplate');
+            const form = container.closest('form');
+
+            function updateRemoveButtons() {
+                const rows = container.querySelectorAll('.document-row');
+                rows.forEach((row) => {
+                    const removeBtn = row.querySelector('.remove-document-btn');
+                    removeBtn.disabled = rows.length === 1;
+                });
+            }
+
+            function addRow() {
+                const clone = rowTemplate.content.cloneNode(true);
+                container.appendChild(clone);
+                updateRemoveButtons();
+            }
+
+            addDocumentBtn.addEventListener('click', addRow);
+
+            container.addEventListener('click', function (event) {
+                if (!event.target.classList.contains('remove-document-btn')) {
+                    return;
+                }
+                const row = event.target.closest('.document-row');
+                if (!row) {
+                    return;
+                }
+                row.remove();
+                updateRemoveButtons();
+            });
+
+            form.addEventListener('submit', function (event) {
+                const rows = container.querySelectorAll('.document-row');
+                let hasValidDocument = false;
+                let hasInvalidRow = false;
+
+                rows.forEach((row) => {
+                    const typeInput = row.querySelector('select[name=\"documentTypes\"]');
+                    const fileInput = row.querySelector('input[name=\"documentFiles\"]');
+                    const hasType = typeInput.value.trim() !== '';
+                    const hasFile = fileInput.files.length > 0;
+
+                    if (hasType && hasFile) {
+                        hasValidDocument = true;
+                        return;
+                    }
+                    if (!hasType && !hasFile) {
+                        return;
+                    }
+                    hasInvalidRow = true;
+                });
+
+                if (!hasValidDocument || hasInvalidRow) {
+                    event.preventDefault();
+                    alert('Please add at least one complete document row. Every used row must have both type and file.');
+                }
+            });
+
+            updateRemoveButtons();
+        })();
+    </script>
 </body>
 </html>

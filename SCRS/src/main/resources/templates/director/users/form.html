@@ -23,11 +23,19 @@
                     <div class="form-group"><label>Mobile</label><input type="text" name="mobileNumber" th:value="${user.mobileNumber}" required/></div>
                     <div class="form-group">
                         <label>Role</label>
-                        <select name="role" required>
-                            <option value="STUDENT" th:selected="${selectedRole == 'STUDENT'}">Student</option>
-                            <option value="AUTHORITY_FACULTY" th:selected="${selectedRole == 'AUTHORITY_FACULTY'}">Faculty</option>
+                        <select th:if="${user.id == null}" name="role" required>
+                            <option value="AUTHORITY_FACULTY" selected>Faculty</option>
                         </select>
+                        <input th:if="${user.id != null}" type="text" th:value="${selectedRole}" readonly class="readonly"/>
+                        <input th:if="${user.id != null}" type="hidden" name="role" th:value="${selectedRole}"/>
                     </div>
+                </div>
+                <div class="form-group" th:if="${selectedRole == 'AUTHORITY_FACULTY' || user.id == null}">
+                    <label>Department</label>
+                    <select name="department" required>
+                        <option value="">Select department</option>
+                        <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${user.department == d}"></option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label th:text="${user.id == null ? 'Password' : 'New Password (optional)'}">Password</label>

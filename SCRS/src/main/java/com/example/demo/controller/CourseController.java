@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.entity.Course;
+import com.example.demo.entity.EnrollmentDocument;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.service.EnrollmentService;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CourseController {
     private final CourseRepository courseRepository;
     private final EnrollmentService enrollmentService;
-    private static final String UPLOAD_DIR = "uploads/marksheets/";
+    private static final String UPLOAD_DIR = "uploads/documents/";
     public CourseController(CourseRepository courseRepository, EnrollmentService enrollmentService) {
         this.courseRepository = courseRepository;
         this.enrollmentService = enrollmentService;
@@ -97,7 +99,8 @@ public class CourseController {
                                    @RequestParam("highestQualification") String highestQualification,
                                    @RequestParam("boardUniversity") String boardUniversity,
                                    @RequestParam("passingYear") Integer passingYear,
-                                   @RequestParam("marksheetFile") MultipartFile marksheetFile,
+                                   @RequestParam("documentTypes") List<String> documentTypes,
+                                   @RequestParam("documentFiles") List<MultipartFile> documentFiles,
                                    @RequestParam(required = false) String comments,
                                    @AuthenticationPrincipal CustomUserDetails userDetails,
                                    RedirectAttributes redirectAttributes) {
@@ -111,17 +114,49 @@ public class CourseController {
             return "redirect:/courses";
         }
         try {
-            String fileName = UUID.randomUUID().toString() + "_" + marksheetFile.getOriginalFilename();
             Path uploadPath = Paths.get(UPLOAD_DIR);
             // 4. Check a rule -> decide what to do next
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(marksheetFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            List<EnrollmentService.DocumentPayload> documents = new ArrayList<>();
+            boolean hasAtLeastOneDocument = false;
+            int rowCount = Math.min(documentTypes.size(), documentFiles.size());
+            for (int i = 0; i < rowCount; i++) {
+                String documentTypeRaw = documentTypes.get(i) == null ? "" : documentTypes.get(i).trim();
+                MultipartFile file = documentFiles.get(i);
+                boolean hasType = !documentTypeRaw.isEmpty();
+                boolean hasFile = file != null && !file.isEmpty();
+                if (!hasType && !hasFile) {
+                    continue;
+                }
+                if (!hasType || !hasFile) {
+                    throw new IllegalArgumentException("Each document row must include both document type and file.");
+                }
+                String originalFileName = file.getOriginalFilename();
+                if (originalFileName == null || originalFileName.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Uploaded file name cannot be empty.");
+                }
+                String safeOriginalName = Paths.get(originalFileName).getFileName().toString();
+                String fileName = UUID.randomUUID() + "_" + safeOriginalName;
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                EnrollmentDocument.DocumentType documentType =
+                        EnrollmentDocument.DocumentType.valueOf(documentTypeRaw.toUpperCase());
+                documents.add(new EnrollmentService.DocumentPayload(
+                        documentType,
+                        safeOriginalName,
+                        filePath.toString(),
+                        file.getContentType()
+                ));
+                hasAtLeastOneDocument = true;
+            }
+            if (!hasAtLeastOneDocument) {
+                throw new IllegalArgumentException("Please add at least one document to upload.");
+            }
             // 5. Ask the service to do the main work
             enrollmentService.enrollStudent(userDetails.getUsername(), id, comments, 
-                fullName, LocalDate.parse(dobStr), pastMarks, highestQualification, boardUniversity, passingYear, filePath.toString());
+                fullName, LocalDate.parse(dobStr), pastMarks, highestQualification, boardUniversity, passingYear, documents);
             // 6. Show a one-time message on the next page
             redirectAttributes.addFlashAttribute("successMessage", "Successfully enrolled in " + id + ". Application under review.");
             // 7. Send the result back to the screen
