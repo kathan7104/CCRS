@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.entity.Department;
 import com.example.demo.entity.Enrollment;
 import com.example.demo.entity.User;
+import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.EnrollmentRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.CustomUserDetails;
@@ -23,17 +25,20 @@ public class AdminController {
     private static final Set<String> MANAGED_ROLES = Set.of("AUTHORITY_ADMIN", "AUTHORITY_DIRECTOR", "AUTHORITY_STAFF");
 
     private final EnrollmentRepository enrollmentRepository;
+    private final DepartmentRepository departmentRepository;
     private final UserRepository userRepository;
     private final AdminWorkflowService adminWorkflowService;
     private final ReportingService reportingService;
     private final PasswordEncoder passwordEncoder;
 
     public AdminController(EnrollmentRepository enrollmentRepository,
+                           DepartmentRepository departmentRepository,
                            UserRepository userRepository,
                            AdminWorkflowService adminWorkflowService,
                            ReportingService reportingService,
                            PasswordEncoder passwordEncoder) {
         this.enrollmentRepository = enrollmentRepository;
+        this.departmentRepository = departmentRepository;
         this.userRepository = userRepository;
         this.adminWorkflowService = adminWorkflowService;
         this.reportingService = reportingService;
@@ -92,6 +97,7 @@ public class AdminController {
     public String createUserForm(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("selectedRole", "AUTHORITY_STAFF");
+        model.addAttribute("departments", getActiveDepartmentNames());
         return "admin/users/form";
     }
 
@@ -118,6 +124,7 @@ public class AdminController {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
         model.addAttribute("user", user);
         model.addAttribute("selectedRole", user.getRoles().stream().findFirst().orElse("AUTHORITY_STAFF"));
+        model.addAttribute("departments", getActiveDepartmentNames());
         return "admin/users/form";
     }
 
@@ -164,9 +171,52 @@ public class AdminController {
         return "admin/reports";
     }
 
+    @GetMapping("/departments")
+    public String departments(Model model) {
+        model.addAttribute("departments", departmentRepository.findAll().stream()
+                .sorted((a, b) -> a.getName().compareToIgnoreCase(b.getName()))
+                .toList());
+        return "admin/departments";
+    }
+
+    @PostMapping("/departments")
+    public String createDepartment(@RequestParam String name, RedirectAttributes redirectAttributes) {
+        String cleaned = name == null ? "" : name.trim();
+        if (cleaned.isBlank()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Department name is required.");
+            return "redirect:/admin/departments";
+        }
+        if (departmentRepository.findByNameIgnoreCase(cleaned).isPresent()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Department already exists.");
+            return "redirect:/admin/departments";
+        }
+        Department department = new Department();
+        department.setName(cleaned);
+        department.setActive(true);
+        departmentRepository.save(department);
+        redirectAttributes.addFlashAttribute("successMessage", "Department added.");
+        return "redirect:/admin/departments";
+    }
+
+    @PostMapping("/departments/{id}/deactivate")
+    public String deactivateDepartment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Department not found"));
+        department.setActive(false);
+        departmentRepository.save(department);
+        redirectAttributes.addFlashAttribute("successMessage", "Department deactivated.");
+        return "redirect:/admin/departments";
+    }
+
     private List<User> getManagedUsers() {
         return userRepository.findAll().stream()
                 .filter(u -> u.getRoles().stream().anyMatch(MANAGED_ROLES::contains))
+                .toList();
+    }
+
+    private List<String> getActiveDepartmentNames() {
+        return departmentRepository.findByActiveTrueOrderByNameAsc().stream()
+                .map(Department::getName)
                 .toList();
     }
 }

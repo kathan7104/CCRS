@@ -24,13 +24,13 @@
                 <div class="form-group">
                     <label>Faculty</label>
                     <select name="facultyId" required>
-                        <option th:each="f : ${faculty}" th:value="${f.id}" th:text="${f.fullName + ' (' + f.email + ')'}">Faculty</option>
+                        <option th:each="f : ${faculty}" th:value="${f.id}" th:text="${f.fullName + ' (' + f.department + ')'}">Faculty</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Course</label>
                     <select name="courseId" required>
-                        <option th:each="c : ${courses}" th:value="${c.id}" th:text="${c.code + ' - ' + c.name}">Course</option>
+                        <option th:each="c : ${courses}" th:value="${c.id}" th:text="${c.code + ' - ' + c.name + ' (' + c.department + ')'}">Course</option>
                     </select>
                 </div>
                 <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" type="submit">Assign</button></div>
@@ -39,11 +39,13 @@
             <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
             <div class="table-wrap">
                 <table class="data-table">
-                    <thead><tr><th>Faculty</th><th>Course</th><th>Assigned At</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Faculty</th><th>Faculty Dept</th><th>Course</th><th>Course Dept</th><th>Assigned At</th><th>Action</th></tr></thead>
                     <tbody>
                     <tr th:each="a : ${assignments}">
                         <td th:text="${a.faculty.fullName}">Faculty</td>
+                        <td th:text="${a.faculty.department}">Dept</td>
                         <td th:text="${a.course.code + ' - ' + a.course.name}">Course</td>
+                        <td th:text="${a.course.department}">Dept</td>
                         <td th:text="${#temporals.format(a.assignedAt, 'yyyy-MM-dd HH:mm')}">time</td>
                         <td>
                             <form th:action="@{/director/assignments/{id}/delete(id=${a.id})}" method="post" class="inline-form">

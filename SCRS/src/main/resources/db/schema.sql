@@ -2,23 +2,46 @@
 -- Assumes existing tables: users, user_roles, otp_verifications
 ALTER TABLE users ADD COLUMN IF NOT EXISTS department VARCHAR(100);
 
+CREATE TABLE IF NOT EXISTS departments (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE,
+  is_active BIT NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME,
+  INDEX idx_department_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS courses (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   code VARCHAR(50) NOT NULL UNIQUE,
   name VARCHAR(255) NOT NULL,
   department VARCHAR(100) NOT NULL,
+  program_name VARCHAR(100) NOT NULL,
+  batch_year INT NOT NULL,
   capacity INT NOT NULL,
   remaining_seats INT NOT NULL,
   credits INT NOT NULL,
   fee INT NOT NULL,
   program_level VARCHAR(20) NOT NULL,
   level VARCHAR(20) NOT NULL,
-  duration_years INT NOT NULL,
+  duration_semesters INT NOT NULL,
   required_qualification VARCHAR(255) NOT NULL,
+  teaching_schema_id BIGINT,
   version BIGINT,
   created_at DATETIME NOT NULL,
   updated_at DATETIME,
   INDEX idx_course_code (code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS teaching_schemas (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  department VARCHAR(100) NOT NULL,
+  program_name VARCHAR(100) NOT NULL,
+  schema_version INT NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  file_path VARCHAR(500) NOT NULL,
+  uploaded_at DATETIME NOT NULL,
+  INDEX idx_teaching_schema_department_program (department, program_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS course_prerequisites (
@@ -41,6 +64,18 @@ CREATE TABLE IF NOT EXISTS enrollments (
   INDEX idx_enrollment_course (course_id),
   CONSTRAINT fk_enrollment_student FOREIGN KEY (student_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT fk_enrollment_course FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS enrollment_documents (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  enrollment_id BIGINT NOT NULL,
+  document_type VARCHAR(50) NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  file_path VARCHAR(500) NOT NULL,
+  content_type VARCHAR(100),
+  uploaded_at DATETIME NOT NULL,
+  INDEX idx_enrollment_document_enrollment (enrollment_id),
+  CONSTRAINT fk_enrollment_document_enrollment FOREIGN KEY (enrollment_id) REFERENCES enrollments (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS invoices (

@@ -1,6 +1,8 @@
 package com.example.demo.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 @Entity
 @Table(name = "enrollments", uniqueConstraints = {@UniqueConstraint(columnNames = {"student_id", "course_id"})},
         indexes = {@Index(name = "idx_enrollment_student", columnList = "student_id"),
@@ -30,6 +32,8 @@ public class Enrollment {
     private String marksheetPath;
     @Column(name = "personal_info", length = 1000)
     private String personalInfo; // Stored as JSON or text
+    @OneToMany(mappedBy = "enrollment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EnrollmentDocument> documents = new ArrayList<>();
     public enum EnrollmentStatus {
         PENDING,
         ENROLLED,
@@ -109,5 +113,12 @@ public class Enrollment {
     }
     public void setPersonalInfo(String personalInfo) {
         this.personalInfo = personalInfo;
+    }
+    public List<EnrollmentDocument> getDocuments() {
+        return documents;
+    }
+    public void addDocument(EnrollmentDocument document) {
+        document.setEnrollment(this);
+        this.documents.add(document);
     }
 }

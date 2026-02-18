@@ -41,6 +41,7 @@
                                 <th>Code</th>
                                 <th>Name</th>
                                 <th>Department</th>
+                                <th>Program</th>
                                 <th>Level</th>
                                 <th>Duration</th>
                                 <th>Credits</th>
@@ -55,8 +56,9 @@
                                 <td th:text="${course.code}">CS101</td>
                                 <td th:text="${course.name}">Intro to CS</td>
                                 <td th:text="${course.department}">Engineering</td>
+                                <td th:text="${course.programName}">BCA</td>
                                 <td th:text="${course.programLevel}">UG</td>
-                                <td th:text="${course.durationYears + ' Years'}">3 Years</td>
+                                <td th:text="${course.durationSemesters + ' Semesters'}">6 Semesters</td>
                                 <td th:text="${course.credits}">3</td>
                                 <td th:text="${course.fee}">120000</td>
                                 <td th:text="${course.requiredQualification}">12th pass</td>

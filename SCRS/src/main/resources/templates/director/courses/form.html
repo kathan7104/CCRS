@@ -28,37 +28,61 @@
             <section class="dashboard-section">
                 <h2 th:text="${course.id == null ? 'Add Course' : 'Edit Course'}">Course Form</h2>
 
-                <form th:action="${course.id == null} ? @{/director/courses} : @{/director/courses/{id}(id=${course.id})}" method="post">
+                <form th:action="${course.id == null} ? @{/director/courses} : @{/director/courses/{id}(id=${course.id})}" method="post" enctype="multipart/form-data">
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="code">Course Code</label>
-                            <input id="code" type="text" name="code" th:value="${course.code}" required/>
+                            <label for="department">Department</label>
+                            <select id="department" name="department" required th:attr="data-current=${course.department}">
+                                <option value="">Select department</option>
+                                <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${course.department == d}"></option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="name">Course Name</label>
-                            <input id="name" type="text" name="name" th:value="${course.name}" required/>
+                            <label for="programName">Program</label>
+                            <select id="programName" name="programName" required th:attr="data-current=${course.programName}">
+                                <option value="">Select program</option>
+                                <option th:each="p : ${programNames}" th:value="${p}" th:text="${p}" th:selected="${course.programName == p}"></option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="department">Department</label>
-                            <input id="department" type="text" name="department" th:value="${course.department}" readonly class="readonly"/>
+                            <label for="code">Course Code</label>
+                            <input id="code" type="text" name="code" th:value="${course.code}" readonly class="readonly"/>
                         </div>
+                        <div class="form-group">
+                            <label for="name">Course Name</label>
+                            <input id="name" type="text" name="name" th:value="${course.name}" readonly class="readonly"/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="batchYear">Batch Year</label>
+                            <input id="batchYear" type="number" name="batchYear" th:value="${course.batchYear}" required min="2000" max="2100"/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="programLevel">Program Level</label>
                             <input id="programLevel" type="text" name="programLevel" th:value="${course.programLevel}" required/>
                         </div>
-                    </div>
-
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="level">Level (Display)</label>
                             <input id="level" type="text" name="level" th:value="${course.level}" required/>
                         </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group">
-                            <label for="durationYears">Duration (Years)</label>
-                            <input id="durationYears" type="number" name="durationYears" th:value="${course.durationYears}" required min="1"/>
+                            <label for="durationSemesters">Program Duration (Semesters)</label>
+                            <input id="durationSemesters" type="number" name="durationSemesters" th:value="${course.durationSemesters}" required min="1"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="requiredQualification">Required Qualification</label>
+                            <input id="requiredQualification" type="text" name="requiredQualification" th:value="${course.requiredQualification}" required/>
                         </div>
                     </div>
 
@@ -85,8 +109,20 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="requiredQualification">Required Qualification</label>
-                        <input id="requiredQualification" type="text" name="requiredQualification" th:value="${course.requiredQualification}" required/>
+                        <label for="existingTeachingSchemaId">Use Existing Teaching Schema PDF</label>
+                        <select id="existingTeachingSchemaId" name="existingTeachingSchemaId">
+                            <option value="">Select existing schema (optional)</option>
+                            <option th:each="s : ${teachingSchemas}"
+                                    th:value="${s.id}"
+                                    th:text="${s.programName + ' | ' + s.department + ' | v' + s.schemaVersion + ' | ' + s.fileName}"
+                                    th:selected="${course.teachingSchema != null and course.teachingSchema.id == s.id}"></option>
+                        </select>
+                        <p class="muted" style="margin-top: 0.4rem;">If schema changed, upload a new PDF below. New upload creates a new schema version.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="teachingSchemaFile">Upload New Teaching Schema PDF</label>
+                        <input id="teachingSchemaFile" type="file" name="teachingSchemaFile" accept=".pdf"/>
                     </div>
 
                     <div class="form-group">
@@ -114,5 +150,85 @@
             </section>
         </main>
     </div>
+
+    <script>
+        (function () {
+            const departmentInput = document.getElementById('department');
+            const programInput = document.getElementById('programName');
+            const levelInput = document.getElementById('level');
+            const programLevelInput = document.getElementById('programLevel');
+            const durationInput = document.getElementById('durationSemesters');
+            const qualificationInput = document.getElementById('requiredQualification');
+            const schemaSelect = document.getElementById('existingTeachingSchemaId');
+            const codeInput = document.getElementById('code');
+            const nameInput = document.getElementById('name');
+            const batchYearInput = document.getElementById('batchYear');
+            const isEditMode = window.location.pathname.includes('/edit');
+
+            const defaultsByProgram = {
+                BCA: { programLevel: 'UG', level: 'UG', durationSemesters: 6, qualification: '12th pass with Mathematics/Computer Science (50%+)' },
+                MCA: { programLevel: 'PG', level: 'PG', durationSemesters: 4, qualification: 'Graduation with Mathematics/CS/IT (50%+)' },
+                BBA: { programLevel: 'UG', level: 'UG', durationSemesters: 6, qualification: '12th pass (Commerce/Any stream) with minimum 50%' },
+                MBA: { programLevel: 'PG', level: 'PG', durationSemesters: 4, qualification: 'Graduation in any discipline with minimum 50%' },
+                BTECH: { programLevel: 'UG', level: 'UG', durationSemesters: 8, qualification: '12th pass (PCM) with minimum 60%' },
+                MTECH: { programLevel: 'PG', level: 'PG', durationSemesters: 4, qualification: 'B.Tech/BE in relevant branch (60%+)' },
+                BHM: { programLevel: 'UG', level: 'UG', durationSemesters: 6, qualification: '12th pass (any stream) with minimum 45%' },
+                BCOM: { programLevel: 'UG', level: 'UG', durationSemesters: 6, qualification: '12th pass with minimum 45%' },
+                MCOM: { programLevel: 'PG', level: 'PG', durationSemesters: 4, qualification: 'B.Com or equivalent with minimum 50%' }
+            };
+
+            function applyProgramDefaults() {
+                const program = (programInput.value || '').trim().toUpperCase();
+                const defaults = defaultsByProgram[program];
+                if (program) {
+                    const programSource = programInput.value;
+                    nameInput.value = programSource;
+                    if (!isEditMode) {
+                        const initials = (programSource || '').toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').trim().split(/\s+/).map((p) => p[0]).join('').slice(0, 8);
+                        const year = batchYearInput.value || new Date().getFullYear();
+                        codeInput.value = initials + '-' + year + '-AUTO';
+                    }
+                } else if (!isEditMode) {
+                    nameInput.value = '';
+                    codeInput.value = '';
+                }
+                if (!defaults) {
+                    return;
+                }
+                programLevelInput.value = defaults.programLevel;
+                levelInput.value = defaults.level;
+                durationInput.value = defaults.durationSemesters;
+                qualificationInput.value = defaults.qualification;
+            }
+
+            function filterSchemas() {
+                const selectedDepartment = (departmentInput.value || '').trim().toLowerCase();
+                const selectedProgram = (programInput.value || '').trim().toLowerCase();
+                const options = schemaSelect.querySelectorAll('option');
+                options.forEach((option, index) => {
+                    if (index === 0) {
+                        option.hidden = false;
+                        return;
+                    }
+                    const txt = option.textContent.toLowerCase();
+                    const matches = txt.includes(selectedDepartment) && txt.includes(selectedProgram);
+                    option.hidden = !matches;
+                });
+            }
+
+            programInput.addEventListener('change', function () {
+                applyProgramDefaults();
+                filterSchemas();
+            });
+
+            departmentInput.addEventListener('change', function () {
+                filterSchemas();
+            });
+            batchYearInput.addEventListener('input', applyProgramDefaults);
+
+            filterSchemas();
+            applyProgramDefaults();
+        })();
+    </script>
 </body>
 </html>
