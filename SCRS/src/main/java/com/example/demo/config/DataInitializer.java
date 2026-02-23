@@ -1,16 +1,22 @@
 package com.example.demo.config;
 import com.example.demo.entity.Course;
 import com.example.demo.entity.Department;
+import com.example.demo.entity.FeeStructure;
+import com.example.demo.entity.Subject;
 import com.example.demo.entity.User;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.EnrollmentRepository;
+import com.example.demo.repository.FacultySubjectAssignmentRepository;
+import com.example.demo.repository.FeeStructureRepository;
+import com.example.demo.repository.SubjectRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 @Configuration
 public class DataInitializer implements CommandLineRunner {
@@ -18,20 +24,35 @@ public class DataInitializer implements CommandLineRunner {
     private final CourseRepository courseRepository;
     private final DepartmentRepository departmentRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final SubjectRepository subjectRepository;
+    private final FacultySubjectAssignmentRepository facultySubjectAssignmentRepository;
+    private final FeeStructureRepository feeStructureRepository;
     private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
     @Value("${ccrs.dev.create-authority:false}")
     private boolean createAuthority;
+
+    @Value("${ccrs.dev.seed-sample-academics:false}")
+    private boolean seedSampleAcademics;
+
+    @Value("${ccrs.dev.seed-demo-faculty:false}")
+    private boolean seedDemoFaculty;
     public DataInitializer(UserRepository userRepository,
                            CourseRepository courseRepository,
                            DepartmentRepository departmentRepository,
                            EnrollmentRepository enrollmentRepository,
+                           SubjectRepository subjectRepository,
+                           FacultySubjectAssignmentRepository facultySubjectAssignmentRepository,
+                           FeeStructureRepository feeStructureRepository,
                            PasswordEncoder passwordEncoder,
                            JdbcTemplate jdbcTemplate) {
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.departmentRepository = departmentRepository;
         this.enrollmentRepository = enrollmentRepository;
+        this.subjectRepository = subjectRepository;
+        this.facultySubjectAssignmentRepository = facultySubjectAssignmentRepository;
+        this.feeStructureRepository = feeStructureRepository;
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -39,7 +60,14 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         patchLegacyCourseSchema();
         seedDepartments();
-        resetAndCreateSampleCourses();
+        if (seedSampleAcademics) {
+            resetAndCreateSampleCourses();
+            resetAndCreateSampleSubjects();
+        }
+        seedDefaultFeeStructure();
+        if (seedDemoFaculty) {
+            ensureDemoFaculty();
+        }
         // 1. Check a rule -> decide what to do next
         if (!createAuthority) return;
         String directorEmail = "director@college.edu";
@@ -77,20 +105,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Created demo admin account: " + adminEmail + " (password: Admin123!)");
         }
         String facultyEmail = "faculty@college.edu";
-        // 8. Check a rule -> decide what to do next
         if (userRepository.findByEmail(facultyEmail).isEmpty()) {
-            User f = new User();
-            f.setEmail(facultyEmail);
-            f.setMobileNumber("9000000003");
-            f.setFullName("Faculty Demo (DEMO)");
-            f.setDepartment("Engineering");
-            // 9. Security: hide the password before saving
-            f.setPassword(passwordEncoder.encode("Faculty123!"));
-            f.getRoles().add("AUTHORITY_FACULTY");
-            f.setEmailVerified(true);
-            f.setMobileVerified(true);
-            // 10. Get or save data in the database
-            userRepository.save(f);
             System.out.println("Created demo faculty account: " + facultyEmail + " (password: Faculty123!)");
         }
         String staffEmail = "staff@college.edu";
@@ -126,6 +141,26 @@ public class DataInitializer implements CommandLineRunner {
                 "file_path VARCHAR(500) NOT NULL, " +
                 "uploaded_at DATETIME NOT NULL" +
                 ")");
+        executeSql("CREATE TABLE IF NOT EXISTS subjects (" +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                "department VARCHAR(100) NOT NULL, " +
+                "program_name VARCHAR(100) NOT NULL, " +
+                "subject_code VARCHAR(50) NOT NULL, " +
+                "subject_name VARCHAR(255) NOT NULL, " +
+                "semester INT NULL, " +
+                "credits INT NULL, " +
+                "teaching_schema_id BIGINT NULL, " +
+                "created_at DATETIME NOT NULL, " +
+                "updated_at DATETIME NULL, " +
+                "UNIQUE KEY uk_subject_department_code (department, subject_code)" +
+                ")");
+        executeSql("CREATE TABLE IF NOT EXISTS faculty_subject_assignments (" +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                "faculty_id BIGINT NOT NULL, " +
+                "subject_id BIGINT NOT NULL, " +
+                "assigned_at DATETIME NOT NULL, " +
+                "UNIQUE KEY uk_faculty_subject (faculty_id, subject_id)" +
+                ")");
         executeSql("ALTER TABLE courses ADD COLUMN IF NOT EXISTS program_name VARCHAR(100) NULL");
         executeSql("ALTER TABLE courses ADD COLUMN IF NOT EXISTS batch_year INT NULL");
         executeSql("ALTER TABLE courses ADD COLUMN IF NOT EXISTS duration_semesters INT NULL");
@@ -139,6 +174,9 @@ public class DataInitializer implements CommandLineRunner {
         // Keep old column nullable so inserts that don't mention it still work.
         executeSql("ALTER TABLE courses MODIFY COLUMN duration_years INT NULL");
         executeSql("CREATE INDEX IF NOT EXISTS idx_teaching_schema_department_program ON teaching_schemas (department, program_name)");
+        executeSql("CREATE INDEX IF NOT EXISTS idx_subject_department ON subjects (department)");
+        executeSql("ALTER TABLE payments ADD COLUMN IF NOT EXISTS gateway_order_id VARCHAR(255) NULL");
+        executeSql("ALTER TABLE payments ADD COLUMN IF NOT EXISTS gateway_signature VARCHAR(500) NULL");
     }
     private void seedDepartments() {
         for (String name : DepartmentCatalog.departments()) {
@@ -159,10 +197,6 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
     private void resetAndCreateSampleCourses() {
-        // 1. Get or save data in the database
-        enrollmentRepository.deleteAll();
-        // 2. Get or save data in the database
-        courseRepository.deleteAll();
         int batchYear = LocalDate.now().getYear();
         createCourse("BBA-" + batchYear + "-001", "Business Fundamentals", "Management", "BBA", batchYear, 120, 120, 3, 120000, "UG", 6, "12th pass (Commerce/Any stream) with minimum 50%");
         createCourse("BCA-" + batchYear + "-001", "Introduction to Programming", "Computer Applications", "BCA", batchYear, 120, 120, 3, 130000, "UG", 6, "12th pass with Mathematics/Computer Science (50%+)");
@@ -174,9 +208,105 @@ public class DataInitializer implements CommandLineRunner {
         createCourse("MTECH-" + batchYear + "-001", "Research Methods in Computing", "Engineering", "MTECH", batchYear, 60, 60, 3, 260000, "PG", 4, "B.Tech/BE in CSE/IT (60%+)");
         System.out.println("Reset and created sample courses.");
     }
+    private void resetAndCreateSampleSubjects() {
+        // BCA
+        createSubject("Computer Applications", "BCA", "BCA-S1-101", "Programming Fundamentals", 1, 4);
+        createSubject("Computer Applications", "BCA", "BCA-S1-102", "Discrete Mathematics", 1, 3);
+        createSubject("Computer Applications", "BCA", "BCA-S1-103", "Digital Computer Basics", 1, 3);
+        createSubject("Computer Applications", "BCA", "BCA-S2-201", "Data Structures", 2, 4);
+        createSubject("Computer Applications", "BCA", "BCA-S2-202", "Database Management Systems", 2, 4);
+        createSubject("Computer Applications", "BCA", "BCA-S2-203", "Operating Systems", 2, 3);
+        createSubject("Computer Applications", "BCA", "BCA-S3-301", "Java Programming", 3, 4);
+        createSubject("Computer Applications", "BCA", "BCA-S3-302", "Web Technologies", 3, 4);
+
+        // MCA
+        createSubject("Computer Applications", "MCA", "MCA-S1-101", "Advanced Data Structures", 1, 4);
+        createSubject("Computer Applications", "MCA", "MCA-S1-102", "Design and Analysis of Algorithms", 1, 4);
+        createSubject("Computer Applications", "MCA", "MCA-S1-103", "Advanced DBMS", 1, 4);
+        createSubject("Computer Applications", "MCA", "MCA-S2-201", "Cloud Computing", 2, 4);
+        createSubject("Computer Applications", "MCA", "MCA-S2-202", "Machine Learning Basics", 2, 4);
+        createSubject("Computer Applications", "MCA", "MCA-S2-203", "Software Project Management", 2, 3);
+
+        // BBA
+        createSubject("Management", "BBA", "BBA-S1-101", "Principles of Management", 1, 3);
+        createSubject("Management", "BBA", "BBA-S1-102", "Business Communication", 1, 3);
+        createSubject("Management", "BBA", "BBA-S1-103", "Financial Accounting", 1, 4);
+        createSubject("Management", "BBA", "BBA-S2-201", "Human Resource Management", 2, 3);
+        createSubject("Management", "BBA", "BBA-S2-202", "Marketing Management", 2, 4);
+        createSubject("Management", "BBA", "BBA-S2-203", "Business Statistics", 2, 4);
+
+        // MBA
+        createSubject("Management", "MBA", "MBA-S1-101", "Managerial Economics", 1, 4);
+        createSubject("Management", "MBA", "MBA-S1-102", "Organizational Behavior", 1, 3);
+        createSubject("Management", "MBA", "MBA-S1-103", "Corporate Finance", 1, 4);
+        createSubject("Management", "MBA", "MBA-S2-201", "Strategic Management", 2, 4);
+        createSubject("Management", "MBA", "MBA-S2-202", "Business Analytics", 2, 4);
+        createSubject("Management", "MBA", "MBA-S2-203", "Operations Strategy", 2, 3);
+
+        // BTECH
+        createSubject("Engineering", "BTECH", "BTECH-S1-101", "Engineering Mathematics I", 1, 4);
+        createSubject("Engineering", "BTECH", "BTECH-S1-102", "Engineering Physics", 1, 4);
+        createSubject("Engineering", "BTECH", "BTECH-S1-103", "Basic Electrical Engineering", 1, 3);
+        createSubject("Engineering", "BTECH", "BTECH-S2-201", "Data Structures and Algorithms", 2, 4);
+        createSubject("Engineering", "BTECH", "BTECH-S2-202", "Object Oriented Programming", 2, 4);
+        createSubject("Engineering", "BTECH", "BTECH-S2-203", "Computer Organization", 2, 3);
+
+        // MTECH
+        createSubject("Engineering", "MTECH", "MTECH-S1-101", "Research Methodology", 1, 3);
+        createSubject("Engineering", "MTECH", "MTECH-S1-102", "Advanced Computing Systems", 1, 4);
+        createSubject("Engineering", "MTECH", "MTECH-S1-103", "High Performance Computing", 1, 4);
+        createSubject("Engineering", "MTECH", "MTECH-S2-201", "Distributed Systems", 2, 4);
+        createSubject("Engineering", "MTECH", "MTECH-S2-202", "AI for Engineers", 2, 4);
+        createSubject("Engineering", "MTECH", "MTECH-S2-203", "Seminar and Review", 2, 2);
+
+        // BHM
+        createSubject("Hospitality", "BHM", "BHM-S1-101", "Front Office Operations", 1, 3);
+        createSubject("Hospitality", "BHM", "BHM-S1-102", "Food Production Basics", 1, 4);
+        createSubject("Hospitality", "BHM", "BHM-S1-103", "Hospitality Communication", 1, 3);
+        createSubject("Hospitality", "BHM", "BHM-S2-201", "Housekeeping Management", 2, 3);
+        createSubject("Hospitality", "BHM", "BHM-S2-202", "Food and Beverage Service", 2, 4);
+        createSubject("Hospitality", "BHM", "BHM-S2-203", "Hospitality Marketing", 2, 3);
+
+        System.out.println("Reset and created sample subjects with full details.");
+    }
+
+    private void seedDefaultFeeStructure() {
+        if (feeStructureRepository.findFirstByActiveTrueOrderByEffectiveFromDesc().isPresent()) {
+            return;
+        }
+        FeeStructure feeStructure = new FeeStructure();
+        feeStructure.setName("Dummy Course Fee Aligned Plan");
+        // Keep fee-structure add-ons zero so invoice totals follow dummy course fee values.
+        feeStructure.setCostPerCredit(BigDecimal.ZERO);
+        feeStructure.setLabFee(BigDecimal.ZERO);
+        feeStructure.setDifferentialFee(BigDecimal.ZERO);
+        feeStructure.setLatePenalty(BigDecimal.ZERO);
+        feeStructure.setEffectiveFrom(LocalDate.now());
+        feeStructure.setActive(true);
+        feeStructureRepository.save(feeStructure);
+        System.out.println("Created default fee structure: Dummy Course Fee Aligned Plan");
+    }
+
+    private void ensureDemoFaculty() {
+        String facultyEmail = "faculty@college.edu";
+        User faculty = userRepository.findByEmail(facultyEmail).orElseGet(User::new);
+        faculty.setEmail(facultyEmail);
+        faculty.setMobileNumber("9000000003");
+        faculty.setFullName("Faculty Demo (DEMO)");
+        faculty.setDepartment("Computer Applications");
+        faculty.setPassword(passwordEncoder.encode("Faculty123!"));
+        faculty.getRoles().clear();
+        faculty.getRoles().add("AUTHORITY_FACULTY");
+        faculty.setEmailVerified(true);
+        faculty.setMobileVerified(true);
+        faculty.setActive(true);
+        userRepository.save(faculty);
+        System.out.println("Ensured demo faculty account: " + facultyEmail + " (password: Faculty123!)");
+    }
+
     private void createCourse(String code, String name, String department, String programName, int batchYear, int capacity, int remainingSeats, int credits, int fee,
                               String programLevel, int durationSemesters, String requiredQualification) {
-        Course c = new Course();
+        Course c = courseRepository.findByCode(code).orElseGet(Course::new);
         c.setCode(code);
         c.setName(name);
         c.setDepartment(department);
@@ -192,5 +322,18 @@ public class DataInitializer implements CommandLineRunner {
         c.setRequiredQualification(requiredQualification);
         // 1. Get or save data in the database
         courseRepository.save(c);
+    }
+
+    private void createSubject(String department, String programName, String code, String name, int semester, int credits) {
+        Subject subject = subjectRepository
+                .findByDepartmentIgnoreCaseAndSubjectCodeIgnoreCase(department, code)
+                .orElseGet(Subject::new);
+        subject.setDepartment(department);
+        subject.setProgramName(programName);
+        subject.setSubjectCode(code);
+        subject.setSubjectName(name);
+        subject.setSemester(semester);
+        subject.setCredits(credits);
+        subjectRepository.save(subject);
     }
 }

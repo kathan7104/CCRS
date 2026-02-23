@@ -27,21 +27,28 @@
             <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
             <div class="table-wrap">
                 <table class="data-table">
-                    <thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Role</th><th>Department</th><th>Status</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Name</th><th>Email</th><th>Mobile</th><th>Role</th><th>Department</th><th>Enrolled Course</th><th>Status</th><th>Action</th></tr></thead>
                     <tbody>
-                    <tr th:each="u : ${users}">
-                        <td th:text="${u.fullName}">Name</td>
-                        <td th:text="${u.email}">Email</td>
-                        <td th:text="${u.mobileNumber}">Mobile</td>
-                        <td th:text="${#strings.listJoin(u.roles, ', ')}">Role</td>
-                        <td th:text="${u.department}">Department</td>
-                        <td th:text="${u.active ? 'Active' : 'Inactive'}">Active</td>
+                    <tr th:each="row : ${userRows}">
+                        <td th:text="${row.user.fullName}">Name</td>
+                        <td th:text="${row.user.email}">Email</td>
+                        <td th:text="${row.user.mobileNumber}">Mobile</td>
+                        <td th:text="${#strings.listJoin(row.user.roles, ', ')}">Role</td>
+                        <td th:text="${row.enrolledDepartment != null ? row.enrolledDepartment : row.user.department}">Department</td>
+                        <td th:text="${row.enrolledCourse != null ? row.enrolledCourse : '-'}">BCA101 - Intro</td>
+                        <td th:text="${row.user.active ? 'Active' : 'Inactive'}">Active</td>
                         <td>
-                            <a th:href="@{/director/users/{id}/edit(id=${u.id})}" class="btn btn-sm btn-secondary">Edit</a>
-                            <form th:if="${u.active}" th:action="@{/director/users/{id}/deactivate(id=${u.id})}" method="post" class="inline-form">
+                            <a th:href="@{/director/users/{id}/edit(id=${row.user.id})}" class="btn btn-sm btn-secondary">Edit</a>
+                            <form th:if="${row.user.active}" th:action="@{/director/users/{id}/deactivate(id=${row.user.id})}" method="post" class="inline-form">
                                 <button type="submit" class="btn btn-sm btn-outline">Deactivate</button>
                             </form>
+                            <form th:if="${!row.user.active}" th:action="@{/director/users/{id}/activate(id=${row.user.id})}" method="post" class="inline-form">
+                                <button type="submit" class="btn btn-sm btn-primary">Activate</button>
+                            </form>
                         </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(userRows)}">
+                        <td colspan="8" style="text-align: center; color: #64748b;">No users available.</td>
                     </tr>
                     </tbody>
                 </table>

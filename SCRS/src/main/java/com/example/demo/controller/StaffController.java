@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.FeeStructure;
+import com.example.demo.entity.Payment;
 import com.example.demo.security.CustomUserDetails;
+import com.example.demo.service.StaffBillingService;
 import com.example.demo.service.FeeStructureService;
 import com.example.demo.service.ReportingService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,10 +20,14 @@ import java.time.LocalDate;
 public class StaffController {
     private final FeeStructureService feeStructureService;
     private final ReportingService reportingService;
+    private final StaffBillingService staffBillingService;
 
-    public StaffController(FeeStructureService feeStructureService, ReportingService reportingService) {
+    public StaffController(FeeStructureService feeStructureService,
+                           ReportingService reportingService,
+                           StaffBillingService staffBillingService) {
         this.feeStructureService = feeStructureService;
         this.reportingService = reportingService;
+        this.staffBillingService = staffBillingService;
     }
 
     @GetMapping("/dashboard")
@@ -117,5 +123,40 @@ public class StaffController {
         model.addAttribute("unpaidRows", reportingService.getUnpaidStudentsReport());
         model.addAttribute("payments", reportingService.getReconciliationReport());
         return "staff/reports";
+    }
+
+    @GetMapping("/invoices")
+    public String invoices(Model model) {
+        model.addAttribute("students", staffBillingService.getActiveStudents());
+        model.addAttribute("invoiceRows", staffBillingService.getInvoiceRows());
+        return "staff/invoices/list";
+    }
+
+    @PostMapping("/invoices/generate")
+    public String generateSemesterInvoice(@RequestParam Long studentId,
+                                          @RequestParam int semester,
+                                          RedirectAttributes redirectAttributes) {
+        try {
+            var invoice = staffBillingService.generateSemesterInvoice(studentId, semester);
+            redirectAttributes.addFlashAttribute("successMessage", "Invoice ready: " + invoice.getInvoiceNumber());
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/staff/invoices";
+    }
+
+    @PostMapping("/invoices/{invoiceId}/offline-payment")
+    public String collectOffline(@PathVariable Long invoiceId,
+                                 @RequestParam Payment.PaymentMethod method,
+                                 @RequestParam(required = false) BigDecimal amount,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            var payment = staffBillingService.recordOfflinePayment(invoiceId, method, amount);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Offline payment recorded. Transaction ID: " + payment.getTransactionId());
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+        return "redirect:/staff/invoices";
     }
 }

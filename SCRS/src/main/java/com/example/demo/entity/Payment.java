@@ -18,6 +18,10 @@ public class Payment {
     private PaymentMethod method;
     @Column(name = "transaction_id", length = 255)
     private String transactionId;
+    @Column(name = "gateway_order_id", length = 255)
+    private String gatewayOrderId;
+    @Column(name = "gateway_signature", length = 500)
+    private String gatewaySignature;
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private PaymentStatus status = PaymentStatus.PENDING;
@@ -80,6 +84,18 @@ public class Payment {
     }
     public void setStatus(PaymentStatus status) {
         this.status = status;
+    }
+    public String getGatewayOrderId() {
+        return gatewayOrderId;
+    }
+    public void setGatewayOrderId(String gatewayOrderId) {
+        this.gatewayOrderId = gatewayOrderId;
+    }
+    public String getGatewaySignature() {
+        return gatewaySignature;
+    }
+    public void setGatewaySignature(String gatewaySignature) {
+        this.gatewaySignature = gatewaySignature;
     }
     public LocalDateTime getPaidAt() {
         // 1. Send the result back to the screen

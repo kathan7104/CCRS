@@ -44,6 +44,22 @@ CREATE TABLE IF NOT EXISTS teaching_schemas (
   INDEX idx_teaching_schema_department_program (department, program_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS subjects (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  department VARCHAR(100) NOT NULL,
+  program_name VARCHAR(100) NOT NULL,
+  subject_code VARCHAR(50) NOT NULL,
+  subject_name VARCHAR(255) NOT NULL,
+  semester INT,
+  credits INT,
+  teaching_schema_id BIGINT,
+  created_at DATETIME NOT NULL,
+  updated_at DATETIME,
+  CONSTRAINT uk_subject_department_code UNIQUE (department, subject_code),
+  INDEX idx_subject_department (department),
+  CONSTRAINT fk_subject_teaching_schema FOREIGN KEY (teaching_schema_id) REFERENCES teaching_schemas (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS course_prerequisites (
   course_id BIGINT NOT NULL,
   prerequisite_id BIGINT NOT NULL,
@@ -107,6 +123,8 @@ CREATE TABLE IF NOT EXISTS payments (
   amount DECIMAL(16,2) NOT NULL DEFAULT 0,
   method VARCHAR(20) NOT NULL,
   transaction_id VARCHAR(255),
+  gateway_order_id VARCHAR(255),
+  gateway_signature VARCHAR(500),
   status VARCHAR(20) NOT NULL,
   paid_at DATETIME,
   INDEX idx_payment_tx (transaction_id),
@@ -144,4 +162,14 @@ CREATE TABLE IF NOT EXISTS faculty_course_assignments (
   CONSTRAINT uk_faculty_course UNIQUE (faculty_id, course_id),
   CONSTRAINT fk_assignment_faculty FOREIGN KEY (faculty_id) REFERENCES users (id) ON DELETE CASCADE,
   CONSTRAINT fk_assignment_course FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS faculty_subject_assignments (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  faculty_id BIGINT NOT NULL,
+  subject_id BIGINT NOT NULL,
+  assigned_at DATETIME NOT NULL,
+  CONSTRAINT uk_faculty_subject UNIQUE (faculty_id, subject_id),
+  CONSTRAINT fk_subject_assignment_faculty FOREIGN KEY (faculty_id) REFERENCES users (id) ON DELETE CASCADE,
+  CONSTRAINT fk_subject_assignment_subject FOREIGN KEY (subject_id) REFERENCES subjects (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

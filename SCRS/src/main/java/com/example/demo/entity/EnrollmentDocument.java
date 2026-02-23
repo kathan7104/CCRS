@@ -11,6 +11,11 @@ import java.time.LocalDateTime;
 public class EnrollmentDocument {
 
     public enum DocumentType {
+        SSC_MARKSHEET,
+        HSC_MARKSHEET,
+        SCHOOL_LEAVING_CERTIFICATE,
+        BACHELOR_SEMESTER_MARKSHEET,
+        DEGREE_CERTIFICATE,
         MARKSHEET,
         ID_PROOF,
         ADDRESS_PROOF,

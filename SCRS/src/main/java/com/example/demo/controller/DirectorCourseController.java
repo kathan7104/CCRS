@@ -6,6 +6,7 @@ import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.TeachingSchemaRepository;
 import com.example.demo.security.CustomUserDetails;
+import com.example.demo.service.TeachingSchemaSubjectIngestionService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,13 +48,16 @@ public class DirectorCourseController {
     private final CourseRepository courseRepository;
     private final DepartmentRepository departmentRepository;
     private final TeachingSchemaRepository teachingSchemaRepository;
+    private final TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService;
 
     public DirectorCourseController(CourseRepository courseRepository,
                                     DepartmentRepository departmentRepository,
-                                    TeachingSchemaRepository teachingSchemaRepository) {
+                                    TeachingSchemaRepository teachingSchemaRepository,
+                                    TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService) {
         this.courseRepository = courseRepository;
         this.departmentRepository = departmentRepository;
         this.teachingSchemaRepository = teachingSchemaRepository;
+        this.teachingSchemaSubjectIngestionService = teachingSchemaSubjectIngestionService;
     }
 
     @GetMapping
@@ -185,8 +189,11 @@ public class DirectorCourseController {
             if (originalFileName == null || originalFileName.isBlank()) {
                 throw new IllegalArgumentException("Teaching schema file name is invalid.");
             }
-            if (!originalFileName.toLowerCase().endsWith(".pdf")) {
-                throw new IllegalArgumentException("Teaching schema must be a PDF file.");
+            String lowerFileName = originalFileName.toLowerCase();
+            if (!(lowerFileName.endsWith(".pdf")
+                    || lowerFileName.endsWith(".doc")
+                    || lowerFileName.endsWith(".docx"))) {
+                throw new IllegalArgumentException("Teaching schema must be a PDF, DOC, or DOCX file.");
             }
             String department = cleanText(course.getDepartment());
             String programName = cleanText(course.getProgramName());
@@ -209,7 +216,9 @@ public class DirectorCourseController {
             schema.setSchemaVersion(nextVersion);
             schema.setFileName(safeOriginalName);
             schema.setFilePath(storedPath.toString());
-            return teachingSchemaRepository.save(schema);
+            TeachingSchema savedSchema = teachingSchemaRepository.save(schema);
+            teachingSchemaSubjectIngestionService.ingestSubjects(savedSchema, storedPath, safeOriginalName);
+            return savedSchema;
         }
 
         if (existingTeachingSchemaId != null) {
@@ -222,7 +231,7 @@ public class DirectorCourseController {
             return existing;
         }
 
-        throw new IllegalArgumentException("Upload a new teaching schema PDF or select an existing one.");
+        throw new IllegalArgumentException("Upload a new teaching schema document (PDF/DOC/DOCX) or select an existing one.");
     }
 
     private void applyPrerequisites(Course course, List<Long> prerequisiteIds) {

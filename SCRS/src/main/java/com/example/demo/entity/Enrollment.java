@@ -36,6 +36,7 @@ public class Enrollment {
     private List<EnrollmentDocument> documents = new ArrayList<>();
     public enum EnrollmentStatus {
         PENDING,
+        APPROVED,
         ENROLLED,
         WAITLISTED,
         CANCELLED,

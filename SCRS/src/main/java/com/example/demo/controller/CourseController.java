@@ -17,6 +17,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 @Controller
@@ -25,6 +26,7 @@ public class CourseController {
     private final CourseRepository courseRepository;
     private final EnrollmentService enrollmentService;
     private static final String UPLOAD_DIR = "uploads/documents/";
+    private static final long MAX_SINGLE_DOCUMENT_SIZE_BYTES = 20L * 1024L * 1024L; // 20MB
     public CourseController(CourseRepository courseRepository, EnrollmentService enrollmentService) {
         this.courseRepository = courseRepository;
         this.enrollmentService = enrollmentService;
@@ -71,12 +73,21 @@ public class CourseController {
         return "courses/detail";
     }
     @GetMapping("/{id}/enroll")
-    public String showEnrollmentForm(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public String showEnrollmentForm(@PathVariable Long id,
+                                     Model model,
+                                     @AuthenticationPrincipal CustomUserDetails userDetails,
+                                     RedirectAttributes redirectAttributes) {
         boolean isStudent = userDetails != null && userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"));
         // 1. Check a rule -> decide what to do next
         if (!isStudent) {
             // 2. Send the result back to the screen
+            return "redirect:/courses";
+        }
+        try {
+            enrollmentService.validateCanApplyForCourse(userDetails.getUsername(), id);
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
             return "redirect:/courses";
         }
         // 3. Get or save data in the database
@@ -95,10 +106,10 @@ public class CourseController {
     public String processEnrollment(@PathVariable Long id, 
                                    @RequestParam("fullName") String fullName,
                                    @RequestParam("dob") String dobStr,
-                                   @RequestParam("pastMarks") Double pastMarks,
+                                   @RequestParam("pastMarks") String pastMarksStr,
                                    @RequestParam("highestQualification") String highestQualification,
                                    @RequestParam("boardUniversity") String boardUniversity,
-                                   @RequestParam("passingYear") Integer passingYear,
+                                   @RequestParam("passingYear") String passingYearStr,
                                    @RequestParam("documentTypes") List<String> documentTypes,
                                    @RequestParam("documentFiles") List<MultipartFile> documentFiles,
                                    @RequestParam(required = false) String comments,
@@ -114,6 +125,11 @@ public class CourseController {
             return "redirect:/courses";
         }
         try {
+            LocalDate dob = LocalDate.parse(dobStr);
+            Double pastMarks = Double.parseDouble(pastMarksStr);
+            Integer passingYear = Integer.parseInt(passingYearStr);
+            validateEnrollmentForm(fullName, dob, pastMarks, highestQualification, boardUniversity, passingYear);
+
             Path uploadPath = Paths.get(UPLOAD_DIR);
             // 4. Check a rule -> decide what to do next
             if (!Files.exists(uploadPath)) {
@@ -138,11 +154,16 @@ public class CourseController {
                     throw new IllegalArgumentException("Uploaded file name cannot be empty.");
                 }
                 String safeOriginalName = Paths.get(originalFileName).getFileName().toString();
+                validateUploadedDocument(file, safeOriginalName);
                 String fileName = UUID.randomUUID() + "_" + safeOriginalName;
                 Path filePath = uploadPath.resolve(fileName);
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                EnrollmentDocument.DocumentType documentType =
-                        EnrollmentDocument.DocumentType.valueOf(documentTypeRaw.toUpperCase());
+                EnrollmentDocument.DocumentType documentType;
+                try {
+                    documentType = EnrollmentDocument.DocumentType.valueOf(documentTypeRaw.toUpperCase(Locale.ROOT));
+                } catch (IllegalArgumentException ex) {
+                    throw new IllegalArgumentException("Invalid document type selected: " + documentTypeRaw);
+                }
                 documents.add(new EnrollmentService.DocumentPayload(
                         documentType,
                         safeOriginalName,
@@ -156,11 +177,11 @@ public class CourseController {
             }
             // 5. Ask the service to do the main work
             enrollmentService.enrollStudent(userDetails.getUsername(), id, comments, 
-                fullName, LocalDate.parse(dobStr), pastMarks, highestQualification, boardUniversity, passingYear, documents);
+                fullName, dob, pastMarks, highestQualification, boardUniversity, passingYear, documents);
             // 6. Show a one-time message on the next page
-            redirectAttributes.addFlashAttribute("successMessage", "Successfully enrolled in " + id + ". Application under review.");
+            redirectAttributes.addFlashAttribute("successMessage", "Application submitted successfully. Track status in My Applications.");
             // 7. Send the result back to the screen
-            return "redirect:/courses";
+            return "redirect:/dashboard";
         } catch (IOException e) {
              // 8. Show a one-time message on the next page
              redirectAttributes.addFlashAttribute("errorMessage", "File upload failed: " + e.getMessage());
@@ -171,6 +192,48 @@ public class CourseController {
             redirectAttributes.addFlashAttribute("errorMessage", "Enrollment failed: " + e.getMessage());
             // 11. Send the result back to the screen
             return "redirect:/courses/" + id + "/enroll";
+        }
+    }
+
+    private void validateEnrollmentForm(String fullName,
+                                        LocalDate dob,
+                                        Double pastMarks,
+                                        String highestQualification,
+                                        String boardUniversity,
+                                        Integer passingYear) {
+        if (fullName == null || fullName.trim().isBlank()) {
+            throw new IllegalArgumentException("Full name is required.");
+        }
+        if (dob == null || dob.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Date of birth is invalid.");
+        }
+        if (pastMarks == null || pastMarks < 0 || pastMarks > 100) {
+            throw new IllegalArgumentException("Past marks must be between 0 and 100.");
+        }
+        if (highestQualification == null || highestQualification.trim().isBlank()) {
+            throw new IllegalArgumentException("Highest qualification is required.");
+        }
+        if (boardUniversity == null || boardUniversity.trim().isBlank()) {
+            throw new IllegalArgumentException("Board/University is required.");
+        }
+        int currentYear = LocalDate.now().getYear();
+        if (passingYear == null || passingYear < 1990 || passingYear > currentYear) {
+            throw new IllegalArgumentException("Passing year must be between 1990 and " + currentYear + ".");
+        }
+    }
+
+    private void validateUploadedDocument(MultipartFile file, String safeOriginalName) {
+        if (file.getSize() > MAX_SINGLE_DOCUMENT_SIZE_BYTES) {
+            throw new IllegalArgumentException("Each file must be 20MB or smaller.");
+        }
+        String lower = safeOriginalName.toLowerCase(Locale.ROOT);
+        boolean supported = lower.endsWith(".pdf")
+                || lower.endsWith(".jpg")
+                || lower.endsWith(".jpeg")
+                || lower.endsWith(".png");
+        if (!supported) {
+            throw new IllegalArgumentException("Unsupported file type for " + safeOriginalName
+                    + ". Only PDF, JPG, JPEG, and PNG are allowed.");
         }
     }
 }

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Faculty Roster - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body>
+<header class="dashboard-header">
+    <h1>College Course Registration System</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPath == '/dashboard' ? 'active' : ''}">Home</a>
+        <a th:href="@{/faculty/roster}" class="nav-link" th:classappend="${currentPath == '/faculty/roster' ? 'active' : ''}">My Roster</a>
+    </nav>
+    <div class="user-info">
+        <span>Welcome, <span th:text="${userName}">Faculty</span></span>
+        <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-outline btn-sm">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <h2>Dashboard Overview</h2>
+            <p>
+                Departmental class roster for approved/enrolled students mapped to your assigned subject programs.
+                <span th:if="${department != null && !department.isBlank()}" th:text="${' Department: ' + department + '.'}">Department: Engineering.</span>
+            </p>
+        </section>
+
+        <section class="dashboard-section" th:each="subjectRoster : ${subjectRosters}">
+            <h2 th:text="${subjectRoster.subject.subjectCode + ' - ' + subjectRoster.subject.subjectName}">Subject</h2>
+            <p th:text="${'Program: ' + subjectRoster.subject.programName}">Program: BCA</p>
+            <p th:if="${subjectRoster.subject.semester != null}" th:text="${'Semester: ' + subjectRoster.subject.semester}">Semester: 1</p>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Course</th>
+                        <th>Enrollment Status</th>
+                        <th>Registered At</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="enrollment : ${subjectRoster.enrollments}">
+                        <td th:text="${enrollment.student.fullName}">Student</td>
+                        <td th:text="${enrollment.student.email}">mail@example.com</td>
+                        <td th:text="${enrollment.student.mobileNumber}">9999999999</td>
+                        <td th:text="${enrollment.course != null ? enrollment.course.code + ' - ' + enrollment.course.name : '-'}">BCA101 - Intro</td>
+                        <td><span class="status-badge enrolled" th:text="${enrollment.status}">ENROLLED</span></td>
+                        <td th:text="${enrollment.registeredAt != null ? #temporals.format(enrollment.registeredAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">time</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(subjectRoster.enrollments)}">
+                        <td colspan="6" style="text-align: center; color: #64748b;">No approved/enrolled students found for this subject program.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="dashboard-section" th:if="${#lists.isEmpty(subjectRosters)}">
+            <h2>My Roster</h2>
+            <p>No departmental subject assignments are mapped to your faculty account yet.</p>
+        </section>
+    </main>
+</div>
+</body>
+</html>
