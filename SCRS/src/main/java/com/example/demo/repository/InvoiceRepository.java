@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     Optional<Invoice> findByInvoiceNumber(String invoiceNumber);
     List<Invoice> findByStudentId(Long studentId);
+    List<Invoice> findByStudentIdAndInvoiceNumberStartingWith(Long studentId, String invoicePrefix);
     List<Invoice> findByStatus(Invoice.InvoiceStatus status);
     @Query("select coalesce(sum(i.totalAmount), 0) from Invoice i where i.status = com.example.demo.entity.Invoice$InvoiceStatus.PAID")
     BigDecimal getTotalPaidRevenue();

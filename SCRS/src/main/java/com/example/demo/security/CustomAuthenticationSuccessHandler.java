@@ -46,6 +46,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             boolean isAdmin = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_ADMIN"));
             boolean isDirector = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_DIRECTOR"));
             boolean isStaff = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_STAFF"));
+            boolean isFaculty = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_FACULTY"));
             if (isAdmin) {
                 response.sendRedirect("/admin/dashboard");
                 return;
@@ -56,6 +57,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
             }
             if (isStaff) {
                 response.sendRedirect("/staff/dashboard");
+                return;
+            }
+            if (isFaculty) {
+                response.sendRedirect("/faculty/roster");
                 return;
             }
             response.sendRedirect("/dashboard/authority");

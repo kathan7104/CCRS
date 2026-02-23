@@ -67,7 +67,7 @@ public class AdminController {
                           RedirectAttributes redirectAttributes) {
         try {
             adminWorkflowService.approveEnrollment(id, note);
-            redirectAttributes.addFlashAttribute("successMessage", "Enrollment approved and invoice generated.");
+            redirectAttributes.addFlashAttribute("successMessage", "Application approved. Status will become ENROLLED after first semester fee is paid.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }

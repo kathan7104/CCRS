@@ -22,6 +22,8 @@
         <main class="dashboard-main">
             <section class="dashboard-section" style="max-width: 800px; margin: 0 auto;">
                 <h2>Course Enrollment Form</h2>
+                <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
+                <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
                 <div class="form-preview" style="margin-bottom: 2rem;">
                     <h3 th:text="${course.code} + ': ' + ${course.name}" style="margin-top: 0; color: #0f3460;">Course Name</h3>
                     <p style="margin: 0; color: #666;">
@@ -77,13 +79,24 @@
 
                     <div class="form-group">
                         <label>Upload Documents</label>
+                        <p th:if="${course.programLevel == 'UG'}" class="muted" style="margin: 0 0 0.6rem 0;">
+                            Required: SSC Marksheet, HSC Marksheet, and School Leaving Certificate.
+                        </p>
+                        <p th:if="${course.programLevel == 'PG'}" class="muted" style="margin: 0 0 0.6rem 0;">
+                            Required: All Bachelor Semester Marksheets (upload each semester separately) and Degree Certificate.
+                        </p>
                         <div id="documentsContainer">
                             <div class="document-row" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.75rem; margin-bottom: 0.75rem; align-items: end;">
                                 <div>
                                     <label style="font-size: 0.9rem;">Document Type</label>
                                     <select name="documentTypes" class="form-control" required>
                                         <option value="">Select document type</option>
-                                        <option value="MARKSHEET">Marksheet</option>
+                                        <option th:if="${course.programLevel == 'UG'}" value="SSC_MARKSHEET">SSC Marksheet</option>
+                                        <option th:if="${course.programLevel == 'UG'}" value="HSC_MARKSHEET">HSC Marksheet</option>
+                                        <option th:if="${course.programLevel == 'UG'}" value="SCHOOL_LEAVING_CERTIFICATE">School Leaving Certificate</option>
+                                        <option th:if="${course.programLevel == 'PG'}" value="BACHELOR_SEMESTER_MARKSHEET">Bachelor Semester Marksheet</option>
+                                        <option th:if="${course.programLevel == 'PG'}" value="DEGREE_CERTIFICATE">Degree Certificate</option>
+                                        <option value="MARKSHEET">Other Marksheet</option>
                                         <option value="ID_PROOF">ID Proof</option>
                                         <option value="ADDRESS_PROOF">Address Proof</option>
                                         <option value="PASSPORT_PHOTO">Passport Photo</option>
@@ -95,13 +108,13 @@
                                 </div>
                                 <div>
                                     <label style="font-size: 0.9rem;">Upload File</label>
-                                    <input type="file" name="documentFiles" class="form-control" required>
+                                    <input type="file" name="documentFiles" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
                                 </div>
                                 <button type="button" class="btn btn-secondary remove-document-btn" style="height: 42px;">Remove</button>
                             </div>
                         </div>
                         <button type="button" id="addDocumentBtn" class="btn btn-secondary" style="margin-top: 0.5rem;">Add Document</button>
-                        <small style="color: #666;">Add one or more documents. Each row needs a document type and a file.</small>
+                        <small style="color: #666;">Allowed files: PDF/JPG/JPEG/PNG. Max 20MB per file.</small>
                     </div>
 
                     <div class="form-group">
@@ -124,7 +137,12 @@
                 <label style="font-size: 0.9rem;">Document Type</label>
                 <select name="documentTypes" class="form-control" required>
                     <option value="">Select document type</option>
-                    <option value="MARKSHEET">Marksheet</option>
+                    <option th:if="${course.programLevel == 'UG'}" value="SSC_MARKSHEET">SSC Marksheet</option>
+                    <option th:if="${course.programLevel == 'UG'}" value="HSC_MARKSHEET">HSC Marksheet</option>
+                    <option th:if="${course.programLevel == 'UG'}" value="SCHOOL_LEAVING_CERTIFICATE">School Leaving Certificate</option>
+                    <option th:if="${course.programLevel == 'PG'}" value="BACHELOR_SEMESTER_MARKSHEET">Bachelor Semester Marksheet</option>
+                    <option th:if="${course.programLevel == 'PG'}" value="DEGREE_CERTIFICATE">Degree Certificate</option>
+                    <option value="MARKSHEET">Other Marksheet</option>
                     <option value="ID_PROOF">ID Proof</option>
                     <option value="ADDRESS_PROOF">Address Proof</option>
                     <option value="PASSPORT_PHOTO">Passport Photo</option>
@@ -136,7 +154,7 @@
             </div>
             <div>
                 <label style="font-size: 0.9rem;">Upload File</label>
-                <input type="file" name="documentFiles" class="form-control" required>
+                <input type="file" name="documentFiles" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
             </div>
             <button type="button" class="btn btn-secondary remove-document-btn" style="height: 42px;">Remove</button>
         </div>
@@ -177,10 +195,43 @@
                 updateRemoveButtons();
             });
 
-            form.addEventListener('submit', function (event) {
+            async function compressImageFile(file) {
+                const imageBitmap = await createImageBitmap(file);
+                const maxDimension = 1280;
+                let targetWidth = imageBitmap.width;
+                let targetHeight = imageBitmap.height;
+                if (targetWidth > maxDimension || targetHeight > maxDimension) {
+                    const ratio = Math.min(maxDimension / targetWidth, maxDimension / targetHeight);
+                    targetWidth = Math.max(1, Math.round(targetWidth * ratio));
+                    targetHeight = Math.max(1, Math.round(targetHeight * ratio));
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(imageBitmap, 0, 0, targetWidth, targetHeight);
+
+                let quality = 0.8;
+                let blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
+                while (blob && blob.size > 700 * 1024 && quality > 0.35) {
+                    quality -= 0.1;
+                    blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
+                }
+                if (!blob) {
+                    return file;
+                }
+                const extSafe = (file.name || 'document').replace(/\.[^/.]+$/, '');
+                return new File([blob], extSafe + '.jpg', { type: 'image/jpeg' });
+            }
+
+            form.addEventListener('submit', async function (event) {
                 const rows = container.querySelectorAll('.document-row');
                 let hasValidDocument = false;
                 let hasInvalidRow = false;
+                const allowedExt = ['pdf', 'jpg', 'jpeg', 'png'];
+                const maxBytes = 20 * 1024 * 1024;
+                const asyncTasks = [];
 
                 rows.forEach((row) => {
                     const typeInput = row.querySelector('select[name=\"documentTypes\"]');
@@ -189,6 +240,25 @@
                     const hasFile = fileInput.files.length > 0;
 
                     if (hasType && hasFile) {
+                        const file = fileInput.files[0];
+                        const fileName = (file.name || '').toLowerCase();
+                        const ext = fileName.includes('.') ? fileName.split('.').pop() : '';
+                        if (!allowedExt.includes(ext)) {
+                            hasInvalidRow = true;
+                            return;
+                        }
+                        if (file.size > maxBytes) {
+                            hasInvalidRow = true;
+                            return;
+                        }
+                        if (file.type && file.type.startsWith('image/')) {
+                            asyncTasks.push((async () => {
+                                const optimized = await compressImageFile(file);
+                                const transfer = new DataTransfer();
+                                transfer.items.add(optimized);
+                                fileInput.files = transfer.files;
+                            })());
+                        }
                         hasValidDocument = true;
                         return;
                     }
@@ -200,7 +270,18 @@
 
                 if (!hasValidDocument || hasInvalidRow) {
                     event.preventDefault();
-                    alert('Please add at least one complete document row. Every used row must have both type and file.');
+                    alert('Please add complete document rows only. Allowed files: PDF/JPG/JPEG/PNG and max 20MB per file.');
+                    return;
+                }
+
+                if (asyncTasks.length > 0) {
+                    event.preventDefault();
+                    try {
+                        await Promise.all(asyncTasks);
+                        form.submit();
+                    } catch (err) {
+                        alert('Unable to process image before upload. Please try another image.');
+                    }
                 }
             });
 

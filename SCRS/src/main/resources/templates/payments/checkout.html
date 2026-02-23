@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Payment Checkout - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+    <script th:if="${checkoutSession.provider == 'razorpay'}" src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+<header class="dashboard-header">
+    <h1>College Course Registration System</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/payments}" class="nav-link">Back to Payments</a>
+    </nav>
+    <div class="user-info">
+        <span>Welcome, <span th:text="${userName}">Student</span></span>
+    </div>
+</header>
+
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <h2 th:text="${checkoutSession.provider == 'razorpay' ? 'Razorpay Secure Checkout' : 'Mock Gateway Checkout'}">Checkout</h2>
+            <p>
+                Invoice: <strong th:text="${checkoutSession.invoiceNumber}">INV</strong><br/>
+                Amount: <strong th:text="${#numbers.formatDecimal(checkoutSession.amountPaise / 100.0, 1, 2)}">0.00</strong> INR
+            </p>
+            <p class="muted" th:if="${checkoutSession.provider == 'razorpay'}">
+                Complete payment in Razorpay popup. Verification is done on server before marking invoice as paid.
+            </p>
+            <p class="muted" th:if="${checkoutSession.provider == 'mock'}">
+                Demo mode only. Choose a simulated result to test successful and failed payment handling.
+            </p>
+        </section>
+
+        <section class="dashboard-section" th:if="${checkoutSession.provider == 'razorpay'}">
+            <button id="payBtn" class="btn btn-primary">Proceed to Razorpay</button>
+            <a th:href="@{/payments}" class="btn btn-outline" style="margin-left: 0.6rem;">Cancel</a>
+        </section>
+
+        <section class="dashboard-section" th:if="${checkoutSession.provider == 'mock'}">
+            <form th:action="@{/payments/{invoiceId}/mock/complete(invoiceId=${checkoutSession.invoiceId})}" method="post">
+                <input type="hidden" name="gateway_order_id" th:value="${checkoutSession.orderId}"/>
+                <input type="hidden" name="result" value="SUCCESS"/>
+                <div class="form-group" style="max-width: 380px;">
+                    <label for="paymentMode">Payment Option</label>
+                    <select id="paymentMode" name="paymentMode" required>
+                        <option value="" selected disabled>Select option</option>
+                        <option value="UPI">UPI</option>
+                        <option value="CARD">Card</option>
+                    </select>
+                </div>
+
+                <div id="upiFields" style="display:none; max-width: 380px;">
+                    <div class="form-group">
+                        <label for="upiId">UPI ID</label>
+                        <input id="upiId" name="upiId" type="text" placeholder="name@bank"/>
+                    </div>
+                </div>
+
+                <div id="cardFields" style="display:none; max-width: 380px;">
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input id="cardNumber" name="cardNumber" type="text" placeholder="4111 1111 1111 1111"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardHolderName">Card Holder Name</label>
+                        <input id="cardHolderName" name="cardHolderName" type="text" placeholder="Student Name"/>
+                    </div>
+                    <div class="form-group" style="display:flex; gap: 0.6rem;">
+                        <div style="flex:1;">
+                            <label for="cardExpiry">Expiry (MM/YY)</label>
+                            <input id="cardExpiry" name="cardExpiry" type="text" placeholder="12/29"/>
+                        </div>
+                        <div style="flex:1;">
+                            <label for="cardCvv">CVV</label>
+                            <input id="cardCvv" name="cardCvv" type="password" placeholder="123"/>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" type="submit">Simulate Success</button>
+            </form>
+            <a th:href="@{/payments}" class="btn btn-outline" style="margin-left: 0.6rem;">Cancel</a>
+        </section>
+    </main>
+</div>
+
+<form id="verifyForm" th:if="${checkoutSession.provider == 'razorpay'}"
+      th:action="@{/payments/{invoiceId}/razorpay/verify(invoiceId=${checkoutSession.invoiceId})}" method="post" style="display:none;">
+    <input type="hidden" name="razorpay_order_id" id="orderIdField"/>
+    <input type="hidden" name="razorpay_payment_id" id="paymentIdField"/>
+    <input type="hidden" name="razorpay_signature" id="signatureField"/>
+</form>
+
+<script th:if="${checkoutSession.provider == 'razorpay'}" th:inline="javascript">
+    (function () {
+        const session = {
+            key: [[${checkoutSession.keyId}]],
+            amount: [[${checkoutSession.amountPaise}]],
+            currency: [[${checkoutSession.currency}]],
+            name: [[${checkoutSession.merchantName}]],
+            description: [[${'Invoice ' + checkoutSession.invoiceNumber}]],
+            order_id: [[${checkoutSession.orderId}]],
+            prefill: {
+                name: [[${checkoutSession.studentName}]],
+                email: [[${checkoutSession.studentEmail}]],
+                contact: [[${checkoutSession.studentPhone}]]
+            },
+            theme: {
+                color: '#0f766e'
+            },
+            handler: function (response) {
+                document.getElementById('orderIdField').value = response.razorpay_order_id;
+                document.getElementById('paymentIdField').value = response.razorpay_payment_id;
+                document.getElementById('signatureField').value = response.razorpay_signature;
+                document.getElementById('verifyForm').submit();
+            }
+        };
+
+        const rzp = new Razorpay(session);
+        rzp.on('payment.failed', function (resp) {
+            const msg = resp && resp.error && resp.error.description
+                ? resp.error.description
+                : 'Payment failed or cancelled.';
+            alert(msg);
+            window.location.href = '/payments';
+        });
+
+        const payBtn = document.getElementById('payBtn');
+        payBtn.addEventListener('click', function () {
+            rzp.open();
+        });
+
+        rzp.open();
+    })();
+</script>
+
+<script th:if="${checkoutSession.provider == 'mock'}">
+    (function () {
+        const mode = document.getElementById('paymentMode');
+        const upiFields = document.getElementById('upiFields');
+        const cardFields = document.getElementById('cardFields');
+        const upiId = document.getElementById('upiId');
+        const cardNumber = document.getElementById('cardNumber');
+        const cardHolderName = document.getElementById('cardHolderName');
+        const cardExpiry = document.getElementById('cardExpiry');
+        const cardCvv = document.getElementById('cardCvv');
+
+        function updateFields() {
+            const selected = mode.value;
+            const isUpi = selected === 'UPI';
+            const isCard = selected === 'CARD';
+
+            upiFields.style.display = isUpi ? 'block' : 'none';
+            cardFields.style.display = isCard ? 'block' : 'none';
+
+            upiId.required = isUpi;
+            cardNumber.required = isCard;
+            cardHolderName.required = isCard;
+            cardExpiry.required = isCard;
+            cardCvv.required = isCard;
+        }
+
+        mode.addEventListener('change', updateFields);
+        updateFields();
+    })();
+</script>
+</body>
+</html>

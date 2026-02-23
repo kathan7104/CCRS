@@ -109,7 +109,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="existingTeachingSchemaId">Use Existing Teaching Schema PDF</label>
+                        <label for="existingTeachingSchemaId">Use Existing Teaching Schema Document</label>
                         <select id="existingTeachingSchemaId" name="existingTeachingSchemaId">
                             <option value="">Select existing schema (optional)</option>
                             <option th:each="s : ${teachingSchemas}"
@@ -117,12 +117,12 @@
                                     th:text="${s.programName + ' | ' + s.department + ' | v' + s.schemaVersion + ' | ' + s.fileName}"
                                     th:selected="${course.teachingSchema != null and course.teachingSchema.id == s.id}"></option>
                         </select>
-                        <p class="muted" style="margin-top: 0.4rem;">If schema changed, upload a new PDF below. New upload creates a new schema version.</p>
+                        <p class="muted" style="margin-top: 0.4rem;">If schema changed, upload a new document below. New upload creates a new schema version.</p>
                     </div>
 
                     <div class="form-group">
-                        <label for="teachingSchemaFile">Upload New Teaching Schema PDF</label>
-                        <input id="teachingSchemaFile" type="file" name="teachingSchemaFile" accept=".pdf"/>
+                        <label for="teachingSchemaFile">Upload New Teaching Schema (PDF/DOC/DOCX)</label>
+                        <input id="teachingSchemaFile" type="file" name="teachingSchemaFile" accept=".pdf,.doc,.docx"/>
                     </div>
 
                     <div class="form-group">

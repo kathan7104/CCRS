@@ -12,9 +12,10 @@
         <h1>College Course Registration System</h1>
         <nav class="dashboard-nav">
             <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPath == '/dashboard' ? 'active' : ''}">Home</a>
-            <a th:href="@{/courses}" class="nav-link" th:classappend="${currentPath == '/courses' ? 'active' : ''}">Courses</a>
-            <a th:if="${isAuthority}" th:href="@{/director/courses}" class="nav-link" th:classappend="${currentPath.startsWith('/director') ? 'active' : ''}">Manage Courses</a>
-            <a href="#" class="nav-link disabled">Payments</a>
+            <a sec:authorize="!hasAuthority('ROLE_AUTHORITY_FACULTY')" th:href="@{/courses}" class="nav-link" th:classappend="${currentPath == '/courses' ? 'active' : ''}">Courses</a>
+            <a sec:authorize="hasAuthority('ROLE_AUTHORITY_DIRECTOR')" th:href="@{/director/courses}" class="nav-link" th:classappend="${currentPath.startsWith('/director') ? 'active' : ''}">Manage Courses</a>
+            <a sec:authorize="hasAuthority('ROLE_AUTHORITY_FACULTY')" th:href="@{/faculty/roster}" class="nav-link" th:classappend="${currentPath.startsWith('/faculty') ? 'active' : ''}">My Roster</a>
+            <a sec:authorize="hasAuthority('ROLE_STUDENT')" th:href="@{/payments}" class="nav-link" th:classappend="${currentPath == '/payments' ? 'active' : ''}">Payments</a>
         </nav>
         <div class="user-info">
             <span>Welcome, <span th:text="${userName}">Student</span></span>
@@ -28,11 +29,46 @@
         <main class="dashboard-main">
             <section class="dashboard-section">
                 <h2>Dashboard Overview</h2>
-                <p>Welcome to the College Course Registration System. Use the navigation bar to browse courses and manage your enrollments.</p>
+                <p th:text="${overviewText}">Welcome to the College Course Registration System.</p>
+                <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+                <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
             </section>
 
-            <section class="dashboard-section">
-                <h2>My Applications</h2>
+            <section class="dashboard-section" th:if="${isFaculty}">
+                <h2>My Assigned Subjects</h2>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                        <tr>
+                            <th>Subject Code</th>
+                            <th>Subject Name</th>
+                            <th>Semester</th>
+                            <th>Program</th>
+                            <th>Department</th>
+                            <th>Assigned At</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="assignment : ${assignedSubjects}">
+                            <td th:text="${assignment.subject.subjectCode}">SUB101</td>
+                            <td th:text="${assignment.subject.subjectName}">Subject Name</td>
+                            <td th:text="${assignment.subject.semester != null ? assignment.subject.semester : 'N/A'}">1</td>
+                            <td th:text="${assignment.subject.programName}">BCA</td>
+                            <td th:text="${assignment.subject.department}">Computer Applications</td>
+                            <td th:text="${assignment.assignedAt != null ? #temporals.format(assignment.assignedAt, 'yyyy-MM-dd HH:mm') : 'N/A'}">2026-02-20 10:00</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(assignedSubjects)}">
+                            <td colspan="6" style="text-align: center; color: #666; padding: 2rem;">
+                                No subjects assigned to your faculty account yet.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="dashboard-section" th:if="${!isFaculty}">
+                <h2>My Applications / Status Tracking</h2>
                 <div class="table-wrap">
                     <table class="data-table">
                         <thead>
