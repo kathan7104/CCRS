@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Local-only runtime/config artifacts
+src/main/resources/application-local.properties
+uploads/documents/
+uploads/teaching-schemas/
