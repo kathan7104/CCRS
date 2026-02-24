@@ -22,7 +22,10 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -82,7 +85,7 @@ public class DirectorCourseController {
 
     @PostMapping
     public String create(@ModelAttribute Course course,
-                         @RequestParam(name = "prerequisiteIds", required = false) List<Long> prerequisiteIds,
+                         @RequestParam(name = "requiredDocumentTypes", required = false) List<String> requiredDocumentTypes,
                          @RequestParam(name = "existingTeachingSchemaId", required = false) Long existingTeachingSchemaId,
                          @RequestParam(name = "teachingSchemaFile", required = false) MultipartFile teachingSchemaFile,
                          RedirectAttributes redirectAttributes) {
@@ -97,13 +100,17 @@ public class DirectorCourseController {
             course.setProgramLevel(cleanText(course.getProgramLevel()));
             course.setLevel(cleanText(course.getLevel()));
             course.setTeachingSchema(resolveTeachingSchema(course, existingTeachingSchemaId, teachingSchemaFile));
-            applyPrerequisites(course, prerequisiteIds);
+            course.setRequiredDocumentTypeList(normalizeDocumentTypes(requiredDocumentTypes));
             normalizeCapacity(course);
             courseRepository.save(course);
+            ensureSubjectsExtracted(course.getTeachingSchema());
             redirectAttributes.addFlashAttribute("successMessage", "Course created successfully.");
             return "redirect:/director/courses";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create course: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create course: " + rootCauseMessage(e));
+            return "redirect:/director/courses/new";
+        } catch (Throwable t) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to create course: " + rootCauseMessage(t));
             return "redirect:/director/courses/new";
         }
     }
@@ -122,7 +129,7 @@ public class DirectorCourseController {
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
                          @ModelAttribute Course form,
-                         @RequestParam(name = "prerequisiteIds", required = false) List<Long> prerequisiteIds,
+                         @RequestParam(name = "requiredDocumentTypes", required = false) List<String> requiredDocumentTypes,
                          @RequestParam(name = "existingTeachingSchemaId", required = false) Long existingTeachingSchemaId,
                          @RequestParam(name = "teachingSchemaFile", required = false) MultipartFile teachingSchemaFile,
                          RedirectAttributes redirectAttributes) {
@@ -148,13 +155,17 @@ public class DirectorCourseController {
             course.setDurationSemesters(form.getDurationSemesters());
             course.setRequiredQualification(form.getRequiredQualification());
             course.setTeachingSchema(resolveTeachingSchema(course, existingTeachingSchemaId, teachingSchemaFile));
-            applyPrerequisites(course, prerequisiteIds);
+            course.setRequiredDocumentTypeList(normalizeDocumentTypes(requiredDocumentTypes));
             normalizeCapacity(course);
             courseRepository.save(course);
+            ensureSubjectsExtracted(course.getTeachingSchema());
             redirectAttributes.addFlashAttribute("successMessage", "Course updated successfully.");
             return "redirect:/director/courses";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update course: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update course: " + rootCauseMessage(e));
+            return "redirect:/director/courses/" + id + "/edit";
+        } catch (Throwable t) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update course: " + rootCauseMessage(t));
             return "redirect:/director/courses/" + id + "/edit";
         }
     }
@@ -171,14 +182,23 @@ public class DirectorCourseController {
 
     private void loadFormOptions(Model model, Course course, List<Course> explicitAllCourses) {
         List<Course> allCourses = explicitAllCourses != null ? explicitAllCourses : courseRepository.findAll().stream()
-                .filter(c -> c.getDepartment().equalsIgnoreCase(course.getDepartment()))
+                .filter(c -> nullSafe(c.getDepartment()).equalsIgnoreCase(nullSafe(course.getDepartment())))
                 .toList();
         model.addAttribute("allCourses", allCourses);
         model.addAttribute("departments", getActiveDepartmentNames());
         model.addAttribute("programNames", resolveProgramOptions());
-        model.addAttribute("teachingSchemas", teachingSchemaRepository.findByDepartmentIgnoreCaseOrderByProgramNameAscSchemaVersionDesc(
-                nullSafe(course.getDepartment())
-        ));
+        model.addAttribute("documentTypeOptions", documentTypeOptions());
+        model.addAttribute("teachingSchemas", teachingSchemaRepository.findAll().stream()
+                .sorted((a, b) -> {
+                    int programCompare = nullSafe(a.getProgramName()).compareToIgnoreCase(nullSafe(b.getProgramName()));
+                    if (programCompare != 0) {
+                        return programCompare;
+                    }
+                    int versionA = a.getSchemaVersion() == null ? 0 : a.getSchemaVersion();
+                    int versionB = b.getSchemaVersion() == null ? 0 : b.getSchemaVersion();
+                    return Integer.compare(versionB, versionA);
+                })
+                .toList());
     }
 
     private TeachingSchema resolveTeachingSchema(Course course,
@@ -202,6 +222,7 @@ public class DirectorCourseController {
                     .map(s -> s.getSchemaVersion() + 1)
                     .orElse(1);
             Path uploadPath = Paths.get(TEACHING_SCHEMA_UPLOAD_DIR);
+            uploadPath = uploadPath.toAbsolutePath().normalize();
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
@@ -215,9 +236,13 @@ public class DirectorCourseController {
             schema.setProgramName(programName);
             schema.setSchemaVersion(nextVersion);
             schema.setFileName(safeOriginalName);
-            schema.setFilePath(storedPath.toString());
+            schema.setFilePath(storedPath.toAbsolutePath().normalize().toString());
             TeachingSchema savedSchema = teachingSchemaRepository.save(schema);
-            teachingSchemaSubjectIngestionService.ingestSubjects(savedSchema, storedPath, safeOriginalName);
+            try {
+                teachingSchemaSubjectIngestionService.ingestSubjects(savedSchema, storedPath, safeOriginalName);
+            } catch (Throwable ignored) {
+                // Keep course creation/update flow working even when parser runtime libraries are unavailable.
+            }
             return savedSchema;
         }
 
@@ -231,16 +256,7 @@ public class DirectorCourseController {
             return existing;
         }
 
-        throw new IllegalArgumentException("Upload a new teaching schema document (PDF/DOC/DOCX) or select an existing one.");
-    }
-
-    private void applyPrerequisites(Course course, List<Long> prerequisiteIds) {
-        if (prerequisiteIds == null || prerequisiteIds.isEmpty()) {
-            course.setPrerequisites(new HashSet<>());
-            return;
-        }
-        Set<Course> prereqs = new HashSet<>(courseRepository.findAllById(prerequisiteIds));
-        course.setPrerequisites(prereqs);
+        return null;
     }
 
     private void normalizeCapacity(Course course) {
@@ -265,6 +281,9 @@ public class DirectorCourseController {
     }
 
     private String resolveDepartment(CustomUserDetails principal) {
+        if (principal == null || principal.getUser() == null) {
+            return "Computer Applications";
+        }
         String department = principal.getUser().getDepartment();
         return department == null || department.isBlank() ? "Computer Applications" : department;
     }
@@ -300,12 +319,67 @@ public class DirectorCourseController {
         return ordered;
     }
 
+    private List<String> normalizeDocumentTypes(List<String> rawValues) {
+        if (rawValues == null || rawValues.isEmpty()) {
+            return List.of();
+        }
+        Set<String> allowed = documentTypeOptions().keySet();
+        List<String> result = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+        for (String raw : rawValues) {
+            String value = raw == null ? "" : raw.trim().toUpperCase(Locale.ROOT);
+            if (value.isBlank() || !allowed.contains(value) || seen.contains(value)) {
+                continue;
+            }
+            result.add(value);
+            seen.add(value);
+        }
+        return result;
+    }
+
+    private Map<String, String> documentTypeOptions() {
+        Map<String, String> options = new LinkedHashMap<>();
+        options.put("SSC_MARKSHEET", "SSC Marksheet");
+        options.put("HSC_MARKSHEET", "HSC Marksheet");
+        options.put("SCHOOL_LEAVING_CERTIFICATE", "School Leaving Certificate");
+        options.put("BACHELOR_SEMESTER_MARKSHEET", "Bachelor Semester Marksheet");
+        options.put("DEGREE_CERTIFICATE", "Degree Certificate");
+        options.put("MARKSHEET", "Other Marksheet");
+        options.put("ID_PROOF", "ID Proof");
+        options.put("ADDRESS_PROOF", "Address Proof");
+        options.put("PASSPORT_PHOTO", "Passport Photo");
+        options.put("CASTE_CERTIFICATE", "Caste Certificate");
+        options.put("INCOME_CERTIFICATE", "Income Certificate");
+        options.put("TRANSFER_CERTIFICATE", "Transfer Certificate");
+        options.put("OTHER", "Other");
+        return options;
+    }
+
     private boolean isCodeMatchingCourseAndBatch(String currentCode, String courseName, Integer batchYear) {
         if (batchYear == null) {
             return false;
         }
         String prefix = codePrefixFromName(courseName) + "-" + batchYear + "-";
         return currentCode != null && currentCode.startsWith(prefix);
+    }
+
+    private void ensureSubjectsExtracted(TeachingSchema schema) {
+        if (schema == null || schema.getId() == null) {
+            return;
+        }
+        String filePath = nullSafe(schema.getFilePath()).trim();
+        if (filePath.isBlank()) {
+            return;
+        }
+        Path path = resolveSchemaPath(filePath);
+        if (!Files.exists(path)) {
+            return;
+        }
+        try {
+            teachingSchemaSubjectIngestionService.ingestSubjects(schema, path, schema.getFileName());
+        } catch (Throwable ignored) {
+            // Keep course save successful even if extraction fails here.
+        }
     }
 
     private String generateNextCourseCode(String courseName, Integer batchYear) {
@@ -355,5 +429,40 @@ public class DirectorCourseController {
             prefix = normalizedName.toUpperCase().replaceAll("[^A-Z0-9]", "");
         }
         return prefix.length() > 8 ? prefix.substring(0, 8) : prefix;
+    }
+
+    private String rootCauseMessage(Throwable throwable) {
+        Throwable current = throwable;
+        while (current.getCause() != null && current.getCause() != current) {
+            current = current.getCause();
+        }
+        String msg = current.getMessage();
+        if (msg == null || msg.isBlank()) {
+            msg = throwable.getMessage();
+        }
+        if (msg == null || msg.isBlank()) {
+            msg = current.getClass().getSimpleName();
+        }
+        return msg;
+    }
+
+    private Path resolveSchemaPath(String rawPath) {
+        Path candidate = Paths.get(rawPath);
+        if (candidate.isAbsolute()) {
+            return candidate.normalize();
+        }
+        Path direct = candidate.toAbsolutePath().normalize();
+        if (Files.exists(direct)) {
+            return direct;
+        }
+        Path uploadsFallback = Paths.get(TEACHING_SCHEMA_UPLOAD_DIR)
+                .toAbsolutePath()
+                .normalize()
+                .resolve(candidate.getFileName() == null ? "" : candidate.getFileName().toString())
+                .normalize();
+        if (Files.exists(uploadsFallback)) {
+            return uploadsFallback;
+        }
+        return direct;
     }
 }

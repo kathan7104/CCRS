@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS courses (
   level VARCHAR(20) NOT NULL,
   duration_semesters INT NOT NULL,
   required_qualification VARCHAR(255) NOT NULL,
+  required_document_types VARCHAR(500),
   teaching_schema_id BIGINT,
   version BIGINT,
   created_at DATETIME NOT NULL,

@@ -16,8 +16,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 @Controller
@@ -95,6 +99,11 @@ public class CourseController {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid course Id:" + id));
         // 4. Put data on the page so the user can see it
         model.addAttribute("course", course);
+        model.addAttribute("documentTypeOptions", documentTypeOptions());
+        model.addAttribute("requiredDocumentTypes", course.getRequiredDocumentTypeList());
+        model.addAttribute("requiredDocumentLabels", course.getRequiredDocumentTypeList().stream()
+                .map(type -> documentTypeOptions().getOrDefault(type, type))
+                .toList());
         // 5. Put data on the page so the user can see it
         model.addAttribute("studentName", userDetails.getUser().getFullName());
         // 6. Put data on the page so the user can see it
@@ -175,6 +184,7 @@ public class CourseController {
             if (!hasAtLeastOneDocument) {
                 throw new IllegalArgumentException("Please add at least one document to upload.");
             }
+            validateRequiredCourseDocuments(id, documents);
             // 5. Ask the service to do the main work
             enrollmentService.enrollStudent(userDetails.getUsername(), id, comments, 
                 fullName, dob, pastMarks, highestQualification, boardUniversity, passingYear, documents);
@@ -235,5 +245,45 @@ public class CourseController {
             throw new IllegalArgumentException("Unsupported file type for " + safeOriginalName
                     + ". Only PDF, JPG, JPEG, and PNG are allowed.");
         }
+    }
+
+    private void validateRequiredCourseDocuments(Long courseId, List<EnrollmentService.DocumentPayload> documents) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid course Id:" + courseId));
+        List<String> required = course.getRequiredDocumentTypeList();
+        if (required.isEmpty()) {
+            return;
+        }
+        Set<String> uploaded = documents.stream()
+                .map(EnrollmentService.DocumentPayload::documentType)
+                .map(Enum::name)
+                .collect(Collectors.toSet());
+        List<String> missing = required.stream()
+                .filter(type -> !uploaded.contains(type))
+                .toList();
+        if (!missing.isEmpty()) {
+            String labels = missing.stream()
+                    .map(type -> documentTypeOptions().getOrDefault(type, type))
+                    .collect(Collectors.joining(", "));
+            throw new IllegalArgumentException("Missing required documents: " + labels);
+        }
+    }
+
+    private Map<String, String> documentTypeOptions() {
+        Map<String, String> options = new LinkedHashMap<>();
+        options.put("SSC_MARKSHEET", "SSC Marksheet");
+        options.put("HSC_MARKSHEET", "HSC Marksheet");
+        options.put("SCHOOL_LEAVING_CERTIFICATE", "School Leaving Certificate");
+        options.put("BACHELOR_SEMESTER_MARKSHEET", "Bachelor Semester Marksheet");
+        options.put("DEGREE_CERTIFICATE", "Degree Certificate");
+        options.put("MARKSHEET", "Other Marksheet");
+        options.put("ID_PROOF", "ID Proof");
+        options.put("ADDRESS_PROOF", "Address Proof");
+        options.put("PASSPORT_PHOTO", "Passport Photo");
+        options.put("CASTE_CERTIFICATE", "Caste Certificate");
+        options.put("INCOME_CERTIFICATE", "Income Certificate");
+        options.put("TRANSFER_CERTIFICATE", "Transfer Certificate");
+        options.put("OTHER", "Other");
+        return options;
     }
 }

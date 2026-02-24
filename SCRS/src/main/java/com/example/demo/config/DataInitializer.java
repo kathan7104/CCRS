@@ -3,6 +3,7 @@ import com.example.demo.entity.Course;
 import com.example.demo.entity.Department;
 import com.example.demo.entity.FeeStructure;
 import com.example.demo.entity.Subject;
+import com.example.demo.entity.TeachingSchema;
 import com.example.demo.entity.User;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.DepartmentRepository;
@@ -10,13 +11,18 @@ import com.example.demo.repository.EnrollmentRepository;
 import com.example.demo.repository.FacultySubjectAssignmentRepository;
 import com.example.demo.repository.FeeStructureRepository;
 import com.example.demo.repository.SubjectRepository;
+import com.example.demo.repository.TeachingSchemaRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.TeachingSchemaSubjectIngestionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 @Configuration
 public class DataInitializer implements CommandLineRunner {
@@ -25,6 +31,8 @@ public class DataInitializer implements CommandLineRunner {
     private final DepartmentRepository departmentRepository;
     private final EnrollmentRepository enrollmentRepository;
     private final SubjectRepository subjectRepository;
+    private final TeachingSchemaRepository teachingSchemaRepository;
+    private final TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService;
     private final FacultySubjectAssignmentRepository facultySubjectAssignmentRepository;
     private final FeeStructureRepository feeStructureRepository;
     private final PasswordEncoder passwordEncoder;
@@ -42,6 +50,8 @@ public class DataInitializer implements CommandLineRunner {
                            DepartmentRepository departmentRepository,
                            EnrollmentRepository enrollmentRepository,
                            SubjectRepository subjectRepository,
+                           TeachingSchemaRepository teachingSchemaRepository,
+                           TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService,
                            FacultySubjectAssignmentRepository facultySubjectAssignmentRepository,
                            FeeStructureRepository feeStructureRepository,
                            PasswordEncoder passwordEncoder,
@@ -51,6 +61,8 @@ public class DataInitializer implements CommandLineRunner {
         this.departmentRepository = departmentRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.subjectRepository = subjectRepository;
+        this.teachingSchemaRepository = teachingSchemaRepository;
+        this.teachingSchemaSubjectIngestionService = teachingSchemaSubjectIngestionService;
         this.facultySubjectAssignmentRepository = facultySubjectAssignmentRepository;
         this.feeStructureRepository = feeStructureRepository;
         this.passwordEncoder = passwordEncoder;
@@ -64,6 +76,7 @@ public class DataInitializer implements CommandLineRunner {
             resetAndCreateSampleCourses();
             resetAndCreateSampleSubjects();
         }
+        backfillTeachingSchemaSubjects();
         seedDefaultFeeStructure();
         if (seedDemoFaculty) {
             ensureDemoFaculty();
@@ -165,6 +178,7 @@ public class DataInitializer implements CommandLineRunner {
         executeSql("ALTER TABLE courses ADD COLUMN IF NOT EXISTS batch_year INT NULL");
         executeSql("ALTER TABLE courses ADD COLUMN IF NOT EXISTS duration_semesters INT NULL");
         executeSql("ALTER TABLE courses ADD COLUMN IF NOT EXISTS teaching_schema_id BIGINT NULL");
+        executeSql("ALTER TABLE courses ADD COLUMN IF NOT EXISTS required_document_types VARCHAR(500) NULL");
         executeSql("UPDATE courses SET program_name = COALESCE(NULLIF(program_name, ''), code)");
         executeSql("UPDATE courses SET batch_year = COALESCE(batch_year, YEAR(created_at), YEAR(CURDATE()))");
         executeSql("UPDATE courses SET duration_semesters = COALESCE(duration_semesters, CASE WHEN duration_years IS NOT NULL THEN duration_years * 2 ELSE 6 END)");
@@ -335,5 +349,54 @@ public class DataInitializer implements CommandLineRunner {
         subject.setSemester(semester);
         subject.setCredits(credits);
         subjectRepository.save(subject);
+    }
+
+    private void backfillTeachingSchemaSubjects() {
+        int totalSaved = 0;
+        for (TeachingSchema schema : teachingSchemaRepository.findAll()) {
+            if (schema == null || schema.getId() == null) {
+                continue;
+            }
+            String rawPath = schema.getFilePath();
+            if (rawPath == null || rawPath.isBlank()) {
+                continue;
+            }
+            Path path = resolveSchemaPath(rawPath);
+            if (!Files.exists(path)) {
+                System.out.println("Teaching schema file not found for schema id " + schema.getId() + ": " + rawPath);
+                continue;
+            }
+            try {
+                int saved = teachingSchemaSubjectIngestionService.ingestSubjects(schema, path, schema.getFileName());
+                totalSaved += saved;
+                if (saved > 0) {
+                    System.out.println("Schema sync: added/updated " + saved + " subjects for "
+                            + schema.getProgramName() + " (schema id " + schema.getId() + ").");
+                }
+            } catch (Throwable ex) {
+                System.out.println("Schema sync failed for schema id " + schema.getId() + ": " + ex.getMessage());
+            }
+        }
+        System.out.println("Teaching schema backfill completed. Total subjects added/updated: " + totalSaved);
+    }
+
+    private Path resolveSchemaPath(String rawPath) {
+        Path candidate = Paths.get(rawPath);
+        if (candidate.isAbsolute()) {
+            return candidate.normalize();
+        }
+        Path direct = candidate.toAbsolutePath().normalize();
+        if (Files.exists(direct)) {
+            return direct;
+        }
+        Path uploadsFallback = Paths.get("uploads", "teaching-schemas")
+                .toAbsolutePath()
+                .normalize()
+                .resolve(candidate.getFileName() == null ? "" : candidate.getFileName().toString())
+                .normalize();
+        if (Files.exists(uploadsFallback)) {
+            return uploadsFallback;
+        }
+        return direct;
     }
 }

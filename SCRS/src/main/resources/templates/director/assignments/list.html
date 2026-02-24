@@ -20,6 +20,10 @@
     <main class="dashboard-main">
         <section class="dashboard-section">
             <h2>Assign Subject to Faculty</h2>
+            <div class="msg success" th:if="${schemaSyncCount != null and schemaSyncCount > 0}"
+                 th:text="${'Teaching schema sync added/updated ' + schemaSyncCount + ' subject(s) on this page load.'}">
+                Teaching schema sync completed.
+            </div>
             <form th:action="@{/director/assignments}" method="post" class="form-row">
                 <div class="form-group">
                     <label>Faculty</label>

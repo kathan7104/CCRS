@@ -1,7 +1,11 @@
 package com.example.demo.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 @Entity
 @Table(name = "courses", indexes = {
@@ -40,6 +44,8 @@ public class Course {
     private TeachingSchema teachingSchema;
     @Column(name = "required_qualification", nullable = false, length = 255)
     private String requiredQualification;
+    @Column(name = "required_document_types", length = 500)
+    private String requiredDocumentTypes;
     @ManyToMany
     @JoinTable(name = "course_prerequisites",
             joinColumns = @JoinColumn(name = "course_id"),
@@ -163,6 +169,40 @@ public class Course {
     }
     public void setRequiredQualification(String requiredQualification) {
         this.requiredQualification = requiredQualification;
+    }
+    public String getRequiredDocumentTypes() {
+        return requiredDocumentTypes;
+    }
+    public void setRequiredDocumentTypes(String requiredDocumentTypes) {
+        this.requiredDocumentTypes = requiredDocumentTypes;
+    }
+    public List<String> getRequiredDocumentTypeList() {
+        if (requiredDocumentTypes == null || requiredDocumentTypes.isBlank()) {
+            return List.of();
+        }
+        String[] tokens = requiredDocumentTypes.split(",");
+        List<String> result = new ArrayList<>();
+        for (String token : tokens) {
+            String normalized = token == null ? "" : token.trim().toUpperCase(Locale.ROOT);
+            if (!normalized.isBlank()) {
+                result.add(normalized);
+            }
+        }
+        return result;
+    }
+    public void setRequiredDocumentTypeList(List<String> values) {
+        if (values == null || values.isEmpty()) {
+            this.requiredDocumentTypes = null;
+            return;
+        }
+        Set<String> normalized = new LinkedHashSet<>();
+        for (String value : values) {
+            String cleaned = value == null ? "" : value.trim().toUpperCase(Locale.ROOT);
+            if (!cleaned.isBlank()) {
+                normalized.add(cleaned);
+            }
+        }
+        this.requiredDocumentTypes = normalized.isEmpty() ? null : String.join(",", normalized);
     }
     public Set<Course> getPrerequisites() {
         // 1. Send the result back to the screen

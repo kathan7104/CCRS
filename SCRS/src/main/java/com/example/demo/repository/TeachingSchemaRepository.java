@@ -10,4 +10,5 @@ public interface TeachingSchemaRepository extends JpaRepository<TeachingSchema, 
     List<TeachingSchema> findByDepartmentIgnoreCaseOrderByProgramNameAscSchemaVersionDesc(String department);
     List<TeachingSchema> findByDepartmentIgnoreCaseAndProgramNameIgnoreCaseOrderBySchemaVersionDesc(String department, String programName);
     Optional<TeachingSchema> findTopByDepartmentIgnoreCaseAndProgramNameIgnoreCaseOrderBySchemaVersionDesc(String department, String programName);
+    Optional<TeachingSchema> findByFilePath(String filePath);
 }
