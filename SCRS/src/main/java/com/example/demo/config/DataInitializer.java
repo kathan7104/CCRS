@@ -193,14 +193,18 @@ public class DataInitializer implements CommandLineRunner {
         executeSql("ALTER TABLE payments ADD COLUMN IF NOT EXISTS gateway_signature VARCHAR(500) NULL");
     }
     private void seedDepartments() {
-        for (String name : DepartmentCatalog.departments()) {
-            if (departmentRepository.findByNameIgnoreCase(name).isPresent()) {
-                continue;
+        try {
+            for (String name : DepartmentCatalog.departments()) {
+                if (departmentRepository.findByNameIgnoreCase(name).isPresent()) {
+                    continue;
+                }
+                Department department = new Department();
+                department.setName(name);
+                department.setActive(true);
+                departmentRepository.save(department);
             }
-            Department department = new Department();
-            department.setName(name);
-            department.setActive(true);
-            departmentRepository.save(department);
+        } catch (Exception ex) {
+            System.out.println("Skipped department seed at startup: " + ex.getMessage());
         }
     }
     private void executeSql(String sql) {
