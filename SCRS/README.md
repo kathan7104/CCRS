@@ -70,6 +70,31 @@ At minimum, change:
 
 If you keep old credentials from another machine, login/OTP/database flow will fail.
 
+For a safer setup, copy `.env.example` values into your environment (local `.env`, system vars, or Render env vars) and avoid hardcoding secrets in repo files.
+
+## 2.1 Deploy With Existing Local Data (Persistent Cloud DB)
+
+To keep your current local data and also store all new live data:
+
+1. Create a cloud MySQL database.
+2. Export your local DB:
+```bash
+mysqldump -u root -p ccrs_db > ccrs_db.sql
+```
+3. Import into cloud DB:
+```bash
+mysql -h <HOST> -P <PORT> -u <USER> -p <DB_NAME> < ccrs_db.sql
+```
+4. In Render, set these env vars:
+- `SPRING_DATASOURCE_URL`
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
+- `SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver`
+- `SPRING_JPA_HIBERNATE_DDL_AUTO=update`
+5. Do not set `SPRING_PROFILES_ACTIVE=h2` for production persistent DB.
+
+Result: imported existing data remains, and new records are added into the same cloud DB.
+
 ## 3. Build and Run
 
 ### Windows
