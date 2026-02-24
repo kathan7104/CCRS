@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: ccrs
+    env: java
+    rootDir: SCRS
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/SCRS-0.0.1-SNAPSHOT.jar
+    healthCheckPath: /auth/login
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: h2
+      - key: CCRS_OTP_SEND_EMAIL
+        value: "false"
+      - key: CCRS_OTP_SEND_SMS
+        value: "false"
+      - key: CCRS_SMS_PROVIDER
+        value: mock
