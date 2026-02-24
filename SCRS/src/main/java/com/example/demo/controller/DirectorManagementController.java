@@ -4,14 +4,17 @@ import com.example.demo.entity.Course;
 import com.example.demo.entity.Enrollment;
 import com.example.demo.entity.FacultySubjectAssignment;
 import com.example.demo.entity.Subject;
+import com.example.demo.entity.TeachingSchema;
 import com.example.demo.entity.User;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.EnrollmentRepository;
 import com.example.demo.repository.FacultySubjectAssignmentRepository;
 import com.example.demo.repository.SubjectRepository;
+import com.example.demo.repository.TeachingSchemaRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.CustomUserDetails;
+import com.example.demo.service.TeachingSchemaSubjectIngestionService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,8 +26,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 @RequestMapping("/director")
@@ -38,6 +45,8 @@ public class DirectorManagementController {
     private final EnrollmentRepository enrollmentRepository;
     private final FacultySubjectAssignmentRepository facultySubjectAssignmentRepository;
     private final SubjectRepository subjectRepository;
+    private final TeachingSchemaRepository teachingSchemaRepository;
+    private final TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService;
     private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
 
@@ -47,6 +56,8 @@ public class DirectorManagementController {
                                         EnrollmentRepository enrollmentRepository,
                                         FacultySubjectAssignmentRepository facultySubjectAssignmentRepository,
                                         SubjectRepository subjectRepository,
+                                        TeachingSchemaRepository teachingSchemaRepository,
+                                        TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService,
                                         PasswordEncoder passwordEncoder,
                                         JdbcTemplate jdbcTemplate) {
         this.userRepository = userRepository;
@@ -55,6 +66,8 @@ public class DirectorManagementController {
         this.enrollmentRepository = enrollmentRepository;
         this.facultySubjectAssignmentRepository = facultySubjectAssignmentRepository;
         this.subjectRepository = subjectRepository;
+        this.teachingSchemaRepository = teachingSchemaRepository;
+        this.teachingSchemaSubjectIngestionService = teachingSchemaSubjectIngestionService;
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -255,17 +268,21 @@ public class DirectorManagementController {
     @GetMapping("/assignments")
     public String assignments(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
         String department = resolveDepartment(principal);
+        int syncedCount = syncSubjectsFromAllCourseSchemas();
         List<User> faculty = userRepository.findAll().stream()
                 .filter(u -> hasRole(u, FACULTY_ROLE))
                 .sorted(Comparator.comparing(f -> normalize(f.getFullName()), String.CASE_INSENSITIVE_ORDER))
                 .toList();
         List<Subject> subjects = subjectRepository.findAll().stream()
                 .sorted(Comparator.comparing((Subject s) -> normalize(s.getDepartment()), String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(s -> normalize(s.getProgramName()), String.CASE_INSENSITIVE_ORDER)
+                        .thenComparing(s -> s.getSemester() == null ? Integer.MAX_VALUE : s.getSemester())
                         .thenComparing(s -> normalize(s.getSubjectCode()), String.CASE_INSENSITIVE_ORDER))
                 .toList();
         model.addAttribute("faculty", faculty);
         model.addAttribute("subjects", subjects);
         model.addAttribute("assignmentRows", fetchAssignmentRows());
+        model.addAttribute("schemaSyncCount", syncedCount);
         model.addAttribute("department", department);
         return "director/assignments/list";
     }
@@ -431,6 +448,150 @@ public class DirectorManagementController {
                         rs.getTimestamp("assigned_at") == null ? null : rs.getTimestamp("assigned_at").toLocalDateTime()
                 )
         );
+    }
+
+    private int syncSubjectsFromAllCourseSchemas() {
+        int syncedCount = 0;
+        List<Course> coursesWithSchema = courseRepository.findAll().stream()
+                .filter(c -> c.getTeachingSchema() != null)
+                .toList();
+
+        for (Course course : coursesWithSchema) {
+            if (course.getTeachingSchema() == null || course.getTeachingSchema().getId() == null) {
+                continue;
+            }
+            if (subjectRepository.existsByTeachingSchemaId(course.getTeachingSchema().getId())) {
+                continue;
+            }
+            String filePath = normalize(course.getTeachingSchema().getFilePath());
+            if (filePath.isBlank()) {
+                continue;
+            }
+            Path path = resolveSchemaPath(filePath);
+            if (!Files.exists(path)) {
+                continue;
+            }
+            try {
+                syncedCount += teachingSchemaSubjectIngestionService.ingestSubjects(
+                        course.getTeachingSchema(),
+                        path,
+                        course.getTeachingSchema().getFileName()
+                );
+            } catch (Throwable ignored) {
+                // Keep assignment page available even if one schema cannot be parsed.
+            }
+        }
+
+        // Also sync standalone/existing schema documents even if no current course is linked.
+        for (var schema : teachingSchemaRepository.findAll()) {
+            if (schema == null || schema.getId() == null) {
+                continue;
+            }
+            String filePath = normalize(schema.getFilePath());
+            if (filePath.isBlank()) {
+                continue;
+            }
+            Path path = resolveSchemaPath(filePath);
+            if (!Files.exists(path)) {
+                continue;
+            }
+            try {
+                syncedCount += teachingSchemaSubjectIngestionService.ingestSubjects(schema, path, schema.getFileName());
+            } catch (Throwable ignored) {
+                // Keep assignment page available even if one schema cannot be parsed.
+            }
+        }
+
+        // Hard fallback: register+ingest schema files directly from uploads directory,
+        // even when DB linkage is missing or stale.
+        syncedCount += syncFromSchemaFilesDirectory();
+        return syncedCount;
+    }
+
+    private int syncFromSchemaFilesDirectory() {
+        int synced = 0;
+        Path dir = Paths.get("uploads", "teaching-schemas").toAbsolutePath().normalize();
+        if (!Files.exists(dir) || !Files.isDirectory(dir)) {
+            return 0;
+        }
+        try (var files = Files.list(dir)) {
+            List<Path> schemaFiles = files
+                    .filter(Files::isRegularFile)
+                    .filter(path -> {
+                        String name = normalize(path.getFileName().toString()).toLowerCase(Locale.ROOT);
+                        return name.endsWith(".pdf") || name.endsWith(".doc") || name.endsWith(".docx");
+                    })
+                    .toList();
+            for (Path file : schemaFiles) {
+                String absPath = file.toAbsolutePath().normalize().toString();
+                TeachingSchema schema = teachingSchemaRepository.findByFilePath(absPath).orElseGet(() -> {
+                    String fileName = file.getFileName().toString();
+                    String program = inferProgramFromFileName(fileName);
+                    String department = inferDepartmentFromProgram(program);
+                    int nextVersion = teachingSchemaRepository
+                            .findTopByDepartmentIgnoreCaseAndProgramNameIgnoreCaseOrderBySchemaVersionDesc(department, program)
+                            .map(s -> s.getSchemaVersion() + 1)
+                            .orElse(1);
+                    TeachingSchema created = new TeachingSchema();
+                    created.setDepartment(department);
+                    created.setProgramName(program);
+                    created.setSchemaVersion(nextVersion);
+                    created.setFileName(fileName);
+                    created.setFilePath(absPath);
+                    return teachingSchemaRepository.save(created);
+                });
+                try {
+                    synced += teachingSchemaSubjectIngestionService.ingestSubjects(schema, file, file.getFileName().toString());
+                } catch (Throwable ignored) {
+                    // Continue with next file.
+                }
+            }
+        } catch (Exception ignored) {
+            return synced;
+        }
+        return synced;
+    }
+
+    private String inferProgramFromFileName(String fileName) {
+        String upper = normalize(fileName).toUpperCase(Locale.ROOT);
+        List<String> knownPrograms = List.of("BCA", "MCA", "BBA", "MBA", "BTECH", "MTECH", "BHM", "BCOM", "MCOM");
+        for (String program : knownPrograms) {
+            if (upper.contains(program)) {
+                return program;
+            }
+        }
+        return "BCA";
+    }
+
+    private String inferDepartmentFromProgram(String program) {
+        return switch (normalize(program).toUpperCase(Locale.ROOT)) {
+            case "BCA", "MCA" -> "Computer Applications";
+            case "BBA", "MBA" -> "Management";
+            case "BTECH", "MTECH" -> "Engineering";
+            case "BHM" -> "Hospitality";
+            case "BCOM", "MCOM" -> "Commerce";
+            default -> "Computer Applications";
+        };
+    }
+
+    private Path resolveSchemaPath(String rawPath) {
+        Path candidate = Path.of(rawPath);
+        if (candidate.isAbsolute()) {
+            return candidate.normalize();
+        }
+        Path direct = candidate.toAbsolutePath().normalize();
+        if (Files.exists(direct)) {
+            return direct;
+        }
+        Path uploadsFallback = Path.of("uploads", "teaching-schemas")
+                .toAbsolutePath()
+                .normalize()
+                .resolve(candidate.getFileName() == null ? "" : candidate.getFileName().toString())
+                .normalize();
+        if (Files.exists(uploadsFallback)) {
+            return uploadsFallback;
+        }
+        return direct;
     }
 
     public record DirectorUserRow(User user, String enrolledDepartment, String enrolledCourse) {

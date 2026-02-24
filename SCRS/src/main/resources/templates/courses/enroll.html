@@ -79,11 +79,14 @@
 
                     <div class="form-group">
                         <label>Upload Documents</label>
-                        <p th:if="${course.programLevel == 'UG'}" class="muted" style="margin: 0 0 0.6rem 0;">
-                            Required: SSC Marksheet, HSC Marksheet, and School Leaving Certificate.
+                        <p th:if="${!#lists.isEmpty(requiredDocumentLabels)}" class="muted" style="margin: 0 0 0.6rem 0;">
+                            Required for this course:
+                            <span th:each="label, stat : ${requiredDocumentLabels}">
+                                <span th:text="${label}">Document</span><span th:if="${!stat.last}">, </span>
+                            </span>
                         </p>
-                        <p th:if="${course.programLevel == 'PG'}" class="muted" style="margin: 0 0 0.6rem 0;">
-                            Required: All Bachelor Semester Marksheets (upload each semester separately) and Degree Certificate.
+                        <p th:if="${#lists.isEmpty(requiredDocumentLabels)}" class="muted" style="margin: 0 0 0.6rem 0;">
+                            No mandatory document list is configured for this course. Upload at least one relevant document.
                         </p>
                         <div id="documentsContainer">
                             <div class="document-row" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.75rem; margin-bottom: 0.75rem; align-items: end;">
@@ -91,19 +94,11 @@
                                     <label style="font-size: 0.9rem;">Document Type</label>
                                     <select name="documentTypes" class="form-control" required>
                                         <option value="">Select document type</option>
-                                        <option th:if="${course.programLevel == 'UG'}" value="SSC_MARKSHEET">SSC Marksheet</option>
-                                        <option th:if="${course.programLevel == 'UG'}" value="HSC_MARKSHEET">HSC Marksheet</option>
-                                        <option th:if="${course.programLevel == 'UG'}" value="SCHOOL_LEAVING_CERTIFICATE">School Leaving Certificate</option>
-                                        <option th:if="${course.programLevel == 'PG'}" value="BACHELOR_SEMESTER_MARKSHEET">Bachelor Semester Marksheet</option>
-                                        <option th:if="${course.programLevel == 'PG'}" value="DEGREE_CERTIFICATE">Degree Certificate</option>
-                                        <option value="MARKSHEET">Other Marksheet</option>
-                                        <option value="ID_PROOF">ID Proof</option>
-                                        <option value="ADDRESS_PROOF">Address Proof</option>
-                                        <option value="PASSPORT_PHOTO">Passport Photo</option>
-                                        <option value="CASTE_CERTIFICATE">Caste Certificate</option>
-                                        <option value="INCOME_CERTIFICATE">Income Certificate</option>
-                                        <option value="TRANSFER_CERTIFICATE">Transfer Certificate</option>
-                                        <option value="OTHER">Other</option>
+                                        <option th:each="entry : ${documentTypeOptions.entrySet()}"
+                                                th:value="${entry.key}"
+                                                th:text="${entry.value}">
+                                            Document
+                                        </option>
                                     </select>
                                 </div>
                                 <div>
@@ -137,19 +132,11 @@
                 <label style="font-size: 0.9rem;">Document Type</label>
                 <select name="documentTypes" class="form-control" required>
                     <option value="">Select document type</option>
-                    <option th:if="${course.programLevel == 'UG'}" value="SSC_MARKSHEET">SSC Marksheet</option>
-                    <option th:if="${course.programLevel == 'UG'}" value="HSC_MARKSHEET">HSC Marksheet</option>
-                    <option th:if="${course.programLevel == 'UG'}" value="SCHOOL_LEAVING_CERTIFICATE">School Leaving Certificate</option>
-                    <option th:if="${course.programLevel == 'PG'}" value="BACHELOR_SEMESTER_MARKSHEET">Bachelor Semester Marksheet</option>
-                    <option th:if="${course.programLevel == 'PG'}" value="DEGREE_CERTIFICATE">Degree Certificate</option>
-                    <option value="MARKSHEET">Other Marksheet</option>
-                    <option value="ID_PROOF">ID Proof</option>
-                    <option value="ADDRESS_PROOF">Address Proof</option>
-                    <option value="PASSPORT_PHOTO">Passport Photo</option>
-                    <option value="CASTE_CERTIFICATE">Caste Certificate</option>
-                    <option value="INCOME_CERTIFICATE">Income Certificate</option>
-                    <option value="TRANSFER_CERTIFICATE">Transfer Certificate</option>
-                    <option value="OTHER">Other</option>
+                    <option th:each="entry : ${documentTypeOptions.entrySet()}"
+                            th:value="${entry.key}"
+                            th:text="${entry.value}">
+                        Document
+                    </option>
                 </select>
             </div>
             <div>

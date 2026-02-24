@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -21,6 +22,7 @@ public class GlobalWebExceptionHandler {
             MultipartException.class,
             MissingServletRequestParameterException.class,
             MethodArgumentNotValidException.class,
+            DataIntegrityViolationException.class,
             IllegalArgumentException.class,
             IllegalStateException.class
     })
@@ -42,6 +44,9 @@ public class GlobalWebExceptionHandler {
         if (uri != null && uri.matches("^/courses/\\d+/enroll$")) {
             return "redirect:" + uri;
         }
+        if (uri != null && (uri.equals("/director/courses") || uri.matches("^/director/courses/\\d+$"))) {
+            return "redirect:/director/courses/new";
+        }
         return "redirect:/dashboard";
     }
 
@@ -50,12 +55,31 @@ public class GlobalWebExceptionHandler {
                                    HttpServletRequest request,
                                    RedirectAttributes redirectAttributes) {
         log.error("Unexpected web error at {}: {}", request.getRequestURI(), ex.getMessage(), ex);
-        redirectAttributes.addFlashAttribute("errorMessage",
-                "Unexpected error occurred. Please try again. If issue continues, contact admin.");
+        String message = buildSafeMessage(ex);
+        redirectAttributes.addFlashAttribute("errorMessage", message);
+        String uri = request.getRequestURI();
+        if (uri != null && (uri.equals("/director/courses") || uri.matches("^/director/courses/\\d+$"))) {
+            return "redirect:/director/courses/new";
+        }
         String referer = request.getHeader("Referer");
         if (referer != null && !referer.isBlank()) {
             return "redirect:" + referer;
         }
         return "redirect:/dashboard";
+    }
+
+    private String buildSafeMessage(Exception ex) {
+        Throwable current = ex;
+        while (current.getCause() != null && current.getCause() != current) {
+            current = current.getCause();
+        }
+        String msg = current.getMessage();
+        if (msg == null || msg.isBlank()) {
+            msg = ex.getMessage();
+        }
+        if (msg == null || msg.isBlank()) {
+            return "Unexpected error occurred. Please verify all course fields and try again.";
+        }
+        return msg;
     }
 }

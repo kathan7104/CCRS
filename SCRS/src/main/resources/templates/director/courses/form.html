@@ -27,6 +27,8 @@
         <main class="dashboard-main">
             <section class="dashboard-section">
                 <h2 th:text="${course.id == null ? 'Add Course' : 'Edit Course'}">Course Form</h2>
+                <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+                <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
 
                 <form th:action="${course.id == null} ? @{/director/courses} : @{/director/courses/{id}(id=${course.id})}" method="post" enctype="multipart/form-data">
                     <div class="form-row">
@@ -114,6 +116,7 @@
                             <option value="">Select existing schema (optional)</option>
                             <option th:each="s : ${teachingSchemas}"
                                     th:value="${s.id}"
+                                    th:attr="data-department=${s.department},data-program=${s.programName}"
                                     th:text="${s.programName + ' | ' + s.department + ' | v' + s.schemaVersion + ' | ' + s.fileName}"
                                     th:selected="${course.teachingSchema != null and course.teachingSchema.id == s.id}"></option>
                         </select>
@@ -126,16 +129,16 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="prerequisiteIds">Prerequisites</label>
-                        <select id="prerequisiteIds" name="prerequisiteIds" multiple size="5">
-                            <option th:each="c : ${allCourses}"
-                                    th:value="${c.id}"
-                                    th:text="${c.code + ' - ' + c.name}"
-                                    th:selected="${course.prerequisites != null and course.prerequisites.contains(c)}">
-                                CS101 - Intro
+                        <label for="requiredDocumentTypes">Required Enrollment Documents</label>
+                        <select id="requiredDocumentTypes" name="requiredDocumentTypes" multiple size="8">
+                            <option th:each="entry : ${documentTypeOptions.entrySet()}"
+                                    th:value="${entry.key}"
+                                    th:text="${entry.value}"
+                                    th:selected="${course.requiredDocumentTypeList.contains(entry.key)}">
+                                Document Type
                             </option>
                         </select>
-                        <p class="muted" style="margin-top: 0.4rem;">Hold Ctrl/Command to select multiple.</p>
+                        <p class="muted" style="margin-top: 0.4rem;">Hold Ctrl/Command to select multiple. Students must upload all selected document types for enrollment.</p>
                     </div>
 
                     <div class="form-row align-center">
@@ -210,8 +213,9 @@
                         option.hidden = false;
                         return;
                     }
-                    const txt = option.textContent.toLowerCase();
-                    const matches = txt.includes(selectedDepartment) && txt.includes(selectedProgram);
+                    const optionDepartment = (option.dataset.department || '').trim().toLowerCase();
+                    const optionProgram = (option.dataset.program || '').trim().toLowerCase();
+                    const matches = optionDepartment === selectedDepartment && optionProgram === selectedProgram;
                     option.hidden = !matches;
                 });
             }
