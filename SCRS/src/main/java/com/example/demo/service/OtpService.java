@@ -18,7 +18,7 @@ public class OtpService {
     private static final int VALID_MINUTES = 10;
     private final OtpVerificationRepository otpRepository;
     private final JavaMailSender mailSender;
-    @Value("${spring.mail.username: noreply@ccrs.edu}")
+    @Value("${spring.mail.username:noreply@ccrs.edu}")
     private String fromEmail;
     @Value("${ccrs.otp.send-email: true}")
     private boolean sendEmailOtp;
@@ -77,8 +77,8 @@ public class OtpService {
         if (sendEmailOtp) {
             try {
                 SimpleMailMessage msg = new SimpleMailMessage();
-                msg.setFrom(fromEmail);
-                msg.setTo(to);
+                msg.setFrom(resolveFromAddress());
+                msg.setTo(to == null ? "" : to.trim());
                 msg.setSubject(subject);
                 msg.setText(body);
                 mailSender.send(msg);
@@ -119,5 +119,10 @@ public class OtpService {
     public void invalidateOtpsForIdentifier(String identifier, OtpVerification.OtpType type) {
         // 1. Get or save data in the database
         otpRepository.markUsedByIdentifierAndType(identifier, type);
+    }
+
+    private String resolveFromAddress() {
+        String normalized = fromEmail == null ? "" : fromEmail.trim();
+        return normalized.isBlank() ? "noreply@ccrs.edu" : normalized;
     }
 }

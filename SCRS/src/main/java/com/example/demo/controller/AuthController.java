@@ -2,6 +2,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.*;
 import com.example.demo.entity.OtpVerification;
 import com.example.demo.entity.User;
+import com.example.demo.repository.OtpVerificationRepository;
 import com.example.demo.service.OtpService;
 import com.example.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.Optional;
 @Controller
 @RequestMapping("/auth")
@@ -26,12 +28,17 @@ public class AuthController {
     private final UserService userService;
     private final OtpService otpService;
     private final PasswordEncoder passwordEncoder;
+    private final OtpVerificationRepository otpVerificationRepository;
     @Value("${ccrs.otp.send-email: true}")
     private boolean sendEmailOtp;
-    public AuthController(UserService userService, OtpService otpService, PasswordEncoder passwordEncoder) {
+    public AuthController(UserService userService,
+                          OtpService otpService,
+                          PasswordEncoder passwordEncoder,
+                          OtpVerificationRepository otpVerificationRepository) {
         this.userService = userService;
         this.otpService = otpService;
         this.passwordEncoder = passwordEncoder;
+        this.otpVerificationRepository = otpVerificationRepository;
     }
     @GetMapping("/login")
     public String loginPage(Model model,
@@ -344,9 +351,13 @@ public class AuthController {
         }
         User user = userOpt.get();
         // 8. Ask the service to do the main work
-        otpService.createForgotPasswordOtp(user.getEmail(), user.getId());
-        // 9. Show a one-time message on the next page
-        redirectAttributes.addFlashAttribute("success", "OTP sent to your email. Enter it below to reset password.");
+        OtpVerification record = otpService.createForgotPasswordOtp(user.getEmail(), user.getId());
+        if (!sendEmailOtp) {
+            redirectAttributes.addFlashAttribute("success", "OTP generated (email sending disabled). Use the OTP below to reset password.");
+        } else {
+            redirectAttributes.addFlashAttribute("success", "OTP sent to your email. If mail delivery fails, use the OTP shown below.");
+        }
+        redirectAttributes.addFlashAttribute("devOtpEmail", record.getOtp());
         // 10. Show a one-time message on the next page
         redirectAttributes.addFlashAttribute("email", user.getEmail());
         // 11. Send the result back to the screen
@@ -360,6 +371,14 @@ public class AuthController {
         model.addAttribute("resetPasswordRequest", req);
         // 2. Put data on the page so the user can see it
         model.addAttribute("email", email);
+        if (email != null && !email.isBlank() && !model.containsAttribute("devOtpEmail")) {
+            otpVerificationRepository
+                    .findTopByIdentifierAndOtpTypeAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(
+                            email,
+                            OtpVerification.OtpType.FORGOT_PASSWORD,
+                            LocalDateTime.now())
+                    .ifPresent(record -> model.addAttribute("devOtpEmail", record.getOtp()));
+        }
         // 3. Send the result back to the screen
         return "auth/reset-password";
     }

@@ -44,7 +44,13 @@
                             <select id="programName" name="programName" required th:attr="data-current=${course.programName}">
                                 <option value="">Select program</option>
                                 <option th:each="p : ${programNames}" th:value="${p}" th:text="${p}" th:selected="${course.programName == p}"></option>
+                                <option value="__OTHER__" th:selected="${course.programName != null and !#lists.contains(programNames, course.programName)}">Other</option>
                             </select>
+                            <input id="programNameCustom"
+                                   type="text"
+                                   name="programNameCustom"
+                                   placeholder="Enter new program name"
+                                   style="margin-top: 0.6rem; display: none;"/>
                         </div>
                     </div>
 
@@ -158,6 +164,7 @@
         (function () {
             const departmentInput = document.getElementById('department');
             const programInput = document.getElementById('programName');
+            const programCustomInput = document.getElementById('programNameCustom');
             const levelInput = document.getElementById('level');
             const programLevelInput = document.getElementById('programLevel');
             const durationInput = document.getElementById('durationSemesters');
@@ -167,6 +174,8 @@
             const nameInput = document.getElementById('name');
             const batchYearInput = document.getElementById('batchYear');
             const isEditMode = window.location.pathname.includes('/edit');
+            const form = programInput.closest('form');
+            const OTHER_PROGRAM_VALUE = '__OTHER__';
 
             const defaultsByProgram = {
                 BCA: { programLevel: 'UG', level: 'UG', durationSemesters: 6, qualification: '12th pass with Mathematics/Computer Science (50%+)' },
@@ -180,11 +189,27 @@
                 MCOM: { programLevel: 'PG', level: 'PG', durationSemesters: 4, qualification: 'B.Com or equivalent with minimum 50%' }
             };
 
+            function getEffectiveProgramValue() {
+                if (programInput.value === OTHER_PROGRAM_VALUE) {
+                    return (programCustomInput.value || '').trim();
+                }
+                return (programInput.value || '').trim();
+            }
+
+            function syncProgramInputState() {
+                const isOther = programInput.value === OTHER_PROGRAM_VALUE;
+                programCustomInput.style.display = isOther ? 'block' : 'none';
+                programCustomInput.required = isOther;
+                if (!isOther) {
+                    programCustomInput.value = '';
+                }
+            }
+
             function applyProgramDefaults() {
-                const program = (programInput.value || '').trim().toUpperCase();
+                const programSource = getEffectiveProgramValue();
+                const program = programSource.toUpperCase();
                 const defaults = defaultsByProgram[program];
                 if (program) {
-                    const programSource = programInput.value;
                     nameInput.value = programSource;
                     if (!isEditMode) {
                         const initials = (programSource || '').toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').trim().split(/\s+/).map((p) => p[0]).join('').slice(0, 8);
@@ -206,7 +231,7 @@
 
             function filterSchemas() {
                 const selectedDepartment = (departmentInput.value || '').trim().toLowerCase();
-                const selectedProgram = (programInput.value || '').trim().toLowerCase();
+                const selectedProgram = getEffectiveProgramValue().toLowerCase();
                 const options = schemaSelect.querySelectorAll('option');
                 options.forEach((option, index) => {
                     if (index === 0) {
@@ -221,6 +246,11 @@
             }
 
             programInput.addEventListener('change', function () {
+                syncProgramInputState();
+                applyProgramDefaults();
+                filterSchemas();
+            });
+            programCustomInput.addEventListener('input', function () {
                 applyProgramDefaults();
                 filterSchemas();
             });
@@ -230,6 +260,19 @@
             });
             batchYearInput.addEventListener('input', applyProgramDefaults);
 
+            const currentProgram = (programInput.dataset.current || '').trim();
+            if (currentProgram && !Array.from(programInput.options).some((opt) => opt.value === currentProgram)) {
+                programInput.value = OTHER_PROGRAM_VALUE;
+                programCustomInput.value = currentProgram;
+            }
+
+            form.addEventListener('submit', function () {
+                if (programInput.value === OTHER_PROGRAM_VALUE) {
+                    programCustomInput.value = (programCustomInput.value || '').trim();
+                }
+            });
+
+            syncProgramInputState();
             filterSchemas();
             applyProgramDefaults();
         })();

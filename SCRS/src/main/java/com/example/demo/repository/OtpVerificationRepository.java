@@ -20,5 +20,10 @@ public interface OtpVerificationRepository extends JpaRepository<OtpVerification
     @Modifying
     @Query("UPDATE OtpVerification o SET o.used = true WHERE o.identifier = :identifier AND o.otpType = :type")
     void markUsedByIdentifierAndType(@Param("identifier") String identifier, @Param("type") OtpVerification.OtpType type);
+    Optional<OtpVerification> findTopByIdentifierAndOtpTypeAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(
+            String identifier,
+            OtpVerification.OtpType otpType,
+            LocalDateTime now
+    );
     void deleteByExpiresAtBefore(LocalDateTime cutOff);
 }

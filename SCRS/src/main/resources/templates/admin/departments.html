@@ -44,6 +44,7 @@
                             <form th:if="${d.active}" th:action="@{/admin/departments/{id}/deactivate(id=${d.id})}" method="post" class="inline-form">
                                 <button class="btn btn-sm btn-outline" type="submit">Deactivate</button>
                             </form>
+                            <a th:if="${!d.active}" th:href="@{/admin/departments/{id}/activate(id=${d.id})}" class="btn btn-sm btn-primary">Activate</a>
                         </td>
                     </tr>
                     </tbody>

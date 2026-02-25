@@ -208,6 +208,16 @@ public class AdminController {
         return "redirect:/admin/departments";
     }
 
+    @RequestMapping(value = {"/departments/{id}/activate", "/departments/{id}/active"}, method = {RequestMethod.POST, RequestMethod.GET})
+    public String activateDepartment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Department not found"));
+        department.setActive(true);
+        departmentRepository.save(department);
+        redirectAttributes.addFlashAttribute("successMessage", "Department activated.");
+        return "redirect:/admin/departments";
+    }
+
     private List<User> getManagedUsers() {
         return userRepository.findAll().stream()
                 .filter(u -> u.getRoles().stream().anyMatch(MANAGED_ROLES::contains))

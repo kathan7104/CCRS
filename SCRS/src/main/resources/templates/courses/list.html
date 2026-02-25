@@ -56,7 +56,7 @@
                                 <td th:text="${course.code}">CS101</td>
                                 <td th:text="${course.name}">Intro to CS</td>
                                 <td th:text="${course.department}">Engineering</td>
-                                <td th:text="${course.programName}">BCA</td>
+                                <td th:text="${(course.programName == '__OTHER__' or #strings.equalsIgnoreCase(course.programName, 'OTHER')) ? course.name : course.programName}">BCA</td>
                                 <td th:text="${course.programLevel}">UG</td>
                                 <td th:text="${course.durationSemesters + ' Semesters'}">6 Semesters</td>
                                 <td th:text="${course.credits}">3</td>

@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 @Controller
 @RequestMapping("/director/courses")
 public class DirectorCourseController {
+    private static final String OTHER_PROGRAM_VALUE = "__OTHER__";
     private static final String TEACHING_SCHEMA_UPLOAD_DIR = "uploads/teaching-schemas/";
     private static final List<String> PROGRAM_NAMES = List.of(
             "BCA",
@@ -86,12 +87,13 @@ public class DirectorCourseController {
     @PostMapping
     public String create(@ModelAttribute Course course,
                          @RequestParam(name = "requiredDocumentTypes", required = false) List<String> requiredDocumentTypes,
+                         @RequestParam(name = "programNameCustom", required = false) String programNameCustom,
                          @RequestParam(name = "existingTeachingSchemaId", required = false) Long existingTeachingSchemaId,
                          @RequestParam(name = "teachingSchemaFile", required = false) MultipartFile teachingSchemaFile,
                          RedirectAttributes redirectAttributes) {
         try {
             course.setDepartment(cleanText(course.getDepartment()));
-            course.setProgramName(cleanText(course.getProgramName()));
+            course.setProgramName(resolveProgramName(course.getProgramName(), programNameCustom));
             course.setName(course.getProgramName());
             if (course.getBatchYear() == null) {
                 course.setBatchYear(LocalDate.now().getYear());
@@ -130,6 +132,7 @@ public class DirectorCourseController {
     public String update(@PathVariable Long id,
                          @ModelAttribute Course form,
                          @RequestParam(name = "requiredDocumentTypes", required = false) List<String> requiredDocumentTypes,
+                         @RequestParam(name = "programNameCustom", required = false) String programNameCustom,
                          @RequestParam(name = "existingTeachingSchemaId", required = false) Long existingTeachingSchemaId,
                          @RequestParam(name = "teachingSchemaFile", required = false) MultipartFile teachingSchemaFile,
                          RedirectAttributes redirectAttributes) {
@@ -137,7 +140,7 @@ public class DirectorCourseController {
             Course course = courseRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid course Id:" + id));
             course.setDepartment(cleanText(form.getDepartment()));
-            course.setProgramName(cleanText(form.getProgramName()));
+            course.setProgramName(resolveProgramName(form.getProgramName(), programNameCustom));
             course.setName(course.getProgramName());
             course.setBatchYear(form.getBatchYear());
             if (course.getBatchYear() == null) {
@@ -292,6 +295,21 @@ public class DirectorCourseController {
         return value == null ? "" : value.trim();
     }
 
+    private String resolveProgramName(String selectedProgram, String customProgram) {
+        String selected = cleanText(selectedProgram);
+        if (isOtherProgramSelection(selected)) {
+            selected = cleanText(customProgram);
+        }
+        if (selected.isBlank()) {
+            throw new IllegalArgumentException("Program name is required.");
+        }
+        return selected;
+    }
+
+    private boolean isOtherProgramSelection(String value) {
+        return OTHER_PROGRAM_VALUE.equals(value) || "OTHER".equalsIgnoreCase(value);
+    }
+
     private String nullSafe(String value) {
         return value == null ? "" : value;
     }
@@ -308,11 +326,13 @@ public class DirectorCourseController {
                 .map(Course::getProgramName)
                 .map(this::cleanText)
                 .filter(s -> !s.isBlank())
+                .filter(s -> !isOtherProgramSelection(s))
                 .forEach(values::add);
         teachingSchemaRepository.findAll().stream()
                 .map(TeachingSchema::getProgramName)
                 .map(this::cleanText)
                 .filter(s -> !s.isBlank())
+                .filter(s -> !isOtherProgramSelection(s))
                 .forEach(values::add);
         List<String> ordered = new ArrayList<>(values);
         ordered.sort(String.CASE_INSENSITIVE_ORDER);
