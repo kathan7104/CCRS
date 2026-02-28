@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Invoice Operations - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-staff">
+<header class="dashboard-header">
+    <h1>Invoice Operations</h1>
+    <nav class="dashboard-nav">
+        <a th:href="@{/staff/dashboard}" class="nav-link">Dashboard</a>
+        <a th:href="@{/staff/fee-structures}" class="nav-link">Fee Structures</a>
+        <a th:href="@{/staff/invoices}" class="nav-link active">Invoice Ops</a>
+        <a th:href="@{/staff/reports}" class="nav-link">Financial Reports</a>
+    </nav>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <h2>Generate Semester Invoice</h2>
+            <p class="muted">Generate semester invoice only after enrollment approval.</p>
+            <form th:action="@{/staff/invoices/generate}" method="post" class="form-row">
+                <div class="form-group">
+                    <label>Student</label>
+                    <select name="studentId" required>
+                        <option value="">Select student</option>
+                        <option th:each="s : ${students}" th:value="${s.id}" th:text="${s.fullName + ' (' + s.email + ')'}">Student</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Semester</label>
+                    <input type="number" name="semester" min="1" value="1" required/>
+                </div>
+                <div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" type="submit">Generate</button></div>
+            </form>
+            <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+            <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2>Generated Invoices</h2>
+            <div class="table-wrap">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Invoice</th><th>Student</th><th>Status</th><th>Total</th><th>Paid</th><th>Due</th><th>Issued</th><th>Due Date</th><th>Offline Payment</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="row : ${invoiceRows}">
+                        <td th:text="${row.invoiceNumber}">INV</td>
+                        <td>
+                            <div th:text="${row.studentName}">Student</div>
+                            <small th:text="${row.studentEmail}">mail@example.com</small>
+                        </td>
+                        <td><span class="status-badge" th:text="${row.status}" th:classappend="${' ' + #strings.toLowerCase(row.status)}">DUE</span></td>
+                        <td th:text="${row.totalAmount}">0.00</td>
+                        <td th:text="${row.paidAmount}">0.00</td>
+                        <td th:text="${row.dueAmount}">0.00</td>
+                        <td th:text="${row.issuedAt != null ? #temporals.format(row.issuedAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                        <td th:text="${row.dueDate != null ? #temporals.format(row.dueDate, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                        <td>
+                            <form th:if="${row.status == 'DUE' or row.status == 'PARTIAL'}"
+                                  th:action="@{/staff/invoices/{invoiceId}/offline-payment(invoiceId=${row.invoiceId})}"
+                                  method="post" class="inline-form">
+                                <select name="method" style="max-width: 120px; margin-bottom: 0.35rem;">
+                                    <option value="CASH">CASH</option>
+                                    <option value="CHEQUE">CHEQUE</option>
+                                </select>
+                                <input type="number" step="0.01" min="0.01" name="amount" placeholder="Amount" style="max-width: 120px; margin-bottom: 0.35rem;"/>
+                                <button class="btn btn-sm btn-primary" type="submit">Record</button>
+                            </form>
+                            <span th:if="${row.status == 'PAID'}" class="muted">Fully Paid</span>
+                            <span th:if="${row.status == 'CANCELLED'}" class="muted">Cancelled</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(invoiceRows)}">
+                        <td colspan="9" style="text-align: center; color: #64748b;">No invoices generated yet.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>

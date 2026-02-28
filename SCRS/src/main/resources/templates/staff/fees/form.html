@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Fee Structure Form - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-staff">
+<header class="dashboard-header">
+    <h1>Fee Structure Form</h1>
+    <nav class="dashboard-nav"><a th:href="@{/staff/fee-structures}" class="nav-link active">Back</a></nav>
+</header>
+<div class="dashboard-layout">
+    <main class="dashboard-main">
+        <section class="dashboard-section">
+            <form th:action="${fee.id == null} ? @{/staff/fee-structures} : @{/staff/fee-structures/{id}(id=${fee.id})}" method="post">
+                <div class="form-row">
+                    <div class="form-group"><label>Name</label><input type="text" name="name" th:value="${fee.name}" required/></div>
+                    <div class="form-group"><label>Effective From</label><input type="date" name="effectiveFrom" th:value="${fee.effectiveFrom}" required/></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Cost Per Credit</label><input type="number" step="0.01" min="0" name="costPerCredit" th:value="${fee.costPerCredit}" required/></div>
+                    <div class="form-group"><label>Lab Fee</label><input type="number" step="0.01" min="0" name="labFee" th:value="${fee.labFee}" required/></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Differential Fee</label><input type="number" step="0.01" min="0" name="differentialFee" th:value="${fee.differentialFee}" required/></div>
+                    <div class="form-group"><label>Late Penalty</label><input type="number" step="0.01" min="0" name="latePenalty" th:value="${fee.latePenalty}" required/></div>
+                </div>
+                <div class="form-group">
+                    <label><input type="checkbox" name="active" value="true" th:checked="${fee.active}"/> Set as active structure</label>
+                </div>
+                <button class="btn btn-primary" type="submit">Save Structure</button>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>

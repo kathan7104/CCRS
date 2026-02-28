@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Course Form - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body class="role-director">
+    <header class="dashboard-header">
+        <h1>College Course Registration System</h1>
+        <nav class="dashboard-nav">
+            <a th:href="@{/director/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/director/courses}" class="nav-link active">Courses</a>
+            <a th:href="@{/director/users}" class="nav-link">Faculty/Students</a>
+            <a th:href="@{/director/assignments}" class="nav-link">Assignments</a>
+        </nav>
+        <div class="user-info">
+            <span style="margin-right: 1rem;">Welcome, <span th:text="${#authentication.name}">Director</span></span>
+            <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-outline btn-sm">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <main class="dashboard-main">
+            <section class="dashboard-section">
+                <h2 th:text="${course.id == null ? 'Add Course' : 'Edit Course'}">Course Form</h2>
+                <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+                <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
+
+                <form th:action="${course.id == null} ? @{/director/courses} : @{/director/courses/{id}(id=${course.id})}" method="post" enctype="multipart/form-data">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="department">Department</label>
+                            <select id="department" name="department" required th:attr="data-current=${course.department}">
+                                <option value="">Select department</option>
+                                <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${course.department == d}"></option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="programName">Program</label>
+                            <select id="programName" name="programName" required th:attr="data-current=${course.programName}">
+                                <option value="">Select program</option>
+                                <option th:each="p : ${programNames}" th:value="${p}" th:text="${p}" th:selected="${course.programName == p}"></option>
+                                <option value="__OTHER__" th:selected="${course.programName != null and !#lists.contains(programNames, course.programName)}">Other</option>
+                            </select>
+                            <input id="programNameCustom"
+                                   type="text"
+                                   name="programNameCustom"
+                                   placeholder="Enter new program name"
+                                   style="margin-top: 0.6rem; display: none;"/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="code">Course Code</label>
+                            <input id="code" type="text" name="code" th:value="${course.code}" readonly class="readonly"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Course Name</label>
+                            <input id="name" type="text" name="name" th:value="${course.name}" readonly class="readonly"/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="batchYear">Batch Year</label>
+                            <input id="batchYear" type="number" name="batchYear" th:value="${course.batchYear}" required min="2000" max="2100"/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="programLevel">Program Level</label>
+                            <input id="programLevel" type="text" name="programLevel" th:value="${course.programLevel}" required/>
+                        </div>
+                        <div class="form-group">
+                            <label for="level">Level (Display)</label>
+                            <input id="level" type="text" name="level" th:value="${course.level}" required/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="durationSemesters">Program Duration (Semesters)</label>
+                            <input id="durationSemesters" type="number" name="durationSemesters" th:value="${course.durationSemesters}" required min="1"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="requiredQualification">Required Qualification</label>
+                            <input id="requiredQualification" type="text" name="requiredQualification" th:value="${course.requiredQualification}" required/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="capacity">Capacity</label>
+                            <input id="capacity" type="number" name="capacity" th:value="${course.capacity}" required min="0"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="remainingSeats">Remaining Seats</label>
+                            <input id="remainingSeats" type="number" name="remainingSeats" th:value="${course.remainingSeats}" min="0"/>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="credits">Credits</label>
+                            <input id="credits" type="number" name="credits" th:value="${course.credits}" required min="0"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="fee">Fee (INR)</label>
+                            <input id="fee" type="number" name="fee" th:value="${course.fee}" required min="0"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="existingTeachingSchemaId">Use Existing Teaching Schema Document</label>
+                        <select id="existingTeachingSchemaId" name="existingTeachingSchemaId">
+                            <option value="">Select existing schema (optional)</option>
+                            <option th:each="s : ${teachingSchemas}"
+                                    th:value="${s.id}"
+                                    th:attr="data-department=${s.department},data-program=${s.programName}"
+                                    th:text="${s.programName + ' | ' + s.department + ' | v' + s.schemaVersion + ' | ' + s.fileName}"
+                                    th:selected="${course.teachingSchema != null and course.teachingSchema.id == s.id}"></option>
+                        </select>
+                        <p class="muted" style="margin-top: 0.4rem;">If schema changed, upload a new document below. New upload creates a new schema version.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="teachingSchemaFile">Upload New Teaching Schema (PDF/DOC/DOCX)</label>
+                        <input id="teachingSchemaFile" type="file" name="teachingSchemaFile" accept=".pdf,.doc,.docx"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="requiredDocumentTypes">Required Enrollment Documents</label>
+                        <select id="requiredDocumentTypes" name="requiredDocumentTypes" multiple size="8">
+                            <option th:each="entry : ${documentTypeOptions.entrySet()}"
+                                    th:value="${entry.key}"
+                                    th:text="${entry.value}"
+                                    th:selected="${course.requiredDocumentTypeList.contains(entry.key)}">
+                                Document Type
+                            </option>
+                        </select>
+                        <p class="muted" style="margin-top: 0.4rem;">Hold Ctrl/Command to select multiple. Students must upload all selected document types for enrollment.</p>
+                    </div>
+
+                    <div class="form-row align-center">
+                        <div class="form-group flex-1">
+                            <a th:href="@{/director/courses}" class="btn btn-outline">Cancel</a>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Save Course</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (function () {
+            const departmentInput = document.getElementById('department');
+            const programInput = document.getElementById('programName');
+            const programCustomInput = document.getElementById('programNameCustom');
+            const levelInput = document.getElementById('level');
+            const programLevelInput = document.getElementById('programLevel');
+            const durationInput = document.getElementById('durationSemesters');
+            const qualificationInput = document.getElementById('requiredQualification');
+            const schemaSelect = document.getElementById('existingTeachingSchemaId');
+            const codeInput = document.getElementById('code');
+            const nameInput = document.getElementById('name');
+            const batchYearInput = document.getElementById('batchYear');
+            const isEditMode = window.location.pathname.includes('/edit');
+            const form = programInput.closest('form');
+            const OTHER_PROGRAM_VALUE = '__OTHER__';
+
+            const defaultsByProgram = {
+                BCA: { programLevel: 'UG', level: 'UG', durationSemesters: 6, qualification: '12th pass with Mathematics/Computer Science (50%+)' },
+                MCA: { programLevel: 'PG', level: 'PG', durationSemesters: 4, qualification: 'Graduation with Mathematics/CS/IT (50%+)' },
+                BBA: { programLevel: 'UG', level: 'UG', durationSemesters: 6, qualification: '12th pass (Commerce/Any stream) with minimum 50%' },
+                MBA: { programLevel: 'PG', level: 'PG', durationSemesters: 4, qualification: 'Graduation in any discipline with minimum 50%' },
+                BTECH: { programLevel: 'UG', level: 'UG', durationSemesters: 8, qualification: '12th pass (PCM) with minimum 60%' },
+                MTECH: { programLevel: 'PG', level: 'PG', durationSemesters: 4, qualification: 'B.Tech/BE in relevant branch (60%+)' },
+                BHM: { programLevel: 'UG', level: 'UG', durationSemesters: 6, qualification: '12th pass (any stream) with minimum 45%' },
+                BCOM: { programLevel: 'UG', level: 'UG', durationSemesters: 6, qualification: '12th pass with minimum 45%' },
+                MCOM: { programLevel: 'PG', level: 'PG', durationSemesters: 4, qualification: 'B.Com or equivalent with minimum 50%' }
+            };
+
+            function getEffectiveProgramValue() {
+                if (programInput.value === OTHER_PROGRAM_VALUE) {
+                    return (programCustomInput.value || '').trim();
+                }
+                return (programInput.value || '').trim();
+            }
+
+            function syncProgramInputState() {
+                const isOther = programInput.value === OTHER_PROGRAM_VALUE;
+                programCustomInput.style.display = isOther ? 'block' : 'none';
+                programCustomInput.required = isOther;
+                if (!isOther) {
+                    programCustomInput.value = '';
+                }
+            }
+
+            function applyProgramDefaults() {
+                const programSource = getEffectiveProgramValue();
+                const program = programSource.toUpperCase();
+                const defaults = defaultsByProgram[program];
+                if (program) {
+                    nameInput.value = programSource;
+                    if (!isEditMode) {
+                        const initials = (programSource || '').toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').trim().split(/\s+/).map((p) => p[0]).join('').slice(0, 8);
+                        const year = batchYearInput.value || new Date().getFullYear();
+                        codeInput.value = initials + '-' + year + '-AUTO';
+                    }
+                } else if (!isEditMode) {
+                    nameInput.value = '';
+                    codeInput.value = '';
+                }
+                if (!defaults) {
+                    return;
+                }
+                programLevelInput.value = defaults.programLevel;
+                levelInput.value = defaults.level;
+                durationInput.value = defaults.durationSemesters;
+                qualificationInput.value = defaults.qualification;
+            }
+
+            function filterSchemas() {
+                const selectedDepartment = (departmentInput.value || '').trim().toLowerCase();
+                const selectedProgram = getEffectiveProgramValue().toLowerCase();
+                const options = schemaSelect.querySelectorAll('option');
+                options.forEach((option, index) => {
+                    if (index === 0) {
+                        option.hidden = false;
+                        return;
+                    }
+                    const optionDepartment = (option.dataset.department || '').trim().toLowerCase();
+                    const optionProgram = (option.dataset.program || '').trim().toLowerCase();
+                    const matches = optionDepartment === selectedDepartment && optionProgram === selectedProgram;
+                    option.hidden = !matches;
+                });
+            }
+
+            programInput.addEventListener('change', function () {
+                syncProgramInputState();
+                applyProgramDefaults();
+                filterSchemas();
+            });
+            programCustomInput.addEventListener('input', function () {
+                applyProgramDefaults();
+                filterSchemas();
+            });
+
+            departmentInput.addEventListener('change', function () {
+                filterSchemas();
+            });
+            batchYearInput.addEventListener('input', applyProgramDefaults);
+
+            const currentProgram = (programInput.dataset.current || '').trim();
+            if (currentProgram && !Array.from(programInput.options).some((opt) => opt.value === currentProgram)) {
+                programInput.value = OTHER_PROGRAM_VALUE;
+                programCustomInput.value = currentProgram;
+            }
+
+            form.addEventListener('submit', function () {
+                if (programInput.value === OTHER_PROGRAM_VALUE) {
+                    programCustomInput.value = (programCustomInput.value || '').trim();
+                }
+            });
+
+            syncProgramInputState();
+            filterSchemas();
+            applyProgramDefaults();
+        })();
+    </script>
+</body>
+</html>

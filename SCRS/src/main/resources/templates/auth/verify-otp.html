@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Verify OTP - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-card">
+            <h1 th:text="${otpType == 'EMAIL' ? 'Verify Email' : (otpType == 'MOBILE' ? 'Verify Mobile' : 'Verify OTP')}">Verify OTP</h1>
+            <p class="subtitle" th:if="${otpType == 'EMAIL'}">Enter the 6-digit OTP sent to your email.</p>
+            <p class="subtitle" th:if="${otpType == 'MOBILE'}">Enter the 6-digit OTP sent to your mobile.</p>
+            <p class="subtitle" th:if="${otpType != 'EMAIL' and otpType != 'MOBILE'}">Enter the 6-digit OTP.</p>
+
+            <p th:if="${success}" class="msg success" th:text="${success}"></p>
+            <p th:if="${error}" class="msg error" th:text="${error}"></p>
+
+            <form th:action="@{/auth/verify-otp}" th:object="${verifyOtpRequest}" method="post" class="auth-form">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" th:field="*{identifier}"/>
+                <input type="hidden" th:field="*{otpType}"/>
+                <div class="form-group">
+                    <label for="identifierDisplay" th:text="${otpType == 'EMAIL' ? 'Email' : (otpType == 'MOBILE' ? 'Mobile' : 'Identifier')}">Identifier</label>
+                    <input type="text" id="identifierDisplay" th:value="${identifier}" readonly class="readonly"/>
+                </div>
+                <div class="form-group">
+                    <label for="otp">OTP (6 digits)</label>
+                    <input type="text" id="otp" th:field="*{otp}" required maxlength="6" pattern="[0-9]{6}"
+                           placeholder="000000" autocomplete="one-time-code"/>
+                    <span th:if="${#fields.hasErrors('otp')}" th:errors="*{otp}" class="field-error"></span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Verify</button>
+                </div>
+                <div class="auth-links">
+                    <a th:href="@{/auth/login}">Back to login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

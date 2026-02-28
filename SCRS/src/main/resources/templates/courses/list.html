@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Course List - CCRS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1>College Course Registration System</h1>
+        <nav class="dashboard-nav">
+            <a th:href="@{/dashboard}" class="nav-link">Home</a>
+            <a th:href="@{/courses}" class="nav-link active">Courses</a>
+            <a th:if="${isStudent}" th:href="@{/payments}" class="nav-link">Payments</a>
+        </nav>
+        <div class="user-info">
+            <span style="margin-right: 1rem;">Welcome, <span th:text="${userName != null ? userName : #authentication.name}">Student</span></span>
+            <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-outline btn-sm">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="dashboard-layout">
+        <main class="dashboard-main">
+            <section class="dashboard-section">
+                <h2>Available Courses</h2>
+
+                <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
+                <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
+
+                <div th:if="${isAuthority}" style="margin: 0 0 1rem 0;">
+                    <a th:href="@{/director/courses}" class="btn btn-primary">Manage Courses</a>
+                </div>
+                
+                <div class="table-wrap">
+                    <table class="data-table" id="coursesTable">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Program</th>
+                                <th>Level</th>
+                                <th>Duration</th>
+                                <th>Credits</th>
+                                <th>Fee (INR)</th>
+                                <th>Required Qualification</th>
+                                <th>Availability</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="course : ${courses}" class="course-row">
+                                <td th:text="${course.code}">CS101</td>
+                                <td th:text="${course.name}">Intro to CS</td>
+                                <td th:text="${course.department}">Engineering</td>
+                                <td th:text="${(course.programName == '__OTHER__' or #strings.equalsIgnoreCase(course.programName, 'OTHER')) ? course.name : course.programName}">BCA</td>
+                                <td th:text="${course.programLevel}">UG</td>
+                                <td th:text="${course.durationSemesters + ' Semesters'}">6 Semesters</td>
+                                <td th:text="${course.credits}">3</td>
+                                <td th:text="${course.fee}">120000</td>
+                                <td th:text="${course.requiredQualification}">12th pass</td>
+                                <td>
+                                    <span th:if="${course.remainingSeats > 0}" class="status-badge enrolled">
+                                        <span th:text="${course.remainingSeats}">20</span> / <span th:text="${course.capacity}">50</span>
+                                    </span>
+                                    <span th:if="${course.remainingSeats == 0}" class="status-badge pending">Full</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/courses/{id}(id=${course.id})}" class="btn btn-sm btn-primary"
+                                       th:text="${isAuthority} ? 'View Details' : 'View & Apply'">View & Apply</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
