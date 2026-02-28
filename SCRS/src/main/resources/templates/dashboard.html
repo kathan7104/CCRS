@@ -4,12 +4,12 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Dashboard - CCRS</title>
+    <title>Dashboard - Northbridge Institute</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
 </head>
 <body>
     <header class="dashboard-header">
-        <h1>College Course Registration System</h1>
+        <h1>Northbridge Institute of Technology Student Portal</h1>
         <nav class="dashboard-nav">
             <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPath == '/dashboard' ? 'active' : ''}">Home</a>
             <a sec:authorize="!hasAuthority('ROLE_AUTHORITY_FACULTY')" th:href="@{/courses}" class="nav-link" th:classappend="${currentPath == '/courses' ? 'active' : ''}">Courses</a>
@@ -29,7 +29,7 @@
         <main class="dashboard-main">
             <section class="dashboard-section">
                 <h2>Dashboard Overview</h2>
-                <p th:text="${overviewText}">Welcome to the College Course Registration System.</p>
+                <p th:text="${overviewText}">Welcome to the Northbridge Institute of Technology Student Portal.</p>
                 <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
                 <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
             </section>
@@ -106,3 +106,4 @@
     </div>
 </body>
 </html>
+

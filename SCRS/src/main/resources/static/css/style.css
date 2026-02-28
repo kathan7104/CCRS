@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&display=swap');
 
 :root {
-    --bg: #f4f7fb;
+    --bg: #eef2f6;
     --surface: #ffffff;
-    --surface-2: #f8fafc;
-    --ink: #0b1b2b;
-    --muted: #5c6b7a;
-    --primary: #0b2d59;
-    --primary-2: #0f4c81;
-    --accent: #0ea5a5;
+    --surface-2: #f5f8fc;
+    --ink: #0f2235;
+    --muted: #5f6f80;
+    --primary: #0b2f4f;
+    --primary-2: #164a74;
+    --accent: #b08a2d;
     --success: #16a34a;
     --warning: #f59e0b;
     --danger: #dc2626;
-    --border: #e2e8f0;
+    --border: #d8e1ea;
     --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
     --radius: 14px;
 }
@@ -27,10 +27,37 @@ body {
     font-size: 16px;
     line-height: 1.6;
     color: var(--ink);
-    background: radial-gradient(1200px 700px at 20% -10%, rgba(14, 165, 165, 0.15), transparent),
+    background: radial-gradient(1200px 700px at 20% -10%, rgba(176, 138, 45, 0.16), transparent),
                 radial-gradient(900px 600px at 120% 10%, rgba(15, 76, 129, 0.12), transparent),
                 var(--bg);
     min-height: 100vh;
+}
+
+.layout .header {
+    max-width: 1200px;
+    margin: 1.25rem auto 0;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, #fdfcf7, #f4f8fc);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.layout .header h1 {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+}
+
+.layout .header h1::before {
+    content: "";
+    width: 42px;
+    height: 42px;
+    border-radius: 8px;
+    background: url('/images/northbridge-crest.svg') center/cover no-repeat;
 }
 
 h1, h2, h3, h4 {
@@ -128,6 +155,94 @@ a:hover {
     padding: 2rem 1rem;
 }
 
+.login-shell {
+    width: 100%;
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1.2rem;
+}
+
+.login-hero {
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    background: linear-gradient(160deg, #0b2f4f, #1c4f7a 68%, #2d628d);
+    color: #f8fbff;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-hero::after {
+    content: "";
+    position: absolute;
+    right: -80px;
+    bottom: -80px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(176, 138, 45, 0.2);
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(176, 138, 45, 0.24);
+    border: 1px solid rgba(216, 184, 92, 0.45);
+    font-weight: 600;
+    font-size: 0.82rem;
+    margin-bottom: 1rem;
+}
+
+.login-hero h1 {
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+.login-hero .subtitle {
+    color: rgba(244, 248, 255, 0.9);
+}
+
+.hero-copy {
+    color: rgba(244, 248, 255, 0.96);
+    max-width: 55ch;
+}
+
+.hero-points {
+    display: grid;
+    gap: 0.45rem;
+    margin: 1.25rem 0;
+}
+
+.hero-points p {
+    color: #e6f0fa;
+    margin: 0;
+}
+
+.hero-motto {
+    margin-top: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.22);
+    font-style: italic;
+    color: #f7e7b8;
+}
+
+.login-card h2 {
+    text-align: center;
+}
+
+.login-footer {
+    margin-top: 1.25rem;
+    font-size: 0.84rem;
+    color: var(--muted);
+    text-align: center;
+    border-top: 1px solid var(--border);
+    padding-top: 0.8rem;
+}
+
 .auth-card {
     width: 100%;
     max-width: 420px;
@@ -136,6 +251,17 @@ a:hover {
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     border: 1px solid rgba(148, 163, 184, 0.2);
+    position: relative;
+}
+
+.auth-card::before {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 0.75rem auto;
+    background: url('/images/northbridge-crest.svg') center/cover no-repeat;
+    border-radius: 10px;
 }
 
 .auth-card-wide {
@@ -313,7 +439,7 @@ select:focus {
 }
 
 .dashboard-header {
-    background: var(--surface);
+    background: linear-gradient(90deg, #fdfcf7, #ffffff);
     border-bottom: 1px solid var(--border);
     padding: 1rem 1.5rem;
     display: flex;
@@ -328,6 +454,18 @@ select:focus {
     font-size: 1.25rem;
     color: var(--primary);
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.dashboard-header h1::before {
+    content: "";
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: url('/images/northbridge-crest.svg') center/cover no-repeat;
+    flex-shrink: 0;
 }
 
 .dashboard-nav {
@@ -545,6 +683,12 @@ body.role-staff .dashboard-header {
 
 /* Responsive */
 @media (max-width: 900px) {
+    .login-shell {
+        grid-template-columns: 1fr;
+    }
+    .login-hero {
+        padding: 1.5rem;
+    }
     .dashboard-header {
         flex-wrap: wrap;
         align-items: flex-start;

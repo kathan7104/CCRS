@@ -44,7 +44,7 @@ public class StudentPaymentService {
     private final UserRepository userRepository;
     private final RazorpayGatewayService razorpayGatewayService;
 
-    @Value("${ccrs.payment.razorpay.company-name:CCRS College}")
+    @Value("${ccrs.payment.razorpay.company-name:Northbridge Institute of Technology}")
     private String companyName;
 
     @Value("${ccrs.payment.razorpay.key-secret:}")

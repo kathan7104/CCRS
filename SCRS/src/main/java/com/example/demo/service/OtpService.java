@@ -70,8 +70,8 @@ public class OtpService {
     @Async
     public void sendEmailOtp(String to, String otp, OtpVerification.OtpType type) {
         String subject = type == OtpVerification.OtpType.FORGOT_PASSWORD
-                ? "CCRS - Reset Password OTP"
-                : "CCRS - Verification OTP";
+                ? "Northbridge Institute - Reset Password OTP"
+                : "Northbridge Institute - Verification OTP";
         String body = "Your OTP is: " + otp + ". Valid for " + VALID_MINUTES + " minutes. Do not share.";
         // 1. Check a rule -> decide what to do next
         if (sendEmailOtp) {
