@@ -25,7 +25,7 @@ public class DashboardController {
         List<Enrollment> enrollments = Collections.emptyList();
         List<FacultySubjectAssignment> assignedSubjects = Collections.emptyList();
         boolean isFaculty = false;
-        String overviewText = "Welcome to the Northbridge Institute of Technology Student Portal.";
+        String overviewText = "Welcome to the KOR Institute of Technology Student Portal.";
         // 1. Put data on the page so the user can see it
         model.addAttribute("currentPath", request.getRequestURI());
         // 2. Check a rule -> decide what to do next
@@ -78,7 +78,7 @@ public class DashboardController {
         model.addAttribute("assignedSubjects", Collections.emptyList());
         model.addAttribute("isFaculty", false);
         model.addAttribute("overviewText", userDetails == null
-                ? "Welcome to the Northbridge Institute of Technology Student Portal."
+                ? "Welcome to the KOR Institute of Technology Student Portal."
                 : resolveOverviewText(userDetails));
         // 7. Send the result back to the screen
         return "dashboard";
@@ -108,3 +108,4 @@ public class DashboardController {
         return "Use this dashboard to browse courses and track your application and payment progress.";
     }
 }
+

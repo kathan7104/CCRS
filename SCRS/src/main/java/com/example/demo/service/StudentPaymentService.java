@@ -44,7 +44,7 @@ public class StudentPaymentService {
     private final UserRepository userRepository;
     private final RazorpayGatewayService razorpayGatewayService;
 
-    @Value("${ccrs.payment.razorpay.company-name:Northbridge Institute of Technology}")
+    @Value("${ccrs.payment.razorpay.company-name:KOR Institute of Technology}")
     private String companyName;
 
     @Value("${ccrs.payment.razorpay.key-secret:}")
@@ -544,3 +544,4 @@ public class StudentPaymentService {
                                      String cardCvv) {
     }
 }
+

@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Dashboard - Northbridge Institute</title>
+    <title>Dashboard - KOR Institute</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
 </head>
 <body>
     <header class="dashboard-header">
-        <h1 th:text="${isFaculty} ? 'Northbridge Institute of Technology Faculty Portal' : 'Northbridge Institute of Technology Student Portal'">
-            Northbridge Institute of Technology Student Portal
+        <h1 th:text="${isFaculty} ? 'KOR Institute of Technology Faculty Portal' : 'KOR Institute of Technology Student Portal'">
+            KOR Institute of Technology Student Portal
         </h1>
         <nav class="dashboard-nav">
             <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPath == '/dashboard' ? 'active' : ''}">Home</a>
@@ -31,7 +31,7 @@
         <main class="dashboard-main">
             <section class="dashboard-section">
                 <h2>Dashboard Overview</h2>
-                <p th:text="${overviewText}">Welcome to the Northbridge Institute of Technology Student Portal.</p>
+                <p th:text="${overviewText}">Welcome to the KOR Institute of Technology Student Portal.</p>
                 <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
                 <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
             </section>
@@ -108,4 +108,5 @@
     </div>
 </body>
 </html>
+
 

@@ -57,7 +57,7 @@ body {
     width: 42px;
     height: 42px;
     border-radius: 8px;
-    background: url('/images/northbridge-crest.svg') center/cover no-repeat;
+    background: url('/images/KOR-crest.svg') center/cover no-repeat;
 }
 
 h1, h2, h3, h4 {
@@ -260,7 +260,7 @@ a:hover {
     width: 56px;
     height: 56px;
     margin: 0 auto 0.75rem auto;
-    background: url('/images/northbridge-crest.svg') center/cover no-repeat;
+    background: url('/images/KOR-crest.svg') center/cover no-repeat;
     border-radius: 10px;
 }
 
@@ -464,7 +464,7 @@ select:focus {
     width: 34px;
     height: 34px;
     border-radius: 8px;
-    background: url('/images/northbridge-crest.svg') center/cover no-repeat;
+    background: url('/images/KOR-crest.svg') center/cover no-repeat;
     flex-shrink: 0;
 }
 
@@ -716,3 +716,4 @@ body.role-staff .dashboard-header {
         width: 100%;
     }
 }
+
