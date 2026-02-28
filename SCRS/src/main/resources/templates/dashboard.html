@@ -9,7 +9,9 @@
 </head>
 <body>
     <header class="dashboard-header">
-        <h1>Northbridge Institute of Technology Student Portal</h1>
+        <h1 th:text="${isFaculty} ? 'Northbridge Institute of Technology Faculty Portal' : 'Northbridge Institute of Technology Student Portal'">
+            Northbridge Institute of Technology Student Portal
+        </h1>
         <nav class="dashboard-nav">
             <a th:href="@{/dashboard}" class="nav-link" th:classappend="${currentPath == '/dashboard' ? 'active' : ''}">Home</a>
             <a sec:authorize="!hasAuthority('ROLE_AUTHORITY_FACULTY')" th:href="@{/courses}" class="nav-link" th:classappend="${currentPath == '/courses' ? 'active' : ''}">Courses</a>
