@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p><w:r><w:t>BACHELOR OF COMMERCE (BCOM) TEACHING SCHEMA</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Department: Commerce</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Program: BCOM</w:t></w:r></w:p>
+
+    <w:p><w:r><w:t>SEMESTER 1</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S1-101 Financial Accounting I Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S1-102 Business Economics I Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S1-103 Business Organization and Management Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S1-104 Business Communication Credits: 3</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S1-105 Environmental Studies Credits: 2</w:t></w:r></w:p>
+
+    <w:p><w:r><w:t>SEMESTER 2</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S2-201 Financial Accounting II Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S2-202 Business Economics II Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S2-203 Corporate Accounting Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S2-204 Business Mathematics Credits: 3</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S2-205 Computer Applications in Business Credits: 3</w:t></w:r></w:p>
+
+    <w:p><w:r><w:t>SEMESTER 3</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S3-301 Cost Accounting Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S3-302 Company Law Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S3-303 Income Tax Law and Practice Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S3-304 Banking and Insurance Credits: 3</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S3-305 Principles of Marketing Credits: 3</w:t></w:r></w:p>
+
+    <w:p><w:r><w:t>SEMESTER 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S4-401 Management Accounting Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S4-402 Goods and Services Tax Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S4-403 Auditing Principles and Practice Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S4-404 Human Resource Management Credits: 3</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S4-405 Business Statistics Credits: 3</w:t></w:r></w:p>
+
+    <w:p><w:r><w:t>SEMESTER 5</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S5-501 Financial Management Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S5-502 E Commerce Credits: 3</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S5-503 Entrepreneurship Development Credits: 3</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S5-504 International Business Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S5-505 Retail Management Credits: 3</w:t></w:r></w:p>
+
+    <w:p><w:r><w:t>SEMESTER 6</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S6-601 Advanced Accounting Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S6-602 Business Research Methods Credits: 3</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S6-603 Strategic Management Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S6-604 Project Work Credits: 4</w:t></w:r></w:p>
+    <w:p><w:r><w:t>BCOM-S6-605 Elective Commerce Paper Credits: 3</w:t></w:r></w:p>
+
+    <w:sectPr/>
+  </w:body>
+</w:document>
