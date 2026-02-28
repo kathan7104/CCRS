@@ -1,0 +1,12 @@
+.git
+.gitignore
+.idea
+.vscode
+target
+uploads
+*.log
+README.md
+DEPLOY_RENDER_RAILWAY.md
+CODE_FLOW.md
+sample_docs
+scripts
