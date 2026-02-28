@@ -4,7 +4,6 @@ import com.example.demo.dto.RegistrationResult;
 import com.example.demo.entity.OtpVerification;
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +14,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OtpService otpService;
-    @Value("${ccrs.otp.send-email: true}")
-    private boolean sendEmailOtp;
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, OtpService otpService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -51,7 +48,7 @@ public class UserService {
                     // 10. Ask the service to do the main work
                     mobileOtpRecord = otpService.createAndSendMobileOtp(existing.getMobileNumber(), OtpVerification.OtpType.MOBILE_VERIFICATION);
                 }
-                String emailOtpForDisplay = (emailOtpRecord == null || sendEmailOtp) ? null : emailOtpRecord.getOtp();
+                String emailOtpForDisplay = emailOtpRecord != null ? emailOtpRecord.getOtp() : null;
                 String mobileOtpForDisplay = mobileOtpRecord != null ? mobileOtpRecord.getOtp() : null;
                 // 11. Send the result back to the screen
                 return new RegistrationResult(existing, emailOtpForDisplay, mobileOtpForDisplay);
@@ -72,7 +69,7 @@ public class UserService {
         OtpVerification emailOtpRecord = otpService.createAndSendEmailOtp(user.getEmail(), OtpVerification.OtpType.EMAIL_VERIFICATION);
         // 16. Ask the service to do the main work
         OtpVerification mobileOtpRecord = otpService.createAndSendMobileOtp(user.getMobileNumber(), OtpVerification.OtpType.MOBILE_VERIFICATION);
-        String emailOtpForDisplay = sendEmailOtp ? null : emailOtpRecord.getOtp();
+        String emailOtpForDisplay = emailOtpRecord.getOtp();
         String mobileOtpForDisplay = mobileOtpRecord.getOtp();
         // 17. Send the result back to the screen
         return new RegistrationResult(user, emailOtpForDisplay, mobileOtpForDisplay);

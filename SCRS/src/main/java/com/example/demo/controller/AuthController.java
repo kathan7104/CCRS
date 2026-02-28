@@ -170,6 +170,22 @@ public class AuthController {
         model.addAttribute("emailOtp", "");
         // 17. Put data on the page so the user can see it
         model.addAttribute("mobileOtp", "");
+        if (email != null && !email.isBlank() && !model.containsAttribute("devOtpEmail")) {
+            otpVerificationRepository
+                    .findTopByIdentifierAndOtpTypeAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(
+                            email,
+                            OtpVerification.OtpType.EMAIL_VERIFICATION,
+                            LocalDateTime.now())
+                    .ifPresent(record -> model.addAttribute("devOtpEmail", record.getOtp()));
+        }
+        if (mobile != null && !mobile.isBlank() && !model.containsAttribute("devOtpMobile")) {
+            otpVerificationRepository
+                    .findTopByIdentifierAndOtpTypeAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(
+                            mobile,
+                            OtpVerification.OtpType.MOBILE_VERIFICATION,
+                            LocalDateTime.now())
+                    .ifPresent(record -> model.addAttribute("devOtpMobile", record.getOtp()));
+        }
         // 18. Send the result back to the screen
         return "auth/verify-registration";
     }
@@ -225,11 +241,8 @@ public class AuthController {
             OtpVerification record = otpService.createAndSendEmailOtp(identifier, OtpVerification.OtpType.EMAIL_VERIFICATION);
             // 6. Show a one-time message on the next page
             redirectAttributes.addFlashAttribute("resendEmailSuccess", "New OTP sent to your email.");
-            // 7. Check a rule -> decide what to do next
-            if (!sendEmailOtp) {
-                // 8. Show a one-time message on the next page
-                redirectAttributes.addFlashAttribute("devOtpEmail", record.getOtp());
-            }
+            // 7. Show fallback OTP on page for SMTP failures
+            redirectAttributes.addFlashAttribute("devOtpEmail", record.getOtp());
         } else if ("MOBILE".equalsIgnoreCase(type)) {
             // 9. Ask the service to do the main work
             OtpVerification record = otpService.createAndSendMobileOtp(identifier, OtpVerification.OtpType.MOBILE_VERIFICATION);
