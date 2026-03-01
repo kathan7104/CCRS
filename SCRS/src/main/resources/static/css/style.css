@@ -57,7 +57,7 @@ body {
     width: 42px;
     height: 42px;
     border-radius: 8px;
-    background: url('/images/kor-logo.png') center/contain no-repeat;
+    background: url('/images/kor-logo.svg') center/contain no-repeat;
 }
 
 h1, h2, h3, h4 {
@@ -260,7 +260,7 @@ a:hover {
     width: 56px;
     height: 56px;
     margin: 0 auto 0.75rem auto;
-    background: url('/images/kor-logo.png') center/contain no-repeat;
+    background: url('/images/kor-logo.svg') center/contain no-repeat;
     border-radius: 10px;
 }
 
@@ -464,7 +464,7 @@ select:focus {
     width: 34px;
     height: 34px;
     border-radius: 8px;
-    background: url('/images/kor-logo.png') center/contain no-repeat;
+    background: url('/images/kor-logo.svg') center/contain no-repeat;
     flex-shrink: 0;
 }
 
