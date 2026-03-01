@@ -372,5 +372,5 @@ uploads/
 - Subject parsing and idempotent upsert workflow
 - Startup/runtime backfill support
 
-# deployed link
+# Deployed link
 - https://college-course-registration-system.onrender.com/auth/login?logout=&type=student
