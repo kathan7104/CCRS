@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="KOR Institute crest">
+  <defs>
+    <linearGradient id="shield" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b2f4f"/>
+      <stop offset="100%" stop-color="#123f68"/>
+    </linearGradient>
+    <linearGradient id="ribbon" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#b08a2d"/>
+      <stop offset="100%" stop-color="#d8b85c"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M90 12l56 18v46c0 39-21 70-56 92C55 146 34 115 34 76V30l56-18z" fill="url(#shield)"/>
+  <path d="M90 24l44 14v38c0 33-16 58-44 78-28-20-44-45-44-78V38l44-14z" fill="#f4f7fb" opacity=".92"/>
+
+  <path d="M56 88h68v24H56z" fill="#123f68"/>
+  <path d="M90 52l16 18H74z" fill="#b08a2d"/>
+  <path d="M66 96h48v6H66zM66 108h48v4H66z" fill="#f4f7fb"/>
+
+  <path d="M42 132h96v16H42z" fill="url(#ribbon)"/>
+  <text x="90" y="144" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-weight="700" fill="#10263d">KOR</text>
+</svg>
+
