@@ -27,8 +27,8 @@ public class DashboardController {
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal CustomUserDetails userDetails, Model model, HttpServletRequest request) {
         if (userDetails != null && userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"))) {
-            if (!studentAccessService.isStudentAllowed(userDetails.getUser())) {
-                model.addAttribute("errorMessage", "Your temporary student login is inactive because registration is closed or seats are full.");
+            if (!studentAccessService.hasActiveEnrollment(userDetails.getUser())) {
+                model.addAttribute("errorMessage", "Your student account is temporary. Please complete course registration and wait for approval.");
                 return "redirect:/courses";
             }
         }
@@ -44,7 +44,8 @@ public class DashboardController {
             model.addAttribute("isAuthority", isAuthority);
             isFaculty = userDetails.getAuthorities().stream()
                     .anyMatch(a -> "ROLE_AUTHORITY_FACULTY".equals(a.getAuthority()));
-            boolean hasStudentAcademicAccess = !userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT")) || studentAccessService.isStudentAllowed(userDetails.getUser());
+            boolean hasStudentAcademicAccess = !userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"))
+                    || studentAccessService.hasActiveEnrollment(userDetails.getUser());
             model.addAttribute("hasStudentAcademicAccess", hasStudentAcademicAccess);
             overviewText = resolveOverviewText(userDetails);
             if (isFaculty) {

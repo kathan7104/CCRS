@@ -39,13 +39,15 @@
                         <td>
                             <a th:href="@{/admin/users/{id}/edit(id=${u.id})}" class="btn btn-sm btn-secondary">Edit</a>
                             <form th:action="@{/admin/users/{id}/deactivate(id=${u.id})}" method="post" class="inline-form" style="display:inline">
-                                <button class="btn btn-sm btn-outline" type="submit" th:if="${u.active} and ${u.id} != ${currentUserId}">Deactivate</button>
+                                <button class="btn btn-sm btn-outline" type="submit"
+                                        th:if="${u.active} and ${u.id} != ${currentUserId} and !#lists.contains(u.roles, 'AUTHORITY_SUPER_ADMIN')">Deactivate</button>
                             </form>
                             <form th:action="@{/admin/users/{id}/activate(id=${u.id})}" method="post" class="inline-form" style="display:inline">
                                 <button class="btn btn-sm btn-outline" type="submit" th:if="${!u.active}">Activate</button>
                             </form>
                             <form th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post" class="inline-form" style="display:inline">
-                                <button class="btn btn-sm btn-outline" type="submit" th:if="${u.id} != ${currentUserId}">Delete</button>
+                                <button class="btn btn-sm btn-outline" type="submit"
+                                        th:if="${u.id} != ${currentUserId} and !#lists.contains(u.roles, 'AUTHORITY_SUPER_ADMIN')">Delete</button>
                             </form>
                         </td>
                     </tr>

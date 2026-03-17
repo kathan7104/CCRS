@@ -28,8 +28,8 @@ public class StudentPaymentController {
 
     private boolean checkStudentAccess(CustomUserDetails principal, RedirectAttributes redirectAttributes) {
         if (principal != null && principal.getUser() != null && principal.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"))) {
-            if (!studentAccessService.isStudentAllowed(principal.getUser())) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Your temporary student login is inactive because registration is closed or seats are full.");
+            if (!studentAccessService.hasActiveEnrollment(principal.getUser())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Payments are available only after your enrollment is approved.");
                 return false;
             }
         }
