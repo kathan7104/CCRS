@@ -18,13 +18,10 @@ import jakarta.servlet.http.HttpServletRequest;
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter;
-    private final com.example.demo.security.CustomAuthenticationSuccessHandler authenticationSuccessHandler;
     public SecurityConfig(CustomUserDetailsService userDetailsService,
-                          com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter,
-                          com.example.demo.security.CustomAuthenticationSuccessHandler authenticationSuccessHandler) {
+                          com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter) {
         this.userDetailsService = userDetailsService;
         this.preLoginRoleValidationFilter = preLoginRoleValidationFilter;
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -53,7 +50,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/", "/authenroll").hasAuthority("ROLE_STUDENT")
                 .requestMatchers("/payments/**", "/payment/**").hasAuthority("ROLE_STUDENT")
-                .requestMatchers("/admin/**").hasAuthority("ROLE_AUTHORITY_ADMIN")
+                .requestMatchers("/admin/**").hasAnyAuthority("ROLE_AUTHORITY_ADMIN", "ROLE_AUTHORITY_SUPER_ADMIN")
                 .requestMatchers("/director/**").hasAuthority("ROLE_AUTHORITY_DIRECTOR")
                 .requestMatchers("/staff/**").hasAuthority("ROLE_AUTHORITY_STAFF")
                 .requestMatchers("/faculty/**").hasAuthority("ROLE_AUTHORITY_FACULTY")
@@ -63,7 +60,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/auth/login")
                 .loginProcessingUrl("/auth/login")
-                .successHandler(authenticationSuccessHandler)
+                .successHandler(new com.example.demo.security.CustomAuthenticationSuccessHandler())
                 .failureUrl("/auth/login?error")
                 .usernameParameter("username")
                 .passwordParameter("password")

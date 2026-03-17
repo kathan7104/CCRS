@@ -86,6 +86,20 @@ public class DataInitializer implements CommandLineRunner {
         }
         // 1. Check a rule -> decide what to do next
         if (!createAuthority) return;
+        String superAdminEmail = "superadmin@college.edu";
+        if (userRepository.findByEmail(superAdminEmail).isEmpty()) {
+            User sa = new User();
+            sa.setEmail(superAdminEmail);
+            sa.setMobileNumber("9000000000");
+            sa.setFullName("College Super Admin (DEMO)");
+            sa.setDepartment("Central");
+            sa.setPassword(passwordEncoder.encode("SuperAdmin123!"));
+            sa.getRoles().add("AUTHORITY_SUPER_ADMIN");
+            sa.setEmailVerified(true);
+            sa.setMobileVerified(true);
+            userRepository.save(sa);
+            System.out.println("Created demo super admin account: " + superAdminEmail + " (password: SuperAdmin123!)");
+        }
         String directorEmail = "director@college.edu";
         // 2. Check a rule -> decide what to do next
         if (userRepository.findByEmail(directorEmail).isEmpty()) {

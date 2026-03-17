@@ -37,14 +37,10 @@
                         <td th:text="${u.department}">dept</td>
                         <td th:text="${#strings.listJoin(u.roles, ', ')}">role</td>
                         <td>
-                            <a th:href="@{/admin/users/{id}/edit(id=${u.id})}" class="btn btn-sm btn-secondary">Edit</a>
-                            <form th:action="@{/admin/users/{id}/deactivate(id=${u.id})}" method="post" class="inline-form" style="display:inline">
-                                <button class="btn btn-sm btn-outline" type="submit" th:if="${u.active}">Deactivate</button>
-                            </form>
-                            <form th:action="@{/admin/users/{id}/activate(id=${u.id})}" method="post" class="inline-form" style="display:inline">
-                                <button class="btn btn-sm btn-outline" type="submit" th:if="${!u.active}">Activate</button>
-                            </form>
-                            <form th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post" class="inline-form" style="display:inline">
+                            <a th:if="${!#lists.contains(u.roles, superAdminRole) or currentIsSuperAdmin}"
+                               th:href="@{/admin/users/{id}/edit(id=${u.id})}" class="btn btn-sm btn-secondary">Edit</a>
+                            <form th:if="${u.id != currentUserId and !#lists.contains(u.roles, superAdminRole)}"
+                                  th:action="@{/admin/users/{id}/delete(id=${u.id})}" method="post" class="inline-form">
                                 <button class="btn btn-sm btn-outline" type="submit">Delete</button>
                             </form>
                         </td>

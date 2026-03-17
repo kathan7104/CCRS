@@ -63,7 +63,7 @@ public class CourseController {
         }
         boolean hasStudentAcademicAccess = !isStudent;
         if (isStudent && userDetails != null) {
-            hasStudentAcademicAccess = studentAccessService.isStudentAllowed(userDetails.getUser());
+            hasStudentAcademicAccess = studentAccessService.hasActiveEnrollment(userDetails.getUser());
         }
         model.addAttribute("isAuthority", isAuthority);
         model.addAttribute("isStudent", isStudent);
@@ -82,7 +82,7 @@ public class CourseController {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"));
         boolean hasStudentAcademicAccess = !isStudent;
         if (isStudent && userDetails != null) {
-            hasStudentAcademicAccess = studentAccessService.isStudentAllowed(userDetails.getUser());
+            hasStudentAcademicAccess = studentAccessService.hasActiveEnrollment(userDetails.getUser());
         }
         model.addAttribute("isStudent", isStudent);
         model.addAttribute("hasStudentAcademicAccess", hasStudentAcademicAccess);
@@ -120,6 +120,7 @@ public class CourseController {
         model.addAttribute("studentName", userDetails.getUser().getFullName());
         // 6. Put data on the page so the user can see it
         model.addAttribute("studentEmail", userDetails.getUsername());
+        model.addAttribute("hasStudentAcademicAccess", studentAccessService.hasActiveEnrollment(userDetails.getUser()));
         // 7. Send the result back to the screen
         return "courses/enroll";
     }

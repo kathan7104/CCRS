@@ -10,7 +10,7 @@
     <header class="dashboard-header">
         <h1>KOR Institute of Technology Student Portal</h1>
         <nav class="dashboard-nav">
-            <a th:href="@{/dashboard}" class="nav-link">Home</a>
+            <a th:if="${hasStudentAcademicAccess}" th:href="@{/dashboard}" class="nav-link">Home</a>
             <a th:href="@{/courses}" class="nav-link active">Courses</a>
         </nav>
         <div class="user-info">

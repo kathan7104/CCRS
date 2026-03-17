@@ -1,5 +1,4 @@
 package com.example.demo.security;
-import com.example.demo.service.StudentAccessService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,61 +8,47 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Collection;
-
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-    private final StudentAccessService studentAccessService;
-
-    public CustomAuthenticationSuccessHandler(StudentAccessService studentAccessService) {
-        this.studentAccessService = studentAccessService;
-    }
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         String loginType = request.getParameter("loginType");
+        // 1. Check a rule -> decide what to do next
         if (loginType == null || loginType.isBlank()) {
             loginType = "STUDENT"; // default
         }
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         boolean hasStudent = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"));
         boolean hasAuthority = authorities.stream().anyMatch(a -> a.getAuthority().startsWith("ROLE_AUTHORITY"));
-
+        // 2. Check a rule -> decide what to do next
         if ("AUTHORITY".equalsIgnoreCase(loginType) && !hasAuthority) {
-            var logoutHandler = new org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler();
+            org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler logoutHandler =
+                    new org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler();
             logoutHandler.logout(request, response, authentication);
             org.springframework.security.core.context.SecurityContextHolder.clearContext();
-            response.sendRedirect("/auth/login?error=authority&type=authority&m=wrongRole");
+            response.sendRedirect("/auth/login?error&type=authority&m=wrongRole");
+            // 3. Send the result back to the screen
             return;
         }
-
+        // 4. Check a rule -> decide what to do next
         if ("STUDENT".equalsIgnoreCase(loginType) && !hasStudent) {
-            var logoutHandler = new org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler();
+            org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler logoutHandler =
+                    new org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler();
             logoutHandler.logout(request, response, authentication);
             org.springframework.security.core.context.SecurityContextHolder.clearContext();
-            response.sendRedirect("/auth/login?error=student&type=student&m=wrongRole");
+            response.sendRedirect("/auth/login?error&type=student&m=wrongRole");
+            // 5. Send the result back to the screen
             return;
         }
-
-        if (hasStudent) {
-            Object principal = authentication.getPrincipal();
-            if (principal instanceof CustomUserDetails userDetails) {
-                if (!studentAccessService.isStudentAllowed(userDetails.getUser())) {
-                    var logoutHandler = new org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler();
-                    logoutHandler.logout(request, response, authentication);
-                    org.springframework.security.core.context.SecurityContextHolder.clearContext();
-                    response.sendRedirect("/auth/login?error=student&type=student&m=registrationClosed");
-                    return;
-                }
-            }
-        }
-
+        // 6. Check a rule -> decide what to do next
         if (hasAuthority && "AUTHORITY".equalsIgnoreCase(loginType)) {
             boolean isAdmin = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_ADMIN"));
+            boolean isSuperAdmin = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_SUPER_ADMIN"));
             boolean isDirector = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_DIRECTOR"));
             boolean isStaff = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_STAFF"));
             boolean isFaculty = authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY_FACULTY"));
-            if (isAdmin) {
+            if (isAdmin || isSuperAdmin) {
                 response.sendRedirect("/admin/dashboard");
                 return;
             }
@@ -80,6 +65,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                 return;
             }
             response.sendRedirect("/dashboard/authority");
+            // 7. Send the result back to the screen
             return;
         }
         response.sendRedirect("/dashboard");

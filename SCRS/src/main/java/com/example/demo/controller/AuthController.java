@@ -44,17 +44,22 @@ public class AuthController {
     public String loginPage(Model model,
                             @RequestParam(value = "error", required = false) String error,
                             @RequestParam(value = "type", required = false) String type,
-                            @RequestParam(value = "m", required = false) String messageKey) {
+                            @RequestParam(value = "m", required = false) String messageCode) {
+        // 1. Put data on the page so the user can see it
         model.addAttribute("loginRequest", new LoginRequest());
         model.addAttribute("loginType", "authority".equalsIgnoreCase(type) ? "AUTHORITY" : "STUDENT");
+        // 2. Check a rule -> decide what to do next
         if (error != null) {
-            String text = switch (messageKey == null ? "" : messageKey) {
-                case "wrongRole" -> "Wrong role selected. Please login with the correct portal.";
-                case "registrationClosed" -> "Your account is temporary. Admissions are closed / seats are full, so login is blocked.";
-                default -> "Invalid email/mobile or password.";
-            };
-            model.addAttribute("error", text);
+            // 3. Put data on the page so the user can see it
+            if ("registrationClosed".equalsIgnoreCase(messageCode)) {
+                model.addAttribute("error", "Course registrations are closed or all seats are full. Your temporary login is disabled.");
+            } else if ("wrongRole".equalsIgnoreCase(messageCode)) {
+                model.addAttribute("error", "This account does not match the selected login type.");
+            } else {
+                model.addAttribute("error", "Invalid email/mobile or password.");
+            }
         }
+        // 4. Send the result back to the screen
         return "auth/login";
     }
     @GetMapping("/register")
@@ -172,22 +177,6 @@ public class AuthController {
         model.addAttribute("emailOtp", "");
         // 17. Put data on the page so the user can see it
         model.addAttribute("mobileOtp", "");
-        if (email != null && !email.isBlank() && !model.containsAttribute("devOtpEmail")) {
-            otpVerificationRepository
-                    .findTopByIdentifierAndOtpTypeAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(
-                            email,
-                            OtpVerification.OtpType.EMAIL_VERIFICATION,
-                            LocalDateTime.now())
-                    .ifPresent(record -> model.addAttribute("devOtpEmail", record.getOtp()));
-        }
-        if (mobile != null && !mobile.isBlank() && !model.containsAttribute("devOtpMobile")) {
-            otpVerificationRepository
-                    .findTopByIdentifierAndOtpTypeAndUsedFalseAndExpiresAtAfterOrderByCreatedAtDesc(
-                            mobile,
-                            OtpVerification.OtpType.MOBILE_VERIFICATION,
-                            LocalDateTime.now())
-                    .ifPresent(record -> model.addAttribute("devOtpMobile", record.getOtp()));
-        }
         // 18. Send the result back to the screen
         return "auth/verify-registration";
     }
@@ -243,8 +232,11 @@ public class AuthController {
             OtpVerification record = otpService.createAndSendEmailOtp(identifier, OtpVerification.OtpType.EMAIL_VERIFICATION);
             // 6. Show a one-time message on the next page
             redirectAttributes.addFlashAttribute("resendEmailSuccess", "New OTP sent to your email.");
-            // 7. Show fallback OTP on page for SMTP failures
-            redirectAttributes.addFlashAttribute("devOtpEmail", record.getOtp());
+            // 7. Check a rule -> decide what to do next
+            if (!sendEmailOtp) {
+                // 8. Show a one-time message on the next page
+                redirectAttributes.addFlashAttribute("devOtpEmail", record.getOtp());
+            }
         } else if ("MOBILE".equalsIgnoreCase(type)) {
             // 9. Ask the service to do the main work
             OtpVerification record = otpService.createAndSendMobileOtp(identifier, OtpVerification.OtpType.MOBILE_VERIFICATION);
