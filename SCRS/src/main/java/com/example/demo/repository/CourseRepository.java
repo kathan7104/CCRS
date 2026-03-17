@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course, Long> {
     Optional<Course> findByCode(String code);
+    long countByRemainingSeatsGreaterThan(int seats);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT c FROM Course c WHERE c.id = :id")
     Optional<Course> findByIdForUpdate(@Param("id") Long id);

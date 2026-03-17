@@ -4,6 +4,7 @@ import com.example.demo.entity.FacultySubjectAssignment;
 import com.example.demo.repository.EnrollmentRepository;
 import com.example.demo.repository.FacultySubjectAssignmentRepository;
 import com.example.demo.security.CustomUserDetails;
+import com.example.demo.service.StudentAccessService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -15,36 +16,40 @@ import java.util.List;
 public class DashboardController {
     private final EnrollmentRepository enrollmentRepository;
     private final FacultySubjectAssignmentRepository facultySubjectAssignmentRepository;
+    private final StudentAccessService studentAccessService;
     public DashboardController(EnrollmentRepository enrollmentRepository,
-                               FacultySubjectAssignmentRepository facultySubjectAssignmentRepository) {
+                               FacultySubjectAssignmentRepository facultySubjectAssignmentRepository,
+                               StudentAccessService studentAccessService) {
         this.enrollmentRepository = enrollmentRepository;
         this.facultySubjectAssignmentRepository = facultySubjectAssignmentRepository;
+        this.studentAccessService = studentAccessService;
     }
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal CustomUserDetails userDetails, Model model, HttpServletRequest request) {
+        if (userDetails != null && userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"))) {
+            if (!studentAccessService.isStudentAllowed(userDetails.getUser())) {
+                model.addAttribute("errorMessage", "Your temporary student login is inactive because registration is closed or seats are full.");
+                return "redirect:/courses";
+            }
+        }
         List<Enrollment> enrollments = Collections.emptyList();
         List<FacultySubjectAssignment> assignedSubjects = Collections.emptyList();
         boolean isFaculty = false;
         String overviewText = "Welcome to the KOR Institute of Technology Student Portal.";
-        // 1. Put data on the page so the user can see it
         model.addAttribute("currentPath", request.getRequestURI());
-        // 2. Check a rule -> decide what to do next
         if (userDetails != null) {
-            // 3. Put data on the page so the user can see it
             model.addAttribute("userName", userDetails.getUser().getFullName());
-            // 4. Put data on the page so the user can see it
             model.addAttribute("userEmail", userDetails.getUsername());
             boolean isAuthority = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY") || a.getAuthority().startsWith("ROLE_AUTHORITY_"));
-            // 5. Put data on the page so the user can see it
             model.addAttribute("isAuthority", isAuthority);
             isFaculty = userDetails.getAuthorities().stream()
                     .anyMatch(a -> "ROLE_AUTHORITY_FACULTY".equals(a.getAuthority()));
+            boolean hasStudentAcademicAccess = !userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT")) || studentAccessService.isStudentAllowed(userDetails.getUser());
+            model.addAttribute("hasStudentAcademicAccess", hasStudentAcademicAccess);
             overviewText = resolveOverviewText(userDetails);
-            // 6. Check a rule -> decide what to do next
             if (isFaculty) {
                 assignedSubjects = facultySubjectAssignmentRepository.findByFacultyIdWithSubject(userDetails.getUser().getId());
             } else if (!isAuthority) {
-                // 7. Get or save data in the database
                 enrollments = enrollmentRepository.findByStudentId(userDetails.getUser().getId());
             }
         }

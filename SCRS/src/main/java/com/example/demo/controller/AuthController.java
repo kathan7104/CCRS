@@ -43,16 +43,18 @@ public class AuthController {
     @GetMapping("/login")
     public String loginPage(Model model,
                             @RequestParam(value = "error", required = false) String error,
-                            @RequestParam(value = "type", required = false) String type) {
-        // 1. Put data on the page so the user can see it
+                            @RequestParam(value = "type", required = false) String type,
+                            @RequestParam(value = "m", required = false) String messageKey) {
         model.addAttribute("loginRequest", new LoginRequest());
         model.addAttribute("loginType", "authority".equalsIgnoreCase(type) ? "AUTHORITY" : "STUDENT");
-        // 2. Check a rule -> decide what to do next
         if (error != null) {
-            // 3. Put data on the page so the user can see it
-            model.addAttribute("error", "Invalid email/mobile or password.");
+            String text = switch (messageKey == null ? "" : messageKey) {
+                case "wrongRole" -> "Wrong role selected. Please login with the correct portal.";
+                case "registrationClosed" -> "Your account is temporary. Admissions are closed / seats are full, so login is blocked.";
+                default -> "Invalid email/mobile or password.";
+            };
+            model.addAttribute("error", text);
         }
-        // 4. Send the result back to the screen
         return "auth/login";
     }
     @GetMapping("/register")

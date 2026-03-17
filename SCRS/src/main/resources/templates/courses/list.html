@@ -12,7 +12,7 @@
         <nav class="dashboard-nav">
             <a th:href="@{/dashboard}" class="nav-link">Home</a>
             <a th:href="@{/courses}" class="nav-link active">Courses</a>
-            <a th:if="${isStudent}" th:href="@{/payments}" class="nav-link">Payments</a>
+            <a th:if="${hasStudentAcademicAccess}" th:href="@{/payments}" class="nav-link">Payments</a>
         </nav>
         <div class="user-info">
             <span style="margin-right: 1rem;">Welcome, <span th:text="${userName != null ? userName : #authentication.name}">Student</span></span>

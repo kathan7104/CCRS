@@ -4,6 +4,7 @@ import com.example.demo.entity.EnrollmentDocument;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.service.EnrollmentService;
+import com.example.demo.service.StudentAccessService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -30,13 +31,16 @@ import org.springframework.web.multipart.MultipartFile;
 public class CourseController {
     private final CourseRepository courseRepository;
     private final EnrollmentService enrollmentService;
+    private final StudentAccessService studentAccessService;
     private final String documentUploadDir;
     private static final long MAX_SINGLE_DOCUMENT_SIZE_BYTES = 20L * 1024L * 1024L; // 20MB
     public CourseController(CourseRepository courseRepository,
                             EnrollmentService enrollmentService,
+                            StudentAccessService studentAccessService,
                             @Value("${ccrs.upload.documents-dir:uploads/documents}") String documentUploadDir) {
         this.courseRepository = courseRepository;
         this.enrollmentService = enrollmentService;
+        this.studentAccessService = studentAccessService;
         this.documentUploadDir = documentUploadDir;
     }
     @GetMapping
@@ -49,20 +53,21 @@ public class CourseController {
         boolean isStudent = false;
         // 3. Check a rule -> decide what to do next
         if (userDetails != null) {
-            // 4. Put data on the page so the user can see it
             model.addAttribute("userName", userDetails.getUser().getFullName());
         }
-        // 5. Check a rule -> decide what to do next
         if (userDetails != null) {
             isAuthority = userDetails.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().startsWith("ROLE_AUTHORITY"));
             isStudent = userDetails.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"));
         }
-        // 6. Put data on the page so the user can see it
+        boolean hasStudentAcademicAccess = !isStudent;
+        if (isStudent && userDetails != null) {
+            hasStudentAcademicAccess = studentAccessService.isStudentAllowed(userDetails.getUser());
+        }
         model.addAttribute("isAuthority", isAuthority);
-        // 7. Put data on the page so the user can see it
         model.addAttribute("isStudent", isStudent);
+        model.addAttribute("hasStudentAcademicAccess", hasStudentAcademicAccess);
         // 8. Send the result back to the screen
         return "courses/list";
     }
@@ -75,9 +80,12 @@ public class CourseController {
         model.addAttribute("course", course);
         boolean isStudent = userDetails != null && userDetails.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"));
-        // 3. Put data on the page so the user can see it
+        boolean hasStudentAcademicAccess = !isStudent;
+        if (isStudent && userDetails != null) {
+            hasStudentAcademicAccess = studentAccessService.isStudentAllowed(userDetails.getUser());
+        }
         model.addAttribute("isStudent", isStudent);
-        // 4. Send the result back to the screen
+        model.addAttribute("hasStudentAcademicAccess", hasStudentAcademicAccess);
         return "courses/detail";
     }
     @GetMapping("/{id}/enroll")

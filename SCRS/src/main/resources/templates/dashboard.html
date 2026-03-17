@@ -17,7 +17,7 @@
             <a sec:authorize="!hasAuthority('ROLE_AUTHORITY_FACULTY')" th:href="@{/courses}" class="nav-link" th:classappend="${currentPath == '/courses' ? 'active' : ''}">Courses</a>
             <a sec:authorize="hasAuthority('ROLE_AUTHORITY_DIRECTOR')" th:href="@{/director/courses}" class="nav-link" th:classappend="${currentPath.startsWith('/director') ? 'active' : ''}">Manage Courses</a>
             <a sec:authorize="hasAuthority('ROLE_AUTHORITY_FACULTY')" th:href="@{/faculty/roster}" class="nav-link" th:classappend="${currentPath.startsWith('/faculty') ? 'active' : ''}">My Roster</a>
-            <a sec:authorize="hasAuthority('ROLE_STUDENT')" th:href="@{/payments}" class="nav-link" th:classappend="${currentPath == '/payments' ? 'active' : ''}">Payments</a>
+            <a th:if="${hasStudentAcademicAccess}" th:href="@{/payments}" class="nav-link" th:classappend="${currentPath == '/payments' ? 'active' : ''}">Payments</a>
         </nav>
         <div class="user-info">
             <span>Welcome, <span th:text="${userName}">Student</span></span>

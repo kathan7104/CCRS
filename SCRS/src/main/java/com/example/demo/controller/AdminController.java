@@ -22,7 +22,8 @@ import java.util.Set;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private static final Set<String> MANAGED_ROLES = Set.of("AUTHORITY_ADMIN", "AUTHORITY_DIRECTOR", "AUTHORITY_STAFF");
+    private static final String SUPER_ADMIN_ROLE = "AUTHORITY_SUPER_ADMIN";
+    private static final Set<String> MANAGED_ROLES = Set.of("AUTHORITY_ADMIN", "AUTHORITY_DIRECTOR", "AUTHORITY_STAFF", SUPER_ADMIN_ROLE);
 
     private final EnrollmentRepository enrollmentRepository;
     private final DepartmentRepository departmentRepository;
@@ -94,19 +95,29 @@ public class AdminController {
     }
 
     @GetMapping("/users/new")
-    public String createUserForm(Model model) {
+    public String createUserForm(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
         model.addAttribute("user", new User());
-        model.addAttribute("selectedRole", "AUTHORITY_STAFF");
         model.addAttribute("departments", getActiveDepartmentNames());
+        String selectedRole = "AUTHORITY_STAFF";
+        if (isSuperAdmin(userDetails.getUser())) {
+            selectedRole = "AUTHORITY_ADMIN";
+        }
+        model.addAttribute("selectedRole", selectedRole);
+        model.addAttribute("isSuperAdmin", isSuperAdmin(userDetails.getUser()));
         return "admin/users/form";
     }
 
     @PostMapping("/users")
-    public String createUser(@ModelAttribute User user,
+    public String createUser(@AuthenticationPrincipal CustomUserDetails userDetails,
+                             @ModelAttribute User user,
                              @RequestParam("role") String role,
                              RedirectAttributes redirectAttributes) {
         if (!MANAGED_ROLES.contains(role)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid role");
+            return "redirect:/admin/users";
+        }
+        if (SUPER_ADMIN_ROLE.equals(role) && !isSuperAdmin(userDetails.getUser())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Only super admin can create another super admin.");
             return "redirect:/admin/users";
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -129,7 +140,8 @@ public class AdminController {
     }
 
     @PostMapping("/users/{id}")
-    public String updateUser(@PathVariable Long id,
+    public String updateUser(@AuthenticationPrincipal CustomUserDetails currentUser,
+                             @PathVariable Long id,
                              @RequestParam String fullName,
                              @RequestParam String email,
                              @RequestParam String mobileNumber,
@@ -140,6 +152,14 @@ public class AdminController {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (!MANAGED_ROLES.contains(role)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid role");
+            return "redirect:/admin/users";
+        }
+        if (isSuperAdmin(user) && !isSuperAdmin(currentUser.getUser())) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Only super admin can modify super admin accounts.");
+            return "redirect:/admin/users";
+        }
+        if (isSelf(currentUser.getUser(), user) && !isSuperAdmin(currentUser.getUser()) && !SUPER_ADMIN_ROLE.equals(role)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You cannot demote yourself from super admin role.");
             return "redirect:/admin/users";
         }
         user.setFullName(fullName);
@@ -157,9 +177,49 @@ public class AdminController {
     }
 
     @PostMapping("/users/{id}/delete")
-    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteUser(@AuthenticationPrincipal CustomUserDetails currentUser,
+                             @PathVariable Long id,
+                             RedirectAttributes redirectAttributes) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (isSuperAdmin(user)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot delete super admin.");
+            return "redirect:/admin/users";
+        }
+        if (isSelf(currentUser.getUser(), user)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot delete yourself.");
+            return "redirect:/admin/users";
+        }
         userRepository.deleteById(id);
         redirectAttributes.addFlashAttribute("successMessage", "User deleted.");
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/users/{id}/deactivate")
+    public String deactivateUser(@AuthenticationPrincipal CustomUserDetails currentUser,
+                                 @PathVariable Long id,
+                                 RedirectAttributes redirectAttributes) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (isSuperAdmin(user)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot deactivate super admin.");
+            return "redirect:/admin/users";
+        }
+        if (isSelf(currentUser.getUser(), user)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot deactivate yourself.");
+            return "redirect:/admin/users";
+        }
+        user.setActive(false);
+        userRepository.save(user);
+        redirectAttributes.addFlashAttribute("successMessage", "User deactivated.");
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/users/{id}/activate")
+    public String activateUser(@PathVariable Long id,
+                               RedirectAttributes redirectAttributes) {
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        user.setActive(true);
+        userRepository.save(user);
+        redirectAttributes.addFlashAttribute("successMessage", "User activated.");
         return "redirect:/admin/users";
     }
 
@@ -216,6 +276,18 @@ public class AdminController {
         departmentRepository.save(department);
         redirectAttributes.addFlashAttribute("successMessage", "Department activated.");
         return "redirect:/admin/departments";
+    }
+
+    private boolean hasRole(User user, String role) {
+        return user.getRoles().stream().anyMatch(r -> r.equalsIgnoreCase(role));
+    }
+
+    private boolean isSuperAdmin(User user) {
+        return hasRole(user, SUPER_ADMIN_ROLE);
+    }
+
+    private boolean isSelf(User currentUser, User target) {
+        return currentUser != null && target != null && currentUser.getId() != null && currentUser.getId().equals(target.getId());
     }
 
     private List<User> getManagedUsers() {
