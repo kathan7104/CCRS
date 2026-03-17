@@ -89,8 +89,9 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public String listSuperUsers(Model model) {
+    public String listSuperUsers(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
         model.addAttribute("users", getManagedUsers());
+        model.addAttribute("currentUserId", userDetails != null && userDetails.getUser() != null ? userDetails.getUser().getId() : -1);
         return "admin/users/list";
     }
 
