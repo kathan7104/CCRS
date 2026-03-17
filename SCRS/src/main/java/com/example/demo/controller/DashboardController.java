@@ -4,7 +4,6 @@ import com.example.demo.entity.FacultySubjectAssignment;
 import com.example.demo.repository.EnrollmentRepository;
 import com.example.demo.repository.FacultySubjectAssignmentRepository;
 import com.example.demo.security.CustomUserDetails;
-import com.example.demo.service.StudentAccessService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -16,42 +15,43 @@ import java.util.List;
 public class DashboardController {
     private final EnrollmentRepository enrollmentRepository;
     private final FacultySubjectAssignmentRepository facultySubjectAssignmentRepository;
-    private final StudentAccessService studentAccessService;
     public DashboardController(EnrollmentRepository enrollmentRepository,
-                               FacultySubjectAssignmentRepository facultySubjectAssignmentRepository,
-                               StudentAccessService studentAccessService) {
+                               FacultySubjectAssignmentRepository facultySubjectAssignmentRepository) {
         this.enrollmentRepository = enrollmentRepository;
         this.facultySubjectAssignmentRepository = facultySubjectAssignmentRepository;
-        this.studentAccessService = studentAccessService;
     }
     @GetMapping("/dashboard")
     public String dashboard(@AuthenticationPrincipal CustomUserDetails userDetails, Model model, HttpServletRequest request) {
-        if (userDetails != null && userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"))) {
-            if (!studentAccessService.hasActiveEnrollment(userDetails.getUser())) {
-                model.addAttribute("errorMessage", "Your student account is temporary. Please complete course registration and wait for approval.");
-                return "redirect:/courses";
-            }
-        }
         List<Enrollment> enrollments = Collections.emptyList();
         List<FacultySubjectAssignment> assignedSubjects = Collections.emptyList();
         boolean isFaculty = false;
-        String overviewText = "Welcome to the KOR Institute of Technology Student Portal.";
+        boolean canAccessPayments = false;
+        boolean isTempStudent = false;
+        String overviewText = "Welcome to the College Course Registration System.";
+        // 1. Put data on the page so the user can see it
         model.addAttribute("currentPath", request.getRequestURI());
+        // 2. Check a rule -> decide what to do next
         if (userDetails != null) {
+            // 3. Put data on the page so the user can see it
             model.addAttribute("userName", userDetails.getUser().getFullName());
+            // 4. Put data on the page so the user can see it
             model.addAttribute("userEmail", userDetails.getUsername());
             boolean isAuthority = userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_AUTHORITY") || a.getAuthority().startsWith("ROLE_AUTHORITY_"));
+            // 5. Put data on the page so the user can see it
             model.addAttribute("isAuthority", isAuthority);
             isFaculty = userDetails.getAuthorities().stream()
                     .anyMatch(a -> "ROLE_AUTHORITY_FACULTY".equals(a.getAuthority()));
-            boolean hasStudentAcademicAccess = !userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"))
-                    || studentAccessService.hasActiveEnrollment(userDetails.getUser());
-            model.addAttribute("hasStudentAcademicAccess", hasStudentAcademicAccess);
             overviewText = resolveOverviewText(userDetails);
+            // 6. Check a rule -> decide what to do next
             if (isFaculty) {
                 assignedSubjects = facultySubjectAssignmentRepository.findByFacultyIdWithSubject(userDetails.getUser().getId());
             } else if (!isAuthority) {
+                // 7. Get or save data in the database
                 enrollments = enrollmentRepository.findByStudentId(userDetails.getUser().getId());
+                canAccessPayments = enrollments.stream().anyMatch(e ->
+                        e.getStatus() == Enrollment.EnrollmentStatus.APPROVED
+                                || e.getStatus() == Enrollment.EnrollmentStatus.ENROLLED);
+                isTempStudent = enrollments.stream().noneMatch(e -> e.getStatus() != Enrollment.EnrollmentStatus.CANCELLED);
             }
         }
         // 8. Put data on the page so the user can see it
@@ -59,6 +59,8 @@ public class DashboardController {
         model.addAttribute("assignedSubjects", assignedSubjects);
         model.addAttribute("isFaculty", isFaculty);
         model.addAttribute("overviewText", overviewText);
+        model.addAttribute("canAccessPayments", canAccessPayments);
+        model.addAttribute("isTempStudent", isTempStudent);
         // 9. Send the result back to the screen
         return "dashboard";
     }
@@ -84,8 +86,10 @@ public class DashboardController {
         model.addAttribute("assignedSubjects", Collections.emptyList());
         model.addAttribute("isFaculty", false);
         model.addAttribute("overviewText", userDetails == null
-                ? "Welcome to the KOR Institute of Technology Student Portal."
+                ? "Welcome to the College Course Registration System."
                 : resolveOverviewText(userDetails));
+        model.addAttribute("canAccessPayments", false);
+        model.addAttribute("isTempStudent", false);
         // 7. Send the result back to the screen
         return "dashboard";
     }
@@ -114,4 +118,3 @@ public class DashboardController {
         return "Use this dashboard to browse courses and track your application and payment progress.";
     }
 }
-

@@ -33,24 +33,15 @@
                     <div class="form-group">
                         <label>Role</label>
                         <select name="role" required>
+                            <option th:if="${showSuperAdminRole}" value="AUTHORITY_SUPER_ADMIN" th:selected="${selectedRole == 'AUTHORITY_SUPER_ADMIN'}">Super Admin</option>
                             <option value="AUTHORITY_ADMIN" th:selected="${selectedRole == 'AUTHORITY_ADMIN'}">Admin</option>
                             <option value="AUTHORITY_DIRECTOR" th:selected="${selectedRole == 'AUTHORITY_DIRECTOR'}">Director</option>
                             <option value="AUTHORITY_STAFF" th:selected="${selectedRole == 'AUTHORITY_STAFF'}">Account Staff</option>
-                            <option th:if="${isSuperAdmin}" value="AUTHORITY_SUPER_ADMIN" th:selected="${selectedRole == 'AUTHORITY_SUPER_ADMIN'}">Super Admin</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label th:text="${user.id == null ? 'Password' : 'New Password (optional)'}">Password</label>
                         <input type="password" name="password" th:required="${user.id == null}"/>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Department (optional)</label>
-                        <select name="department" th:value="${user.department}">
-                            <option value="">(None)</option>
-                            <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${user.department == d}"></option>
-                        </select>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
