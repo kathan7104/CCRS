@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Payment;
 import com.example.demo.security.CustomUserDetails;
+import com.example.demo.service.StudentAccessService;
 import com.example.demo.service.StudentPaymentService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,13 +18,29 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping({"/payments", "/payment"})
 public class StudentPaymentController {
     private final StudentPaymentService studentPaymentService;
+    private final StudentAccessService studentAccessService;
 
-    public StudentPaymentController(StudentPaymentService studentPaymentService) {
+    public StudentPaymentController(StudentPaymentService studentPaymentService,
+                                    StudentAccessService studentAccessService) {
         this.studentPaymentService = studentPaymentService;
+        this.studentAccessService = studentAccessService;
+    }
+
+    private boolean checkStudentAccess(CustomUserDetails principal, RedirectAttributes redirectAttributes) {
+        if (principal != null && principal.getUser() != null && principal.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"))) {
+            if (!studentAccessService.isStudentAllowed(principal.getUser())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Your temporary student login is inactive because registration is closed or seats are full.");
+                return false;
+            }
+        }
+        return true;
     }
 
     @GetMapping
-    public String payments(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
+    public String payments(@AuthenticationPrincipal CustomUserDetails principal, Model model, RedirectAttributes redirectAttributes) {
+        if (!checkStudentAccess(principal, redirectAttributes)) {
+            return "redirect:/courses";
+        }
         var dashboard = studentPaymentService.getPaymentDashboard(principal.getUser());
         model.addAttribute("currentPath", "/payments");
         model.addAttribute("userName", principal.getUser().getFullName());
@@ -43,6 +60,9 @@ public class StudentPaymentController {
                                   @PathVariable Long invoiceId,
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
+        if (!checkStudentAccess(principal, redirectAttributes)) {
+            return "redirect:/courses";
+        }
         return renderCheckout(principal, invoiceId, model, redirectAttributes);
     }
 
@@ -51,6 +71,9 @@ public class StudentPaymentController {
                                @PathVariable Long invoiceId,
                                Model model,
                                RedirectAttributes redirectAttributes) {
+        if (!checkStudentAccess(principal, redirectAttributes)) {
+            return "redirect:/courses";
+        }
         return renderCheckout(principal, invoiceId, model, redirectAttributes);
     }
 
@@ -81,6 +104,9 @@ public class StudentPaymentController {
                                @RequestParam(value = "cardExpiry", required = false) String cardExpiry,
                                @RequestParam(value = "cardCvv", required = false) String cardCvv,
                                RedirectAttributes redirectAttributes) {
+        if (!checkStudentAccess(principal, redirectAttributes)) {
+            return "redirect:/courses";
+        }
         try {
             boolean success = "SUCCESS".equalsIgnoreCase(result);
             StudentPaymentService.MockPaymentDetails details = new StudentPaymentService.MockPaymentDetails(
@@ -108,6 +134,9 @@ public class StudentPaymentController {
                                  @RequestParam("razorpay_payment_id") String razorpayPaymentId,
                                  @RequestParam("razorpay_signature") String razorpaySignature,
                                  RedirectAttributes redirectAttributes) {
+        if (!checkStudentAccess(principal, redirectAttributes)) {
+            return "redirect:/courses";
+        }
         try {
             Payment payment = studentPaymentService.verifyRazorpayPayment(
                     principal.getUser(),

@@ -36,6 +36,7 @@
                             <option value="AUTHORITY_ADMIN" th:selected="${selectedRole == 'AUTHORITY_ADMIN'}">Admin</option>
                             <option value="AUTHORITY_DIRECTOR" th:selected="${selectedRole == 'AUTHORITY_DIRECTOR'}">Director</option>
                             <option value="AUTHORITY_STAFF" th:selected="${selectedRole == 'AUTHORITY_STAFF'}">Account Staff</option>
+                            <option th:if="${isSuperAdmin}" value="AUTHORITY_SUPER_ADMIN" th:selected="${selectedRole == 'AUTHORITY_SUPER_ADMIN'}">Super Admin</option>
                         </select>
                     </div>
                     <div class="form-group">

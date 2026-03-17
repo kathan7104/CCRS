@@ -18,10 +18,13 @@ import jakarta.servlet.http.HttpServletRequest;
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     private final com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter;
+    private final com.example.demo.security.CustomAuthenticationSuccessHandler authenticationSuccessHandler;
     public SecurityConfig(CustomUserDetailsService userDetailsService,
-                          com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter) {
+                          com.example.demo.security.PreLoginRoleValidationFilter preLoginRoleValidationFilter,
+                          com.example.demo.security.CustomAuthenticationSuccessHandler authenticationSuccessHandler) {
         this.userDetailsService = userDetailsService;
         this.preLoginRoleValidationFilter = preLoginRoleValidationFilter;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
     }
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -60,7 +63,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/auth/login")
                 .loginProcessingUrl("/auth/login")
-                .successHandler(new com.example.demo.security.CustomAuthenticationSuccessHandler())
+                .successHandler(authenticationSuccessHandler)
                 .failureUrl("/auth/login?error")
                 .usernameParameter("username")
                 .passwordParameter("password")
