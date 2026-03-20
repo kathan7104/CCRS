@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,6 +91,7 @@ public class DirectorCourseController {
     @PostMapping
     public String create(@ModelAttribute Course course,
                          @RequestParam(name = "requiredDocumentTypes", required = false) List<String> requiredDocumentTypes,
+                         @RequestParam(name = "prerequisiteIds", required = false) List<Long> prerequisiteIds,
                          @RequestParam(name = "programNameCustom", required = false) String programNameCustom,
                          @RequestParam(name = "existingTeachingSchemaId", required = false) Long existingTeachingSchemaId,
                          @RequestParam(name = "teachingSchemaFile", required = false) MultipartFile teachingSchemaFile,
@@ -106,6 +108,7 @@ public class DirectorCourseController {
             course.setLevel(cleanText(course.getLevel()));
             course.setTeachingSchema(resolveTeachingSchema(course, existingTeachingSchemaId, teachingSchemaFile));
             course.setRequiredDocumentTypeList(normalizeDocumentTypes(requiredDocumentTypes));
+            course.setPrerequisites(resolvePrerequisites(prerequisiteIds, null));
             normalizeCapacity(course);
             courseRepository.save(course);
             ensureSubjectsExtracted(course.getTeachingSchema());
@@ -135,6 +138,7 @@ public class DirectorCourseController {
     public String update(@PathVariable Long id,
                          @ModelAttribute Course form,
                          @RequestParam(name = "requiredDocumentTypes", required = false) List<String> requiredDocumentTypes,
+                         @RequestParam(name = "prerequisiteIds", required = false) List<Long> prerequisiteIds,
                          @RequestParam(name = "programNameCustom", required = false) String programNameCustom,
                          @RequestParam(name = "existingTeachingSchemaId", required = false) Long existingTeachingSchemaId,
                          @RequestParam(name = "teachingSchemaFile", required = false) MultipartFile teachingSchemaFile,
@@ -162,6 +166,7 @@ public class DirectorCourseController {
             course.setRequiredQualification(form.getRequiredQualification());
             course.setTeachingSchema(resolveTeachingSchema(course, existingTeachingSchemaId, teachingSchemaFile));
             course.setRequiredDocumentTypeList(normalizeDocumentTypes(requiredDocumentTypes));
+            course.setPrerequisites(resolvePrerequisites(prerequisiteIds, course.getId()));
             normalizeCapacity(course);
             courseRepository.save(course);
             ensureSubjectsExtracted(course.getTeachingSchema());
@@ -341,6 +346,16 @@ public class DirectorCourseController {
         ordered.sort(String.CASE_INSENSITIVE_ORDER);
         return ordered;
     }
+    private Set<Course> resolvePrerequisites(List<Long> prerequisiteIds, Long currentCourseId) {
+        if (prerequisiteIds == null || prerequisiteIds.isEmpty()) {
+            return Set.of();
+        }
+        List<Course> selected = courseRepository.findAllById(prerequisiteIds);
+        return selected.stream()
+                .filter(c -> c.getId() != null)
+                .filter(c -> currentCourseId == null || !c.getId().equals(currentCourseId))
+                .collect(Collectors.toSet());
+    }
 
     private List<String> normalizeDocumentTypes(List<String> rawValues) {
         if (rawValues == null || rawValues.isEmpty()) {
@@ -489,3 +504,13 @@ public class DirectorCourseController {
         return direct;
     }
 }
+
+
+
+
+
+
+
+
+
+

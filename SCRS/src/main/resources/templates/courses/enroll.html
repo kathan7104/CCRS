@@ -10,7 +10,7 @@
     <header class="dashboard-header">
         <h1>KOR Institute of Technology Student Portal</h1>
         <nav class="dashboard-nav">
-            <a th:if="${hasStudentAcademicAccess}" th:href="@{/dashboard}" class="nav-link">Home</a>
+            <a th:href="@{/dashboard}" class="nav-link">Home</a>
             <a th:href="@{/courses}" class="nav-link active">Courses</a>
         </nav>
         <div class="user-info">
@@ -41,6 +41,20 @@
                     <p style="margin: 0; color: #666;">
                         <strong>Required Qualification:</strong> <span th:text="${course.requiredQualification}">12th pass</span>
                     </p>
+                    <p style="margin: 0; color: #666;">
+                        <strong>Prerequisites:</strong>
+                        <span th:if="${#lists.isEmpty(prerequisites)}">None</span>
+                        <span th:if="${!#lists.isEmpty(prerequisites)}" th:each="p, stat : ${prerequisites}">
+                            <span th:text="${p.code + ' - ' + p.name}">PREREQ</span><span th:if="${!stat.last}">, </span>
+                        </span>
+                    </p>
+                    <p style="margin: 0; color: #666;">
+                        <strong>Required Documents:</strong>
+                        <span th:if="${#lists.isEmpty(requiredDocumentLabels)}">As per your highest qualification</span>
+                        <span th:if="${!#lists.isEmpty(requiredDocumentLabels)}" th:each="label, stat : ${requiredDocumentLabels}">
+                            <span th:text="${label}">Document</span><span th:if="${!stat.last}">, </span>
+                        </span>
+                    </p>
                 </div>
 
                 <form th:action="@{/courses/{id}/enroll(id=${course.id})}" method="post" enctype="multipart/form-data">
@@ -54,6 +68,26 @@
                     <div class="form-group">
                         <label>Date of Birth</label>
                         <input type="date" name="dob" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <label><input type="radio" name="gender" value="MALE" required> Male</label>
+                            <label><input type="radio" name="gender" value="FEMALE" required> Female</label>
+                            <label><input type="radio" name="gender" value="OTHER" required> Other</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Caste Category</label>
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <label><input type="radio" name="caste" value="GENERAL" required> General</label>
+                            <label><input type="radio" name="caste" value="OBC" required> OBC</label>
+                            <label><input type="radio" name="caste" value="SC" required> SC</label>
+                            <label><input type="radio" name="caste" value="ST" required> ST</label>
+                            <label><input type="radio" name="caste" value="EWS" required> EWS</label>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -147,28 +181,40 @@
         </div>
     </template>
 
-    <script>
+    <script th:inline="javascript">
         (function () {
             const container = document.getElementById('documentsContainer');
             const addDocumentBtn = document.getElementById('addDocumentBtn');
             const rowTemplate = document.getElementById('documentRowTemplate');
             const form = container.closest('form');
+            const requiredDocs = /*[[${requiredDocumentTypes}]]*/ [];
 
             function updateRemoveButtons() {
                 const rows = container.querySelectorAll('.document-row');
                 rows.forEach((row) => {
                     const removeBtn = row.querySelector('.remove-document-btn');
-                    removeBtn.disabled = rows.length === 1;
+                    const isRequired = row.dataset.required === 'true';
+                    removeBtn.disabled = rows.length === 1 || isRequired;
                 });
             }
 
-            function addRow() {
+            function addRow(selectedType, isRequired) {
                 const clone = rowTemplate.content.cloneNode(true);
+                const row = clone.querySelector('.document-row');
+                if (row && isRequired) {
+                    row.dataset.required = 'true';
+                }
+                if (row && selectedType) {
+                    const select = row.querySelector('select[name="documentTypes"]');
+                    if (select) {
+                        select.value = selectedType;
+                    }
+                }
                 container.appendChild(clone);
                 updateRemoveButtons();
             }
 
-            addDocumentBtn.addEventListener('click', addRow);
+            addDocumentBtn.addEventListener('click', () => addRow('', false));
 
             container.addEventListener('click', function (event) {
                 if (!event.target.classList.contains('remove-document-btn')) {
@@ -272,6 +318,10 @@
                 }
             });
 
+            if (Array.isArray(requiredDocs) && requiredDocs.length > 0) {
+                container.innerHTML = '';
+                requiredDocs.forEach((docType) => addRow(docType, true));
+            }
             updateRemoveButtons();
         })();
     </script>

@@ -147,6 +147,19 @@
                         <p class="muted" style="margin-top: 0.4rem;">Hold Ctrl/Command to select multiple. Students must upload all selected document types for enrollment.</p>
                     </div>
 
+                    <div class="form-group">
+                        <label>Course Prerequisites</label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                            <label th:each="p : ${allCourses}" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox"
+                                       name="prerequisiteIds"
+                                       th:value="${p.id}"
+                                       th:checked="${course.prerequisites.contains(p)}"/>
+                                <span th:text="${p.code + ' - ' + p.name}">COURSE</span>
+                            </label>
+                        </div>
+                        <p class="muted" style="margin-top: 0.4rem;">Select all courses that must be completed before this course.</p>
+                    </div>
                     <div class="form-row align-center">
                         <div class="form-group flex-1">
                             <a th:href="@{/director/courses}" class="btn btn-outline">Cancel</a>
@@ -279,5 +292,7 @@
     </script>
 </body>
 </html>
+
+
 
 

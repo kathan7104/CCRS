@@ -116,6 +116,7 @@ public class CourseController {
         model.addAttribute("requiredDocumentLabels", course.getRequiredDocumentTypeList().stream()
                 .map(type -> documentTypeOptions().getOrDefault(type, type))
                 .toList());
+        model.addAttribute("prerequisites", course.getPrerequisites().stream().toList());
         // 5. Put data on the page so the user can see it
         model.addAttribute("studentName", userDetails.getUser().getFullName());
         // 6. Put data on the page so the user can see it
@@ -128,6 +129,8 @@ public class CourseController {
     public String processEnrollment(@PathVariable Long id, 
                                    @RequestParam("fullName") String fullName,
                                    @RequestParam("dob") String dobStr,
+                                   @RequestParam("gender") String gender,
+                                   @RequestParam("caste") String caste,
                                    @RequestParam("pastMarks") String pastMarksStr,
                                    @RequestParam("highestQualification") String highestQualification,
                                    @RequestParam("boardUniversity") String boardUniversity,
@@ -150,7 +153,7 @@ public class CourseController {
             LocalDate dob = LocalDate.parse(dobStr);
             Double pastMarks = Double.parseDouble(pastMarksStr);
             Integer passingYear = Integer.parseInt(passingYearStr);
-            validateEnrollmentForm(fullName, dob, pastMarks, highestQualification, boardUniversity, passingYear);
+            validateEnrollmentForm(fullName, dob, gender, caste, pastMarks, highestQualification, boardUniversity, passingYear);
 
             Path uploadPath = Paths.get(documentUploadDir).toAbsolutePath().normalize();
             // 4. Check a rule -> decide what to do next
@@ -200,7 +203,7 @@ public class CourseController {
             validateRequiredCourseDocuments(id, documents);
             // 5. Ask the service to do the main work
             enrollmentService.enrollStudent(userDetails.getUsername(), id, comments, 
-                fullName, dob, pastMarks, highestQualification, boardUniversity, passingYear, documents);
+                fullName, dob, gender, caste, pastMarks, highestQualification, boardUniversity, passingYear, documents);
             // 6. Show a one-time message on the next page
             redirectAttributes.addFlashAttribute("successMessage", "Application submitted successfully. Track status in My Applications.");
             // 7. Send the result back to the screen
@@ -220,6 +223,8 @@ public class CourseController {
 
     private void validateEnrollmentForm(String fullName,
                                         LocalDate dob,
+                                        String gender,
+                                        String caste,
                                         Double pastMarks,
                                         String highestQualification,
                                         String boardUniversity,
@@ -229,6 +234,12 @@ public class CourseController {
         }
         if (dob == null || dob.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Date of birth is invalid.");
+        }
+        if (gender == null || gender.trim().isBlank()) {
+            throw new IllegalArgumentException("Gender is required.");
+        }
+        if (caste == null || caste.trim().isBlank()) {
+            throw new IllegalArgumentException("Caste category is required.");
         }
         if (pastMarks == null || pastMarks < 0 || pastMarks > 100) {
             throw new IllegalArgumentException("Past marks must be between 0 and 100.");
@@ -300,3 +311,7 @@ public class CourseController {
         return options;
     }
 }
+
+
+
+

@@ -26,7 +26,7 @@ public class EnrollmentService {
     }
     @Transactional
     public Enrollment enrollStudent(String userEmail, Long courseId, String comments, 
-                                    String fullName, LocalDate dob, Double pastMarks,
+                                    String fullName, LocalDate dob, String gender, String caste, Double pastMarks,
                                     String highestQualification, String boardUniversity, Integer passingYear,
                                     List<DocumentPayload> documents) {
         // 1. Get or save data in the database
@@ -84,8 +84,8 @@ public class EnrollmentService {
         }
         validateMandatoryDocuments(course, documents);
         String personalInfo = String.format(
-                "{\"fullName\": \"%s\", \"dob\": \"%s\", \"highestQualification\": \"%s\", \"boardUniversity\": \"%s\", \"passingYear\": \"%s\"}",
-                fullName, dob, highestQualification, boardUniversity, passingYear
+                "{\"fullName\": \"%s\", \"dob\": \"%s\", \"gender\": \"%s\", \"caste\": \"%s\", \"highestQualification\": \"%s\", \"boardUniversity\": \"%s\", \"passingYear\": \"%s\"}",
+                fullName, dob, gender, caste, highestQualification, boardUniversity, passingYear
         );
         enrollment.setPersonalInfo(personalInfo);
         enrollment.setStatus(Enrollment.EnrollmentStatus.PENDING);
@@ -165,3 +165,6 @@ public class EnrollmentService {
                                   String contentType) {
     }
 }
+
+
+
