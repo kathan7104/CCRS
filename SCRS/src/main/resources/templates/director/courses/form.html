@@ -134,17 +134,18 @@
                         <input id="teachingSchemaFile" type="file" name="teachingSchemaFile" accept=".pdf,.doc,.docx"/>
                     </div>
 
-                    <div class="form-group">
-                        <label for="requiredDocumentTypes">Required Enrollment Documents</label>
-                        <select id="requiredDocumentTypes" name="requiredDocumentTypes" multiple size="8">
-                            <option th:each="entry : ${documentTypeOptions.entrySet()}"
-                                    th:value="${entry.key}"
-                                    th:text="${entry.value}"
-                                    th:selected="${course.requiredDocumentTypeList.contains(entry.key)}">
-                                Document Type
-                            </option>
-                        </select>
-                        <p class="muted" style="margin-top: 0.4rem;">Hold Ctrl/Command to select multiple. Students must upload all selected document types for enrollment.</p>
+                                        <div class="form-group">
+                        <label>Required Enrollment Documents</label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                            <label th:each="entry : ${documentTypeOptions.entrySet()}" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox"
+                                       name="requiredDocumentTypes"
+                                       th:value="${entry.key}"
+                                       th:checked="${course.requiredDocumentTypeList.contains(entry.key)}"/>
+                                <span th:text="${entry.value}">Document Type</span>
+                            </label>
+                        </div>
+                        <p class="muted" style="margin-top: 0.4rem;">Students must upload all selected document types for enrollment.</p>
                     </div>
 
                     <div class="form-group">
@@ -292,6 +293,7 @@
     </script>
 </body>
 </html>
+
 
 
 

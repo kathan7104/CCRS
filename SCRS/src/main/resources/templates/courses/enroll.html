@@ -198,6 +198,15 @@
                 });
             }
 
+            function nextRequiredType() {
+                if (!Array.isArray(requiredDocs) || requiredDocs.length === 0) {
+                    return "";
+                }
+                const selected = Array.from(container.querySelectorAll('select[name="documentTypes"]'))
+                    .map((el) => el.value)
+                    .filter((v) => v);
+                return requiredDocs.find((doc) => !selected.includes(doc)) || "";
+            }
             function addRow(selectedType, isRequired) {
                 const clone = rowTemplate.content.cloneNode(true);
                 const row = clone.querySelector('.document-row');
@@ -214,7 +223,7 @@
                 updateRemoveButtons();
             }
 
-            addDocumentBtn.addEventListener('click', () => addRow('', false));
+            addDocumentBtn.addEventListener('click', () => addRow(nextRequiredType(), false));
 
             container.addEventListener('click', function (event) {
                 if (!event.target.classList.contains('remove-document-btn')) {
@@ -327,5 +336,6 @@
     </script>
 </body>
 </html>
+
 
 
