@@ -187,7 +187,10 @@ public class StaffBillingService {
             throw new IllegalStateException("Invoice is already fully paid.");
         }
 
-        BigDecimal paymentAmount = amount == null ? due : amount.setScale(2, RoundingMode.HALF_UP);
+        if (amount == null) {
+            throw new IllegalArgumentException("Payment amount is required.");
+        }
+        BigDecimal paymentAmount = amount.setScale(2, RoundingMode.HALF_UP);
         if (paymentAmount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Payment amount must be greater than zero.");
         }
