@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Payment;
+import com.example.demo.entity.Enrollment;
 import com.example.demo.security.CustomUserDetails;
+import com.example.demo.repository.EnrollmentRepository;
 import com.example.demo.service.StudentPaymentService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,13 +19,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping({"/payments", "/payment"})
 public class StudentPaymentController {
     private final StudentPaymentService studentPaymentService;
+    private final EnrollmentRepository enrollmentRepository;
 
-    public StudentPaymentController(StudentPaymentService studentPaymentService) {
+    public StudentPaymentController(StudentPaymentService studentPaymentService,
+                                    EnrollmentRepository enrollmentRepository) {
         this.studentPaymentService = studentPaymentService;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     @GetMapping
-    public String payments(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
+    public String payments(@AuthenticationPrincipal CustomUserDetails principal,
+                           Model model,
+                           RedirectAttributes redirectAttributes) {
+        if (!canAccessPayments(principal)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Payments are available after your application is approved.");
+            return "redirect:/dashboard";
+        }
         var dashboard = studentPaymentService.getPaymentDashboard(principal.getUser());
         model.addAttribute("currentPath", "/payments");
         model.addAttribute("userName", principal.getUser().getFullName());
@@ -59,6 +70,10 @@ public class StudentPaymentController {
                                   Model model,
                                   RedirectAttributes redirectAttributes) {
         try {
+            if (!canAccessPayments(principal)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Payments are available after your application is approved.");
+                return "redirect:/dashboard";
+            }
             var session = studentPaymentService.createCheckoutSession(principal.getUser(), invoiceId);
             model.addAttribute("userName", principal.getUser().getFullName());
             model.addAttribute("checkoutSession", session);
@@ -82,6 +97,10 @@ public class StudentPaymentController {
                                @RequestParam(value = "cardCvv", required = false) String cardCvv,
                                RedirectAttributes redirectAttributes) {
         try {
+            if (!canAccessPayments(principal)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Payments are available after your application is approved.");
+                return "redirect:/dashboard";
+            }
             boolean success = "SUCCESS".equalsIgnoreCase(result);
             StudentPaymentService.MockPaymentDetails details = new StudentPaymentService.MockPaymentDetails(
                     paymentMode, upiId, cardNumber, cardHolderName, cardExpiry, cardCvv
@@ -109,6 +128,10 @@ public class StudentPaymentController {
                                  @RequestParam("razorpay_signature") String razorpaySignature,
                                  RedirectAttributes redirectAttributes) {
         try {
+            if (!canAccessPayments(principal)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Payments are available after your application is approved.");
+                return "redirect:/dashboard";
+            }
             Payment payment = studentPaymentService.verifyRazorpayPayment(
                     principal.getUser(),
                     invoiceId,
@@ -122,5 +145,14 @@ public class StudentPaymentController {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
         return "redirect:/payments";
+    }
+
+    private boolean canAccessPayments(CustomUserDetails principal) {
+        if (principal == null || principal.getUser() == null) {
+            return false;
+        }
+        return enrollmentRepository.findByStudentId(principal.getUser().getId()).stream()
+                .anyMatch(e -> e.getStatus() == Enrollment.EnrollmentStatus.APPROVED
+                        || e.getStatus() == Enrollment.EnrollmentStatus.ENROLLED);
     }
 }

@@ -33,6 +33,7 @@
                     <div class="form-group">
                         <label>Role</label>
                         <select name="role" required>
+                            <option th:if="${showSuperAdminRole}" value="AUTHORITY_SUPER_ADMIN" th:selected="${selectedRole == 'AUTHORITY_SUPER_ADMIN'}">Super Admin</option>
                             <option value="AUTHORITY_ADMIN" th:selected="${selectedRole == 'AUTHORITY_ADMIN'}">Admin</option>
                             <option value="AUTHORITY_DIRECTOR" th:selected="${selectedRole == 'AUTHORITY_DIRECTOR'}">Director</option>
                             <option value="AUTHORITY_STAFF" th:selected="${selectedRole == 'AUTHORITY_STAFF'}">Account Staff</option>

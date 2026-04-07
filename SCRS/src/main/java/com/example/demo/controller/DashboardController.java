@@ -25,6 +25,8 @@ public class DashboardController {
         List<Enrollment> enrollments = Collections.emptyList();
         List<FacultySubjectAssignment> assignedSubjects = Collections.emptyList();
         boolean isFaculty = false;
+        boolean canAccessPayments = false;
+        boolean isTempStudent = false;
         String overviewText = "Welcome to the College Course Registration System.";
         // 1. Put data on the page so the user can see it
         model.addAttribute("currentPath", request.getRequestURI());
@@ -46,6 +48,10 @@ public class DashboardController {
             } else if (!isAuthority) {
                 // 7. Get or save data in the database
                 enrollments = enrollmentRepository.findByStudentId(userDetails.getUser().getId());
+                canAccessPayments = enrollments.stream().anyMatch(e ->
+                        e.getStatus() == Enrollment.EnrollmentStatus.APPROVED
+                                || e.getStatus() == Enrollment.EnrollmentStatus.ENROLLED);
+                isTempStudent = enrollments.stream().noneMatch(e -> e.getStatus() != Enrollment.EnrollmentStatus.CANCELLED);
             }
         }
         // 8. Put data on the page so the user can see it
@@ -53,6 +59,8 @@ public class DashboardController {
         model.addAttribute("assignedSubjects", assignedSubjects);
         model.addAttribute("isFaculty", isFaculty);
         model.addAttribute("overviewText", overviewText);
+        model.addAttribute("canAccessPayments", canAccessPayments);
+        model.addAttribute("isTempStudent", isTempStudent);
         // 9. Send the result back to the screen
         return "dashboard";
     }
@@ -80,6 +88,8 @@ public class DashboardController {
         model.addAttribute("overviewText", userDetails == null
                 ? "Welcome to the College Course Registration System."
                 : resolveOverviewText(userDetails));
+        model.addAttribute("canAccessPayments", false);
+        model.addAttribute("isTempStudent", false);
         // 7. Send the result back to the screen
         return "dashboard";
     }

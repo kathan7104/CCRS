@@ -43,14 +43,21 @@ public class AuthController {
     @GetMapping("/login")
     public String loginPage(Model model,
                             @RequestParam(value = "error", required = false) String error,
-                            @RequestParam(value = "type", required = false) String type) {
+                            @RequestParam(value = "type", required = false) String type,
+                            @RequestParam(value = "m", required = false) String messageCode) {
         // 1. Put data on the page so the user can see it
         model.addAttribute("loginRequest", new LoginRequest());
         model.addAttribute("loginType", "authority".equalsIgnoreCase(type) ? "AUTHORITY" : "STUDENT");
         // 2. Check a rule -> decide what to do next
         if (error != null) {
             // 3. Put data on the page so the user can see it
-            model.addAttribute("error", "Invalid email/mobile or password.");
+            if ("registrationClosed".equalsIgnoreCase(messageCode)) {
+                model.addAttribute("error", "Course registrations are closed or all seats are full. Your temporary login is disabled.");
+            } else if ("wrongRole".equalsIgnoreCase(messageCode)) {
+                model.addAttribute("error", "This account does not match the selected login type.");
+            } else {
+                model.addAttribute("error", "Invalid email/mobile or password.");
+            }
         }
         // 4. Send the result back to the screen
         return "auth/login";

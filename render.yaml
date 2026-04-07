@@ -1,15 +1,44 @@
 services:
   - type: web
-    name: ccrs
-    env: docker
-    dockerfilePath: ./Dockerfile
+    name: ccrs-app
+    runtime: java
+    plan: free
+    rootDir: SCRS
+    buildCommand: ./mvnw -DskipTests clean package
+    startCommand: java -Dspring.profiles.active=prod -jar target/*.jar
     healthCheckPath: /auth/login
     envVars:
+      - key: JAVA_VERSION
+        value: 21
       - key: SPRING_PROFILES_ACTIVE
-        value: h2
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: SPRING_MAIL_HOST
+        value: smtp.gmail.com
+      - key: SPRING_MAIL_PORT
+        value: 587
+      - key: SPRING_MAIL_USERNAME
+        sync: false
+      - key: SPRING_MAIL_PASSWORD
+        sync: false
+      - key: SPRING_MAIL_SMTP_AUTH
+        value: true
+      - key: SPRING_MAIL_SMTP_STARTTLS_ENABLE
+        value: true
+      - key: SPRING_MAIL_SMTP_SSL_TRUST
+        value: "*"
       - key: CCRS_OTP_SEND_EMAIL
-        value: "false"
+        value: true
       - key: CCRS_OTP_SEND_SMS
-        value: "false"
-      - key: CCRS_SMS_PROVIDER
-        value: mock
+        value: false
+      - key: CCRS_UPLOAD_BASE_DIR
+        value: uploads
+      - key: CCRS_UPLOAD_DOCUMENTS_DIR
+        value: uploads/documents
+      - key: CCRS_UPLOAD_TEACHING_SCHEMA_DIR
+        value: uploads/teaching-schemas

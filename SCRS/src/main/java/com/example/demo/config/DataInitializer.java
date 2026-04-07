@@ -45,6 +45,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Value("${ccrs.dev.seed-demo-faculty:false}")
     private boolean seedDemoFaculty;
+
+    @Value("${ccrs.upload.teaching-schema-dir:uploads/teaching-schemas}")
+    private String teachingSchemaUploadDir;
     public DataInitializer(UserRepository userRepository,
                            CourseRepository courseRepository,
                            DepartmentRepository departmentRepository,
@@ -83,39 +86,65 @@ public class DataInitializer implements CommandLineRunner {
         }
         // 1. Check a rule -> decide what to do next
         if (!createAuthority) return;
+        String superAdminEmail = "superadmin@college.edu";
+        if (userRepository.findByEmail(superAdminEmail).isEmpty()) {
+            if (userRepository.existsByMobileNumber("9000000000")) {
+                System.out.println("Skipped demo super admin account creation (mobile already exists): " + superAdminEmail);
+            } else {
+                User sa = new User();
+                sa.setEmail(superAdminEmail);
+                sa.setMobileNumber("9000000000");
+                sa.setFullName("College Super Admin (DEMO)");
+                sa.setDepartment("Central");
+                sa.setPassword(passwordEncoder.encode("SuperAdmin123!"));
+                sa.getRoles().add("AUTHORITY_SUPER_ADMIN");
+                sa.setEmailVerified(true);
+                sa.setMobileVerified(true);
+                userRepository.save(sa);
+                System.out.println("Created demo super admin account: " + superAdminEmail + " (password: SuperAdmin123!)");
+            }
+        }
         String directorEmail = "director@college.edu";
         // 2. Check a rule -> decide what to do next
         if (userRepository.findByEmail(directorEmail).isEmpty()) {
-            User u = new User();
-            u.setEmail(directorEmail);
-            u.setMobileNumber("9000000001");
-            u.setFullName("College Director (DEMO)");
-            u.setDepartment("Engineering");
-            // 3. Security: hide the password before saving
-            u.setPassword(passwordEncoder.encode("Director123!"));
-            u.getRoles().add("AUTHORITY_DIRECTOR");
-            u.setEmailVerified(true);
-            u.setMobileVerified(true);
-            // 4. Get or save data in the database
-            userRepository.save(u);
-            System.out.println("Created demo director account: " + directorEmail + " (password: Director123!)");
+            if (userRepository.existsByMobileNumber("9000000001")) {
+                System.out.println("Skipped demo director account creation (mobile already exists): " + directorEmail);
+            } else {
+                User u = new User();
+                u.setEmail(directorEmail);
+                u.setMobileNumber("9000000001");
+                u.setFullName("College Director (DEMO)");
+                u.setDepartment("Engineering");
+                // 3. Security: hide the password before saving
+                u.setPassword(passwordEncoder.encode("Director123!"));
+                u.getRoles().add("AUTHORITY_DIRECTOR");
+                u.setEmailVerified(true);
+                u.setMobileVerified(true);
+                // 4. Get or save data in the database
+                userRepository.save(u);
+                System.out.println("Created demo director account: " + directorEmail + " (password: Director123!)");
+            }
         }
         String adminEmail = "admin@college.edu";
         // 5. Check a rule -> decide what to do next
         if (userRepository.findByEmail(adminEmail).isEmpty()) {
-            User a = new User();
-            a.setEmail(adminEmail);
-            a.setMobileNumber("9000000002");
-            a.setFullName("College Admin (DEMO)");
-            a.setDepartment("Central");
-            // 6. Security: hide the password before saving
-            a.setPassword(passwordEncoder.encode("Admin123!"));
-            a.getRoles().add("AUTHORITY_ADMIN");
-            a.setEmailVerified(true);
-            a.setMobileVerified(true);
-            // 7. Get or save data in the database
-            userRepository.save(a);
-            System.out.println("Created demo admin account: " + adminEmail + " (password: Admin123!)");
+            if (userRepository.existsByMobileNumber("9000000002")) {
+                System.out.println("Skipped demo admin account creation (mobile already exists): " + adminEmail);
+            } else {
+                User a = new User();
+                a.setEmail(adminEmail);
+                a.setMobileNumber("9000000002");
+                a.setFullName("College Admin (DEMO)");
+                a.setDepartment("Central");
+                // 6. Security: hide the password before saving
+                a.setPassword(passwordEncoder.encode("Admin123!"));
+                a.getRoles().add("AUTHORITY_ADMIN");
+                a.setEmailVerified(true);
+                a.setMobileVerified(true);
+                // 7. Get or save data in the database
+                userRepository.save(a);
+                System.out.println("Created demo admin account: " + adminEmail + " (password: Admin123!)");
+            }
         }
         String facultyEmail = "faculty@college.edu";
         if (userRepository.findByEmail(facultyEmail).isEmpty()) {
@@ -123,17 +152,21 @@ public class DataInitializer implements CommandLineRunner {
         }
         String staffEmail = "staff@college.edu";
         if (userRepository.findByEmail(staffEmail).isEmpty()) {
-            User s = new User();
-            s.setEmail(staffEmail);
-            s.setMobileNumber("9000000004");
-            s.setFullName("Account Staff (DEMO)");
-            s.setDepartment("Accounts");
-            s.setPassword(passwordEncoder.encode("Staff123!"));
-            s.getRoles().add("AUTHORITY_STAFF");
-            s.setEmailVerified(true);
-            s.setMobileVerified(true);
-            userRepository.save(s);
-            System.out.println("Created demo account staff account: " + staffEmail + " (password: Staff123!)");
+            if (userRepository.existsByMobileNumber("9000000004")) {
+                System.out.println("Skipped demo staff account creation (mobile already exists): " + staffEmail);
+            } else {
+                User s = new User();
+                s.setEmail(staffEmail);
+                s.setMobileNumber("9000000004");
+                s.setFullName("Account Staff (DEMO)");
+                s.setDepartment("Accounts");
+                s.setPassword(passwordEncoder.encode("Staff123!"));
+                s.getRoles().add("AUTHORITY_STAFF");
+                s.setEmailVerified(true);
+                s.setMobileVerified(true);
+                userRepository.save(s);
+                System.out.println("Created demo account staff account: " + staffEmail + " (password: Staff123!)");
+            }
         }
     }
     private void patchLegacyCourseSchema() {
@@ -307,6 +340,11 @@ public class DataInitializer implements CommandLineRunner {
 
     private void ensureDemoFaculty() {
         String facultyEmail = "faculty@college.edu";
+        if (userRepository.findByEmail(facultyEmail).isEmpty()
+                && userRepository.existsByMobileNumber("9000000003")) {
+            System.out.println("Skipped demo faculty account creation (mobile already exists): " + facultyEmail);
+            return;
+        }
         User faculty = userRepository.findByEmail(facultyEmail).orElseGet(User::new);
         faculty.setEmail(facultyEmail);
         faculty.setMobileNumber("9000000003");
@@ -393,7 +431,7 @@ public class DataInitializer implements CommandLineRunner {
         if (Files.exists(direct)) {
             return direct;
         }
-        Path uploadsFallback = Paths.get("uploads", "teaching-schemas")
+        Path uploadsFallback = Paths.get(teachingSchemaUploadDir)
                 .toAbsolutePath()
                 .normalize()
                 .resolve(candidate.getFileName() == null ? "" : candidate.getFileName().toString())

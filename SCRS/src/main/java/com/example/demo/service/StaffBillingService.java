@@ -138,9 +138,37 @@ public class StaffBillingService {
     }
 
     @Transactional
-    public Payment recordOfflinePayment(Long invoiceId, Payment.PaymentMethod method, BigDecimal amount) {
+    public Payment recordOfflinePayment(Long invoiceId,
+                                        Payment.PaymentMethod method,
+                                        BigDecimal amount,
+                                        String chequeNumber,
+                                        String chequeBankName,
+                                        String chequeIfscCode) {
         if (method != Payment.PaymentMethod.CASH && method != Payment.PaymentMethod.CHEQUE) {
             throw new IllegalArgumentException("Only CASH/CHEQUE entries are allowed here.");
+        }
+        if (method == Payment.PaymentMethod.CHEQUE) {
+            String cleaned = chequeNumber == null ? "" : chequeNumber.trim();
+            if (cleaned.isBlank()) {
+                throw new IllegalArgumentException("Cheque number is required for cheque payments.");
+            }
+            if (cleaned.length() > 50) {
+                throw new IllegalArgumentException("Cheque number is too long.");
+            }
+            String bankName = chequeBankName == null ? "" : chequeBankName.trim();
+            if (bankName.isBlank()) {
+                throw new IllegalArgumentException("Bank name is required for cheque payments.");
+            }
+            if (bankName.length() > 100) {
+                throw new IllegalArgumentException("Bank name is too long.");
+            }
+            String ifsc = chequeIfscCode == null ? "" : chequeIfscCode.trim();
+            if (ifsc.isBlank()) {
+                throw new IllegalArgumentException("IFSC code is required for cheque payments.");
+            }
+            if (ifsc.length() > 20) {
+                throw new IllegalArgumentException("IFSC code is too long.");
+            }
         }
 
         Invoice invoice = invoiceRepository.findById(invoiceId)
@@ -171,6 +199,11 @@ public class StaffBillingService {
         payment.setInvoice(invoice);
         payment.setAmount(paymentAmount);
         payment.setMethod(method);
+        if (method == Payment.PaymentMethod.CHEQUE) {
+            payment.setChequeNumber(chequeNumber == null ? null : chequeNumber.trim());
+            payment.setChequeBankName(chequeBankName == null ? null : chequeBankName.trim());
+            payment.setChequeIfscCode(chequeIfscCode == null ? null : chequeIfscCode.trim());
+        }
         payment.setStatus(Payment.PaymentStatus.SUCCESS);
         payment.setPaidAt(LocalDateTime.now());
         payment.setTransactionId("OFF-" + method.name() + "-" + invoice.getId() + "-" +

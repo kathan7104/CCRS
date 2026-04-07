@@ -7,6 +7,7 @@ import com.example.demo.repository.DepartmentRepository;
 import com.example.demo.repository.TeachingSchemaRepository;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.service.TeachingSchemaSubjectIngestionService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +36,6 @@ import java.util.regex.Pattern;
 @RequestMapping("/director/courses")
 public class DirectorCourseController {
     private static final String OTHER_PROGRAM_VALUE = "__OTHER__";
-    private static final String TEACHING_SCHEMA_UPLOAD_DIR = "uploads/teaching-schemas/";
     private static final List<String> PROGRAM_NAMES = List.of(
             "BCA",
             "MCA",
@@ -53,15 +53,18 @@ public class DirectorCourseController {
     private final DepartmentRepository departmentRepository;
     private final TeachingSchemaRepository teachingSchemaRepository;
     private final TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService;
+    private final String teachingSchemaUploadDir;
 
     public DirectorCourseController(CourseRepository courseRepository,
                                     DepartmentRepository departmentRepository,
                                     TeachingSchemaRepository teachingSchemaRepository,
-                                    TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService) {
+                                    TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService,
+                                    @Value("${ccrs.upload.teaching-schema-dir:uploads/teaching-schemas}") String teachingSchemaUploadDir) {
         this.courseRepository = courseRepository;
         this.departmentRepository = departmentRepository;
         this.teachingSchemaRepository = teachingSchemaRepository;
         this.teachingSchemaSubjectIngestionService = teachingSchemaSubjectIngestionService;
+        this.teachingSchemaUploadDir = teachingSchemaUploadDir;
     }
 
     @GetMapping
@@ -224,7 +227,7 @@ public class DirectorCourseController {
                     .findTopByDepartmentIgnoreCaseAndProgramNameIgnoreCaseOrderBySchemaVersionDesc(department, programName)
                     .map(s -> s.getSchemaVersion() + 1)
                     .orElse(1);
-            Path uploadPath = Paths.get(TEACHING_SCHEMA_UPLOAD_DIR);
+            Path uploadPath = Paths.get(teachingSchemaUploadDir);
             uploadPath = uploadPath.toAbsolutePath().normalize();
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
@@ -357,6 +360,17 @@ public class DirectorCourseController {
         return result;
     }
 
+    private Set<Course> resolvePrerequisites(List<Long> prerequisiteIds, Long currentCourseId) {
+        if (prerequisiteIds == null || prerequisiteIds.isEmpty()) {
+            return Set.of();
+        }
+        List<Course> selected = courseRepository.findAllById(prerequisiteIds);
+        return selected.stream()
+                .filter(c -> c.getId() != null)
+                .filter(c -> currentCourseId == null || !c.getId().equals(currentCourseId))
+                .collect(Collectors.toSet());
+    }
+
     private Map<String, String> documentTypeOptions() {
         Map<String, String> options = new LinkedHashMap<>();
         options.put("SSC_MARKSHEET", "SSC Marksheet");
@@ -475,7 +489,7 @@ public class DirectorCourseController {
         if (Files.exists(direct)) {
             return direct;
         }
-        Path uploadsFallback = Paths.get(TEACHING_SCHEMA_UPLOAD_DIR)
+        Path uploadsFallback = Paths.get(teachingSchemaUploadDir)
                 .toAbsolutePath()
                 .normalize()
                 .resolve(candidate.getFileName() == null ? "" : candidate.getFileName().toString())

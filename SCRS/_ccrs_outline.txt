@@ -1,0 +1,154 @@
+001: College Course Registration System (CCRS)
+003: 17th January, 2026
+006: Introduction
+007: The College Course Registration & Fee Management System (CCRS) is a proposed comprehensive, web-based application designed to modernise and integrate the academic enrollment and financial processes of an educational institution. The current, traditional approach often involves disconnected systems where course selection and tuition fee payment are handled separately, resulting in significant administrative inefficiencies, long student queues, and a high risk of reconciliation errors and financial discrepancies.
+009: This project is specifically engineered to eliminate these challenges by introducing a single, unified platform. The core objective of the CCRS is to seamlessly integrate the entire workflow: from a student selecting their courses to the automated generation of their invoice and the final confirmation of their payment. By doing so, the system will ensure real-time data concurrency, preventing course overbooking and providing administrators with immediate visibility into pending dues while establishing a centralised, reliable repository for all enrollment and financial transactions.
+011: The CCRS will deliver a streamlined, user-friendly experience that benefits both students and college administration through automation, data integrity, and a unified operational model.
+014: Problem Statement
+015: The existing manual or semi-digital systems suffer from critical limitations that hinder operational efficiency:
+016: The "Race Condition" Issue: In high-demand courses, multiple students may attempt to claim the last available seat simultaneously. Traditional systems often fail to handle this concurrency, resulting in overbooking.
+017: Complex Fee Calculations: Fee structures vary based on laboratory components, credit hours, and late penalties. Manual calculation is prone to human error, resulting in financial discrepancies.
+018: Data Redundancy: Storing student data in spreadsheets or isolated files leads to data duplication and security risks.
+019: Proposed Solution
+020: The College Course Registration & Fee Management System addresses these problems by automating the entire lifecycle of student enrollment. The system introduces a centralised database architecture where course data and financial records are tightly integrated.
+021: Key features of the proposed solution include:
+022: Real-Time Seat Management: Utilising database transaction locking (via Hibernate) to ensure that seat counts are updated the instant a student confirms enrollment, preventing double-booking.
+023: Integrated Payment Gateway: A module that automatically generates invoices based on selected credits and allows students to complete payments online. The system ensures that enrollment is only finalised once the financial transaction is successful.
+024: Automated Prerequisite Validation: The system logic checks a student's academic history against course requirements before allowing registration.
+026: Objectives
+027: Unified Workflow: To integrate course registration directly with fee generation, ensuring a student is only officially enrolled once payment (or a payment plan) is confirmed.
+028: Automation: To automate fee calculations based on selected credits (e.g., Total Credits × Cost Per Credit).
+029: Real-Time Concurrency: To provide live updates on seat availability to prevent overbooking.
+030: Data Integrity: To maintain a centralised record of enrollments and financial transactions using a relational database.
+031: Project Scope
+032: The system will be divided into four primary functional modules:
+033: A. Student Module
+034: Secure Login/Authentication.
+035: Enrollment Engine: Add/Drop courses with instant seat validation.
+036: Dashboard: View class schedule and academic history.
+037: B. Fee & Payment Module
+038: Automated Invoicing: The system automatically generates a bill based on the courses selected.
+039: Payment Processing: Students can view pending dues and make payments (simulated or sandbox integration).
+040: Receipt Generation: Downloadable PDF receipts for successful transactions.
+041: History: View past payment records.
+042: C. Administrator Module
+043: Manage Course Catalogue (Add/Edit/Delete courses).
+044: Fee Structure Management: Define cost per credit or lab fees.
+045: Generate reports: "Unpaid Students," "Enrollment Stats," "Total Revenue."
+046: D. Faculty Module (Optional)
+047: View class rosters (list of enrolled and paid students).
+048: Selected Technology Stack
+049: After evaluating various technologies for scalability and data integrity, the following stack has been selected:
+050: Language: Java (JDK 17 or higher)
+051: Framework: Spring Boot
+052: ORM (Object-Relational Mapping): Hibernate
+053: Database: MySQL (Relational Database Management System)
+054: Frontend: HTML/CSS/JavaScript
+055: Tools: Git, Maven
+056: Conclusion
+057: Ultimately, the College Course Registration & Fee Management System aims to transform the administrative experience from a bottleneck into an enabler of student success. By providing a transparent, user-friendly, and error-free platform, the institution can reduce administrative overhead and allow students to focus on their primary goal: education.
+069: System Analysis
+070: The System Analysis phase serves as the foundational investigation into the existing processes and the definition of the solution architecture for the College Course Registration & Fee Management System (CCRS). This analysis is crucial for establishing the scope, requirements, and viability of the project.
+071: 1. Detailed Problem Analysis
+072: The development of the CCRS is necessitated by critical limitations within the existing academic and financial administration framework, which are typically characterised by disjointed, manual, or semi-digital systems.
+073: 1.1 The Operational Bottleneck of Disconnected Systems
+074: The primary source of inefficiency is the lack of integration between course registration and fee payment. This separation forces students and administrators to navigate parallel, non-communicative workflows:
+075: Student Experience: Students must first register for courses, often receiving a temporary slot, and then proceed to a separate financial department to receive an invoice and make a payment. This multi-step, often physical, process results in significant queue times and delays in final enrollment confirmation.
+076: Administrative Burden: Reconciliation is manual. The academic department cannot confirm a student is financially clear, and the financial department cannot verify real-time enrollment status. This necessitates manual cross-referencing of student lists, which is a significant drain on administrative resources and prone to errors.
+077: 1.2 Critical Systemic Limitations
+078: 1.2.1 The "Race Condition" and Concurrency Failure
+079: This is the most critical technical flaw in the existing system.
+080: Definition: The "Race Condition" occurs in high-demand courses where the number of available seats is critically low (e.g., 1-5 seats). Multiple students submitting registration requests simultaneously will all read the same remaining seat count before the system has time to write an update.
+081: Consequence: The traditional system fails to handle this concurrency, allowing multiple successful registration attempts for the same final seat. This results in course overbooking—a situation where more students are officially enrolled than the course capacity allows.
+082: Impact: Resolving overbooking requires substantial and disruptive administrative intervention, including forcing students to drop the course, which negatively impacts the student experience and trust in the system.
+083: 1.2.2 Complexity in Fee Calculation and Financial Reconciliation
+084: The college’s fee structure is not static or simple, making manual calculation unreliable.
+085: Variability: Fee calculation is dynamic, based on multiple variables: base tuition per credit hour, mandatory lab fees for specific courses, differential fees (e.g., out-of-state tuition), and late registration penalties.
+086: Complex Payment Reconciliation: Existing systems struggle significantly with managing flexible payment structures, such as partial payments (instalments) and mixed payment modes (e.g., Cash, Cheque, Online). Manually reconciling these complex transactions is a major administrative task that frequently leads to unrecoverable revenue leakage and financial discrepancies.
+087: Consequence: Manual entry is a high-risk activity, inevitably leading to human error. This results in under-invoicing or over-invoicing, both requiring complex and costly reconciliation.
+088: 1.2.3 Lack of Hierarchical Control and System Security
+089: Most current systems lack a strict hierarchical command structure, leading to severe governance and security risks:
+090: Lack of Hierarchical Control: There is no dedicated "Super User" or "Director" role to manage the operational staff. "Admins" often have excessive or undifferentiated power, leading to a breakdown in the principle of least privilege.
+091: Staff Management: There is no secure, digital process to manage the onboarding and offboarding of staff (Admins/Faculty). If an Admin leaves, there is no centralised and secure way for the highest authority to revoke their system access.
+092: Security Risks: Without a strict separation of duties enforced by role-based access, lower-level staff may inadvertently or maliciously access sensitive configuration settings (like fee structures) or PII, compromising system integrity and compliance.
+093: 1.2.4 Data Redundancy and Compliance
+094: The current reliance on isolated data storage (e.g., separate spreadsheets for student services, finance, and academics) poses serious risks.
+095: Redundancy: Information is stored across multiple, non-synchronised files, leading to data duplication and inconsistency.
+096: Non-Compliance: Maintaining multiple, potentially insecure data sources complicates adherence to data privacy regulations (e.g., GDPR, FERPA, depending on jurisdiction).
+098: 2. Feasibility Study
+099: A thorough assessment confirms that the CCRS project is highly viable and presents an optimal solution to the identified problems.
+100: 2.1 Technical Feasibility
+101: The project is sound from a technical standpoint, relying on proven, enterprise-grade technologies.
+102: Proven Technology Stack: The chosen stack (Java/JDK 17+, Spring Boot, Hibernate, MySQL) is mature, widely adopted, and supported by a large community, ensuring stability and long-term maintenance.
+103: Concurrency Solution: The "Race Condition" is addressed by a specific and proven solution: Database Transaction Locking via the Hibernate ORM, which enforces atomic updates and eliminates overbooking.
+104: Role Hierarchy and Security: The project leverages Java Spring Security to implement a strict Role Hierarchy. This allows for precise separation of duties, where the "Director" role will have CRUCIAL_ACCESS privileges for staff management, while "Admins" and "Faculty" will have restricted, need-to-know views and permissions.
+105: Integration Capability: Spring Boot provides robust modules for integrating the Integrated Payment Gateway and connecting the centralised database, confirming the technical achievability of a unified workflow.
+106: 2.2 Economic Feasibility
+107: The system demonstrates a strong Return on Investment (ROI) and will generate significant long-term economic benefits.
+108: Cost Reduction in Man-Hours: Automation of invoicing, payment tracking, and report generation will liberate administrative staff from repetitive manual tasks, resulting in substantial savings in annual labour costs.
+109: Mitigation of Financial Errors: The automated, rule-based fee calculation and the centralised reconciliation module will virtually eliminate human-based financial discrepancies, preventing revenue loss and reducing the time/cost associated with student disputes over incorrect billing.
+110: Efficiency Gains: The real-time nature of the system accelerates the enrollment-to-payment cycle, improving institutional cash flow.
+111: 2.3 Operational Feasibility
+112: The CCRS is fully aligned with the operational needs of the institution and is designed for high user acceptance.
+113: Ease of Use: The solution delivers a single, intuitive, web-based platform, replacing multiple disjointed interfaces, which enhances the student experience and reduces support requests.
+114: Administrator and Director Control: The Administrator Module provides tools for managing the Course Catalogue and Fee Structure. Critically, the system introduces a "Director Dashboard" specifically for staff management, ensuring that only the highest authority can securely add or delete other operational staff (Admins/Faculty), directly solving the hierarchical control and offboarding problem.
+115: Change Management: The new system automates painful manual processes, simplifying the change management process. Training will focus on the new, streamlined, exception-handling workflows.
+116: 3. Requirements Analysis
+117: The Requirements Analysis phase translates the findings of the problem analysis and feasibility study into precise, measurable specifications for the development team.
+118: 3.1 Functional Requirements (FRs)
+119: Functional requirements define what the system must do to support the business operations, focusing on the core transactional and management features.
+129: 3.2 Non-Functional Requirements (NFRs)
+130: Non-functional requirements define the quality attributes, constraints, and design characteristics that the system must satisfy.
+141: 4. System Design
+142: 4.1. Use case Diagram:
+143: A use-case diagram quickly defines a project's purpose and describes object interaction for a useful result. It shows how a system interacts with external actors. A system includes actors and a set of use cases, with each use case representing system functionality, and the complete set showing the entire system's functionality.
+144: Systems UseCase diagram
+150: 4.2. Activity Diagram:
+151: An activity diagram, like a flowchart, illustrates the flow of control and logic for a single use-case scenario. It visually represents a workflow from start to finish, detailing activities, parallel tasks, alternative paths, and decision points.
+152: Account Staff Activity diagram
+154: Faculty’s Activity diagram
+156: Director’s Activity diagram
+158: Student’s Activity diagram
+160: Admin’s Activity diagram
+164: 4.3. Sequence Diagram:
+165: A sequence diagram illustrates the interactions between objects, showing how they send and receive messages in a specific, sequential order. These diagrams serve as a transition point, refining the requirements initially captured in a use case into a more formal representation. Their primary function is to define the exact sequence of events (messages) that must occur between objects to achieve a desired outcome, communicating both what messages are exchanged and when they occur.
+167: Student’s Sequence diagram
+170: Admin’s Sequence diagram
+172: Director’s Sequence diagram
+174: Faculty’s Sequence diagram
+176: Account staff’s diagram
+184: 4.4. Class Diagram:
+185: The two main objectives of a class diagram are:
+186: Understanding Requirements: To aid in comprehending the system's specifications.
+187: Describing Detailed Design: To document the in-depth architectural blueprint.
+188: Class diagrams are categorized into two types:
+189: Analysis Class Diagram
+190: Design Class Diagram
+192: System’s Class Diagram
+204: 5. Database Design (Master Tables Schema)
+206: List of Master Tables
+208: 1) USERS
+209: 2) USER_ROLES
+210: 3) OTP_VERIFICATIONS
+211: 4) DEPARTMENTS
+212: 5) TEACHING_SCHEMAS
+213: 6) SUBJECTS
+214: 7) COURSES
+215: 8) COURSE_PREREQUISITES
+216: 9) ENROLLMENTS
+217: 10) ENROLLMENT_DOCUMENTS
+218: 11) INVOICES
+219: 12) INVOICE_ITEMS
+220: 13) PAYMENTS
+221: 14) FEE_STRUCTURES
+222: 15) FEE_STRUCTURE_AUDIT_LOGS
+224: 16) FACULTY_COURSE_ASSIGNMENTS
+225: 17) FACULTY_SUBJECT_ASSIGNMENTS
+228: Test Report - CCRS (College Course Registration System)
+229: Summary
+230: Manual Execution Summary
+231: Manual Test Cases
+232: Automation Execution Summary
+233: Automation Test Results
+234: Notes
+235: Manual tests are documented but not executed in this run. Automation results are based on Surefire reports in target/surefire-reports.

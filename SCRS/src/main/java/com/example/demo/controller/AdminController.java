@@ -22,7 +22,8 @@ import java.util.Set;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private static final Set<String> MANAGED_ROLES = Set.of("AUTHORITY_ADMIN", "AUTHORITY_DIRECTOR", "AUTHORITY_STAFF");
+    private static final String SUPER_ADMIN_ROLE = "AUTHORITY_SUPER_ADMIN";
+    private static final Set<String> MANAGED_ROLES = Set.of("AUTHORITY_ADMIN", "AUTHORITY_DIRECTOR", "AUTHORITY_STAFF", SUPER_ADMIN_ROLE);
 
     private final EnrollmentRepository enrollmentRepository;
     private final DepartmentRepository departmentRepository;
@@ -58,6 +59,8 @@ public class AdminController {
     public String enrollmentApprovals(Model model) {
         List<Enrollment> pending = enrollmentRepository.findByStatusOrderByRegisteredAtDesc(Enrollment.EnrollmentStatus.PENDING);
         model.addAttribute("pendingEnrollments", pending);
+        List<Enrollment> enrolled = enrollmentRepository.findByStatusOrderByRegisteredAtDesc(Enrollment.EnrollmentStatus.ENROLLED);
+        model.addAttribute("enrolledEnrollments", enrolled);
         return "admin/enrollments";
     }
 
@@ -88,25 +91,34 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public String listSuperUsers(Model model) {
+    public String listSuperUsers(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
         model.addAttribute("users", getManagedUsers());
+        model.addAttribute("currentUserId", principal.getUser().getId());
+        model.addAttribute("currentIsSuperAdmin", hasRole(principal.getUser(), SUPER_ADMIN_ROLE));
+        model.addAttribute("superAdminRole", SUPER_ADMIN_ROLE);
         return "admin/users/list";
     }
 
     @GetMapping("/users/new")
-    public String createUserForm(Model model) {
+    public String createUserForm(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
         model.addAttribute("user", new User());
         model.addAttribute("selectedRole", "AUTHORITY_STAFF");
         model.addAttribute("departments", getActiveDepartmentNames());
+        model.addAttribute("showSuperAdminRole", hasRole(principal.getUser(), SUPER_ADMIN_ROLE));
         return "admin/users/form";
     }
 
     @PostMapping("/users")
-    public String createUser(@ModelAttribute User user,
+    public String createUser(@AuthenticationPrincipal CustomUserDetails principal,
+                             @ModelAttribute User user,
                              @RequestParam("role") String role,
                              RedirectAttributes redirectAttributes) {
         if (!MANAGED_ROLES.contains(role)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid role");
+            return "redirect:/admin/users";
+        }
+        if (SUPER_ADMIN_ROLE.equals(role)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Super admin accounts cannot be created here.");
             return "redirect:/admin/users";
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -120,16 +132,26 @@ public class AdminController {
     }
 
     @GetMapping("/users/{id}/edit")
-    public String editUserForm(@PathVariable Long id, Model model) {
+    public String editUserForm(@PathVariable Long id,
+                               @AuthenticationPrincipal CustomUserDetails principal,
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        boolean isTargetSuperAdmin = hasRole(user, SUPER_ADMIN_ROLE);
+        if (isTargetSuperAdmin && !hasRole(principal.getUser(), SUPER_ADMIN_ROLE)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot edit the super admin account.");
+            return "redirect:/admin/users";
+        }
         model.addAttribute("user", user);
         model.addAttribute("selectedRole", user.getRoles().stream().findFirst().orElse("AUTHORITY_STAFF"));
         model.addAttribute("departments", getActiveDepartmentNames());
+        model.addAttribute("showSuperAdminRole", isTargetSuperAdmin || hasRole(principal.getUser(), SUPER_ADMIN_ROLE));
         return "admin/users/form";
     }
 
     @PostMapping("/users/{id}")
     public String updateUser(@PathVariable Long id,
+                             @AuthenticationPrincipal CustomUserDetails principal,
                              @RequestParam String fullName,
                              @RequestParam String email,
                              @RequestParam String mobileNumber,
@@ -140,6 +162,19 @@ public class AdminController {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (!MANAGED_ROLES.contains(role)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Invalid role");
+            return "redirect:/admin/users";
+        }
+        boolean isTargetSuperAdmin = hasRole(user, SUPER_ADMIN_ROLE);
+        if (SUPER_ADMIN_ROLE.equals(role) && !isTargetSuperAdmin) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Super admin role cannot be assigned here.");
+            return "redirect:/admin/users";
+        }
+        if (isTargetSuperAdmin && !hasRole(principal.getUser(), SUPER_ADMIN_ROLE)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Cannot edit the super admin account.");
+            return "redirect:/admin/users";
+        }
+        if (isTargetSuperAdmin && !SUPER_ADMIN_ROLE.equals(role)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Super admin role cannot be changed.");
             return "redirect:/admin/users";
         }
         user.setFullName(fullName);
@@ -157,7 +192,18 @@ public class AdminController {
     }
 
     @PostMapping("/users/{id}/delete")
-    public String deleteUser(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteUser(@PathVariable Long id,
+                             @AuthenticationPrincipal CustomUserDetails principal,
+                             RedirectAttributes redirectAttributes) {
+        if (principal != null && principal.getUser().getId().equals(id)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "You cannot delete your own account.");
+            return "redirect:/admin/users";
+        }
+        User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        if (hasRole(user, SUPER_ADMIN_ROLE)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Super admin accounts cannot be deleted.");
+            return "redirect:/admin/users";
+        }
         userRepository.deleteById(id);
         redirectAttributes.addFlashAttribute("successMessage", "User deleted.");
         return "redirect:/admin/users";
@@ -228,5 +274,12 @@ public class AdminController {
         return departmentRepository.findByActiveTrueOrderByNameAsc().stream()
                 .map(Department::getName)
                 .toList();
+    }
+
+    private boolean hasRole(User user, String role) {
+        if (user == null || role == null) {
+            return false;
+        }
+        return user.getRoles().stream().anyMatch(r -> r.equalsIgnoreCase(role));
     }
 }

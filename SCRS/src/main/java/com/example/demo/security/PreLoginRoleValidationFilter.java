@@ -1,5 +1,8 @@
 package com.example.demo.security;
+import com.example.demo.entity.Enrollment;
 import com.example.demo.entity.User;
+import com.example.demo.repository.CourseRepository;
+import com.example.demo.repository.EnrollmentRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
@@ -15,8 +18,14 @@ import java.util.Optional;
 public class PreLoginRoleValidationFilter extends OncePerRequestFilter {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PreLoginRoleValidationFilter.class);
     private final UserRepository userRepository;
-    public PreLoginRoleValidationFilter(UserRepository userRepository) {
+    private final EnrollmentRepository enrollmentRepository;
+    private final CourseRepository courseRepository;
+    public PreLoginRoleValidationFilter(UserRepository userRepository,
+                                        EnrollmentRepository enrollmentRepository,
+                                        CourseRepository courseRepository) {
         this.userRepository = userRepository;
+        this.enrollmentRepository = enrollmentRepository;
+        this.courseRepository = courseRepository;
     }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -47,12 +56,23 @@ public class PreLoginRoleValidationFilter extends OncePerRequestFilter {
             User user = userOpt.get();
             boolean hasStudent = user.getRoles().stream().anyMatch(r -> r.equalsIgnoreCase("STUDENT") || r.equalsIgnoreCase("ROLE_STUDENT"));
             boolean hasAuthority = user.getRoles().stream().anyMatch(r -> r.toUpperCase().startsWith("AUTHORITY") || r.toUpperCase().startsWith("ROLE_AUTHORITY"));
+            boolean hasActiveEnrollment = enrollmentRepository.findByStudentId(user.getId()).stream()
+                    .anyMatch(e -> e.getStatus() != Enrollment.EnrollmentStatus.CANCELLED);
+            boolean hasOpenSeats = courseRepository.existsByRemainingSeatsGreaterThan(0);
             // 9. Check a rule -> decide what to do next
             if ("STUDENT".equalsIgnoreCase(loginType) && !hasStudent) {
                 // 10. Note: write a log so we can track it
                 log.info("Blocking login attempt for username={} as loginType=STUDENT but user lacks STUDENT role", username);
                 response.sendRedirect("/auth/login?error&type=student&m=wrongRole");
                 // 11. Send the result back to the screen
+                return;
+            }
+            if ("STUDENT".equalsIgnoreCase(loginType)
+                    && hasStudent
+                    && !hasActiveEnrollment
+                    && !hasOpenSeats) {
+                log.info("Blocking temp-student login for username={} because no open course seats remain", username);
+                response.sendRedirect("/auth/login?error&type=student&m=registrationClosed");
                 return;
             }
             // 12. Check a rule -> decide what to do next

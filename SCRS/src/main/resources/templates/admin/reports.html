@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Financial Oversight - KOR Institute</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"/>
 </head>
 <body class="role-admin">
 <header class="dashboard-header">
@@ -27,11 +29,65 @@
         <section class="dashboard-section">
             <h2>Unpaid Students</h2>
             <div class="table-wrap">
-                <table class="data-table">
+                <table class="data-table js-data-table js-export-table" data-export-title="Unpaid Students">
                     <thead><tr><th>Invoice</th><th>Student</th><th>Email</th><th>Amount</th><th>Status</th></tr></thead>
                     <tbody>
                     <tr th:each="row : ${unpaidRows}">
                         <td th:text="${row.invoiceNumber}">INV</td><td th:text="${row.studentName}">Name</td><td th:text="${row.studentEmail}">mail</td><td th:text="${row.amount}">0</td><td th:text="${row.status}">DUE</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(unpaidRows)}">
+                        <td style="text-align: center;">No unpaid students found.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="dashboard-section">
+            <h2>Payment Reconciliation</h2>
+            <div class="table-wrap">
+                <table class="data-table js-data-table js-export-table" data-export-title="Payment Reconciliation">
+                    <thead>
+                    <tr>
+                        <th>Transaction</th>
+                        <th>Invoice</th>
+                        <th>Student</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Cheque No.</th>
+                        <th>Bank</th>
+                        <th>IFSC</th>
+                        <th>Status</th>
+                        <th>Paid At</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="payment : ${payments}">
+                        <td th:text="${payment.transactionId}">TXN</td>
+                        <td th:text="${payment.invoiceNumber}">INV</td>
+                        <td th:text="${payment.studentName}">Name</td>
+                        <td th:text="${payment.amount}">0</td>
+                        <td th:text="${payment.paymentMethod}">CASH</td>
+                        <td th:text="${payment.chequeNumber != null ? payment.chequeNumber : '-'}">-</td>
+                        <td th:text="${payment.chequeBankName != null ? payment.chequeBankName : '-'}">-</td>
+                        <td th:text="${payment.chequeIfscCode != null ? payment.chequeIfscCode : '-'}">-</td>
+                        <td th:text="${payment.paymentStatus}">PAID</td>
+                        <td th:text="${payment.paidAt != null ? #temporals.format(payment.paidAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(payments)}">
+                        <td style="text-align: center;">No payments recorded yet.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     </tbody>
                 </table>
@@ -39,6 +95,31 @@
         </section>
     </main>
 </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.js-data-table').forEach(function (table) {
+            var hasExport = table.classList.contains('js-export-table');
+            var options = {
+                pageLength: 10,
+                order: [],
+                language: { search: "Filter:" }
+            };
+            if (hasExport) {
+                options.dom = 'Bfrtip';
+                options.buttons = [{
+                    extend: 'excelHtml5',
+                    title: table.getAttribute('data-export-title') || 'Report'
+                }];
+            }
+            $(table).DataTable(options);
+        });
+    });
+</script>
 </body>
 </html>
 

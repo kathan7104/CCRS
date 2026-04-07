@@ -1,0 +1,26 @@
+ID,Module,Scenario,Steps (High-Level),Expected Result,Status,Evidence
+AUTH-01,Auth,Student registration with email + mobile OTP,Open /auth/register -> fill form -> submit -> verify email OTP -> verify mobile OTP,"Account created, both verifications succeed, login enabled",Passed (Automated),AUTO-manualAuth01RegistrationAndOtpVerification
+AUTH-02,Auth,OTP expiry enforcement,Request OTP -> wait past expiry -> submit OTP,OTP rejected as expired; prompt to resend,Not Executed,N/A
+AUTH-03,Auth,Login role mismatch blocked,Open /auth/login?type=authority -> login using student account,Login blocked with wrong-role message,Not Executed,N/A
+AUTH-04,Auth,Forgot password with OTP reset,Open /auth/forgot-password -> request OTP -> reset password,Password updated; login succeeds with new password,Passed (Automated),AUTO-manualAuth04ForgotPasswordFlow
+STU-01,Student,Browse courses list,Login as student -> open /courses,Courses list renders with available courses,Passed (Automated),AUTO-manualStu01CoursesListLoads
+STU-02,Student,Course detail view,Open /courses/{id},"Course details page shows name, fee, credits, seats",Passed (Automated),AUTO-manualStu02CourseDetailLoads
+STU-03,Student,Apply with missing mandatory docs,Open enroll -> submit without required docs,Validation error; application not submitted,Not Executed,N/A
+STU-04,Student,Document type validation,"Upload unsupported file type (e.g., .exe) during enrollment",Upload rejected with file type error,Not Executed,N/A
+STU-05,Student,Enforce single active application,Submit application -> attempt second application,Second application blocked with message,Not Executed,N/A
+ADM-01,Admin,Approve enrollment,Login as admin -> open pending enrollment -> approve,Status becomes APPROVED; seat consumed,Not Executed,N/A
+ADM-02,Admin,Reject enrollment releases seat,Reject pending enrollment,Status becomes CANCELLED; seat restored,Not Executed,N/A
+ADM-03,Admin,Manage authority users,Create -> edit -> deactivate authority user,User record updates reflected in list and status,Not Executed,N/A
+ADM-04,Admin,Department duplicate prevention,Create department with existing name,Duplicate prevented or merged; no duplicate record,Passed (Automated),AUTO-manualAdm04DuplicateDepartmentBlocked
+ADM-05,Admin,Reports render,Open /admin/reports,Revenue and unpaid reports load without error,Passed (Automated),AUTO-manualAdm05ReportsRender
+DIR-01,Director,Create course with capacity,Create new course with capacity/fee/credits,Course saved; remaining seats initialized,Not Executed,N/A
+DIR-02,Director,Attach teaching schema (upload),Upload teaching schema docx for a program,Subjects extracted and upserted for program,Not Executed,N/A
+DIR-03,Director,Assign subjects to faculty,Assign subject -> attempt duplicate assignment,Duplicate assignment blocked,Not Executed,N/A
+DIR-04,Director,Activate/deactivate users,Toggle user active status,User status updates and reflects in login access,Not Executed,N/A
+STF-01,Staff,Fee structure activation,Create new fee structure and activate,Previous structure deactivated automatically,Not Executed,N/A
+STF-02,Staff,Invoice generation,Generate invoices for enrolled students,Invoices created with correct totals,Not Executed,N/A
+STF-03,Staff,Offline payment capture,Record CASH/CHEQUE payment for invoice,Invoice status updates to PAID/PARTIAL,Not Executed,N/A
+PAY-01,Payment,Mock checkout success,Pay via mock gateway,Payment success; invoice updated,Not Executed,N/A
+PAY-02,Payment,Razorpay verification,Verify payment signature,Payment marked SUCCESS,Not Executed,N/A
+FAC-01,Faculty,Roster view,Login as faculty -> open /faculty/roster,Assigned subjects and students listed,Passed (Automated),AUTO-manualFac01RosterLoads
+SYS-01,Startup,Backfill subjects from schema,Start app with existing teaching schemas,Subjects backfilled for all schemas,Not Executed,N/A

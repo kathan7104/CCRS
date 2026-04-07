@@ -15,6 +15,7 @@ import com.example.demo.repository.TeachingSchemaRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.service.TeachingSchemaSubjectIngestionService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,6 +50,7 @@ public class DirectorManagementController {
     private final TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService;
     private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
+    private final String teachingSchemaUploadDir;
 
     public DirectorManagementController(UserRepository userRepository,
                                         CourseRepository courseRepository,
@@ -59,7 +61,8 @@ public class DirectorManagementController {
                                         TeachingSchemaRepository teachingSchemaRepository,
                                         TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService,
                                         PasswordEncoder passwordEncoder,
-                                        JdbcTemplate jdbcTemplate) {
+                                        JdbcTemplate jdbcTemplate,
+                                        @Value("${ccrs.upload.teaching-schema-dir:uploads/teaching-schemas}") String teachingSchemaUploadDir) {
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
         this.departmentRepository = departmentRepository;
@@ -70,6 +73,7 @@ public class DirectorManagementController {
         this.teachingSchemaSubjectIngestionService = teachingSchemaSubjectIngestionService;
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
+        this.teachingSchemaUploadDir = teachingSchemaUploadDir;
     }
 
     @GetMapping("/dashboard")
@@ -510,7 +514,7 @@ public class DirectorManagementController {
 
     private int syncFromSchemaFilesDirectory() {
         int synced = 0;
-        Path dir = Paths.get("uploads", "teaching-schemas").toAbsolutePath().normalize();
+        Path dir = Paths.get(teachingSchemaUploadDir).toAbsolutePath().normalize();
         if (!Files.exists(dir) || !Files.isDirectory(dir)) {
             return 0;
         }
@@ -583,7 +587,7 @@ public class DirectorManagementController {
         if (Files.exists(direct)) {
             return direct;
         }
-        Path uploadsFallback = Path.of("uploads", "teaching-schemas")
+        Path uploadsFallback = Path.of(teachingSchemaUploadDir)
                 .toAbsolutePath()
                 .normalize()
                 .resolve(candidate.getFileName() == null ? "" : candidate.getFileName().toString())

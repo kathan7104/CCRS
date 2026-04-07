@@ -48,6 +48,10 @@ public class ReportingService {
                         p.getInvoice().getInvoiceNumber(),
                         p.getInvoice().getStudent().getFullName(),
                         p.getAmount(),
+                        p.getMethod() == null ? "-" : p.getMethod().name(),
+                        p.getChequeNumber(),
+                        p.getChequeBankName(),
+                        p.getChequeIfscCode(),
                         p.getStatus().name(),
                         p.getPaidAt()))
                 .toList();
@@ -59,5 +63,7 @@ public class ReportingService {
                                    BigDecimal amount, String status) {}
 
     public record PaymentRow(String transactionId, String invoiceNumber, String studentName,
-                             BigDecimal amount, String paymentStatus, java.time.LocalDateTime paidAt) {}
+                             BigDecimal amount, String paymentMethod, String chequeNumber,
+                             String chequeBankName, String chequeIfscCode,
+                             String paymentStatus, java.time.LocalDateTime paidAt) {}
 }

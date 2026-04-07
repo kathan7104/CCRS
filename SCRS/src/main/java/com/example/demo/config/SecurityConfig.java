@@ -50,7 +50,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/", "/authenroll").hasAuthority("ROLE_STUDENT")
                 .requestMatchers("/payments/**", "/payment/**").hasAuthority("ROLE_STUDENT")
-                .requestMatchers("/admin/**").hasAuthority("ROLE_AUTHORITY_ADMIN")
+                .requestMatchers("/admin/**").hasAnyAuthority("ROLE_AUTHORITY_ADMIN", "ROLE_AUTHORITY_SUPER_ADMIN")
                 .requestMatchers("/director/**").hasAuthority("ROLE_AUTHORITY_DIRECTOR")
                 .requestMatchers("/staff/**").hasAuthority("ROLE_AUTHORITY_STAFF")
                 .requestMatchers("/faculty/**").hasAuthority("ROLE_AUTHORITY_FACULTY")

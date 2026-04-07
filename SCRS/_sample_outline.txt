@@ -1,0 +1,347 @@
+002: A Project Report on
+003: Industrial Animal Farming Goods Management System
+004: Submitted To
+005: Shri Chimanbhai Patel Post Graduate Institute of Computer Applications Sardar Vallabhbhai Global University
+007: In Partial Fulfillment of the requirements for the degree of
+008: Master of Computer Applications
+009: April 2025
+010: Submitted By: Supervisor Name: Khushee Miyanee [23CI2110068] Dr. Harish Morwani Manali Pareta [23CI2110080]
+011: Acknowledgment
+012: We would like to express our sincere gratitude to all those who have supported and guided us throughout the  completion of this project.
+013: First and foremost, we thank god for granting us the strength and opportunity to complete this project. We are  deeply grateful for their blessings.
+014: We would also like to extend our heartfelt thanks to our mentor, Mr. Prince Vekariya, and guide Dr. Harish  Morwani, whose invaluable guidance, suggestions, and encouragement were instrumental in successfully  executing this project. His expertise and constructive feedback have been crucial in shaping this project to its  final form.
+015: Additionally, we are profoundly grateful to our parents and friends for their unwavering support and insightful  suggestions. Their encouragement, both emotional and intellectual, has been invaluable during various stages of  this project.
+016: Finally, we would like to thank our classmates for their continued assistance and collaboration, which  significantly contributed to the success of this endeavor.
+017: Thanks to all!!
+018: Page: 2
+019: Collage Certificate
+020: Page: 3
+021: Company Certificate
+022: Page: 4
+023: Company Certificate
+024: Page: 5
+025: Table of Contents
+028: Page: 6
+029: Introduction
+030: The Animal Farming Goods Management System project, we have created a Water Analysis module in odoo.  This module enables the creation of CRM leads based on water analysis data. It also features functionality to  generate meeting rooms and send emails to the admin, users, and attendees. Then, we have to create a product  from the product portfolio. In the product portfolio, first, when we create a product, we update to testing, then  create a product. Then, we create a sale-to-purchase flow and generate a receipt from the purchase order. Then,  we log in with the product manager ID. The admin has set the rights in the product manager to set only those  records which is assigned to the product manager in the water analysis document. Then we have set a filter in  water analysis for view to only which document status is done, draft and group by filter.
+031: Project
+032: CRM Lead Creation
+033: ● CRM leads are automatically created from submitted water analysis data.
+034: Meeting Room & Email Notification
+035: ● The system generates meeting rooms and sends notifications to the admin, users, and attendees. Product Creation from Portfolio
+036: ● Products are first marked as "testing" before final creation.
+037: Sales to Purchase Flow
+038: ● Sales orders are followed by purchase orders, and a receipt is generated from the purchase. Product Manager Role
+039: ● The product manager logs in and accesses only records assigned to them in water analysis. Admin Rights Configuration
+040: ● Admin sets access rights to restrict visibility and editing based on role assignments. Water Analysis Filters
+041: ● The view is filtered by document status (Done, Draft) and supports group-by functionality.
+042: Page: 7
+043: Tools & Technology
+046: Page: 8
+047: Project scope
+048: 1. Goods Sales and Purchasing:
+049: ● The system will manage the sale of farming goods such as animal feed, health supplies, and equipment. It  will also handle purchasing necessary products to maintain the farm's operations.
+050: ● Bill of Materials (BoM):
+051: ○ A comprehensive Bill of Materials (BoM) will be generated for each purchase, listing all necessary  items and quantities required for farming operations. This helps track inventory, manage stock  levels, and optimize purchasing decisions.
+052: 2. Water Analysis System:
+053: ● Created a custom water analysis module with three security groups: Representative (own documents  only), User (all documents), and Administrator (full access).
+054: ● Created water analysis records based on customer requirements.
+055: ● "Send" button to send emails or log messages.
+056: ● When send button press and stage to "Done" if attachments exist or "Error" if missing. ● Then generate lead and create a meeting room.
+057: ● Integrated with the Documents app by creating a "Water Analysis", attachments are moved there and  accessible via a smart button on the customer record.
+058: 3. Meeting Management:
+059: ● Attendee Invitations and Email Validation:
+060: ○ The system will send email invitations to the selected meeting attendees. Each attendee will  confirm their participation or reject the invitation via email, and the system will track these  responses.
+061: ● Tracking Meeting Outcome:
+062: ○ Once the meeting has taken place, the system will evaluate the discussion's outcome. Based on the  decisions made and actions taken during the meeting, the meeting will be marked as either  Successful or Unsuccessful.
+063: 4. Lead Generation in the CRM Module:
+064: ● Lead Generation from Meetings:
+065: ○ The system will generate leads based on the discussions and decisions made during meetings. For  example, if a solution is proposed for improving water quality or buying more supplies, a lead will  be created in the CRM module for further follow-up and sales.
+066: ● CRM Integration:
+067: ○ The CRM system will track all leads generated, including details such as contact information,  status of discussions, and potential sales opportunities.
+068: Page: 9
+069: 5. Lead Validation and Success Tracking:
+070: ● Meeting Outcome Determines Lead Status:
+071: ○ After the meeting, the lead will be either Won or Lost based on whether the meeting led to  actionable decisions and successful outcomes.
+072: ● Labeling in CRM:
+073: ○ The CRM system automatically assigns labels like Won or Lost to each lead depending on the  meeting's success or failure. A "Won" lead would indicate that the proposed solution was accepted,  while a "Lost" lead would indicate that the proposal was rejected or no agreement was reached.
+074: Page: 10
+075: Project Objective
+076: 1. Efficiency Improvement
+077: ● Developed a Water Analysis module to automate CRM lead creation based on customer’s request data. ● Implemented end-to-end sale-to-purchase workflows, including automated receipt generation from  purchase orders.
+078: ● Streamlined product lifecycle stages from initial testing to finalized product creation within the Product  Portfolio model.
+079: ● Enabled faster task execution through role-based access and workflow filters.
+080: 2. Centralized Management
+081: ● Integrated multiple processes (water analysis, CRM, meetings, documents, and sales/purchase  workflows) into a unified Odoo system.
+082: ● Created a single platform for managing:
+083: ○ Product data
+084: ○ Water analysis attachments
+085: ○ CRM activities
+086: ○ Meetings
+087: ○ Sale/Purchase data
+088: 3. Data-Driven Decision Making
+089: ● Automated CRM lead generation based on water analysis data.
+090: ● Facilitated informed planning by allowing visibility into:
+091: ○ Product status (testing, creation, approval)
+092: ○ Meeting outcomes
+093: ○ Inventory and purchase activities
+094: ● Enabled filtering and grouping of water analysis reports by status (Done, Draft) for focused evaluation. 4. Automation and Scalability
+095: ● Automated lead generation, meeting scheduling, and record assignments based on roles (e.g., Product  Manager rights assigned by Admin).
+096: ● Reduced manual intervention in administrative tasks through automation.
+097: 5. Enhanced Communication and Collaboration
+098: ● Meeting room generation and email notifications for admins, representatives, and attendees, improving  collaboration.
+099: ● Allowed Product Managers to access only their assigned documents, ensuring secure and role-specific  communication.
+100: ● Maintained clear logs of inventory data, meeting outcomes, and CRM actions.
+101: Page: 11
+102: 7. Traceability and Compliance
+103: ● Maintained detailed logs for:
+104: ○ Water analysis records
+105: ○ Meetings
+106: ○ Product creation steps
+107: ○ Lead generation and progress tracking
+108: ● Supported compliance through visibility into each stage of the farm product lifecycle. ● Created a structured documentation process to support regulatory requirements for meetings and product  traceability.
+109: Page: 12
+110: Existing System
+111: 1. Water Analysis
+112: ● There is no water analysis module, so the system works manually.
+113: ● Customers manually create and send email of their requirements to the admin.
+114: ● When the admin checks the mail their meeting will be scheduled and a communication gap is generated. 2. Meeting Room & Email Notification
+115: ● The admin generates virtual or book physical meeting rooms for discussions or follow-ups related to  water analysis or product workflows.
+116: ● It also sends email notifications to the admin, representatives, and attendees, ensuring timely  communication and collaboration across teams.
+117: 3. Product Portfolio Management
+118: ● Product manufacture or purchased without testing.
+119: ● The system allows the creation of new farm products through a structured workflow. ● There are no requirements for testing the product before it is produced.
+120: 4. Sales to Purchase Workflow
+121: ● Users can initiate a sales order, which then triggers the system to generate a purchase order as needed. ● The workflow is tightly integrated to automatically generate a receipt once the purchase is confirmed  and fulfilled.
+122: ● This ensures complete traceability of product flow, from sales request to procurement and delivery.
+123: Page: 13
+124: Gaps In Existing System
+125: 1. Module Integration
+126: ● Existing systems manage operations in separate modules with limited data sharing, while our system  fully integrates CRM, inventory, water analysis, and meetings into a unified platform.
+127: 2. Water Analysis
+128: ● Water analysis tracking and meeting generating is available only in specialized tools and is isolated  from operations, whereas our system embeds water analysis into the operational flow and triggers  meetings based on real-time data.
+129: 3. Automated Meeting Scheduling
+130: ● Meetings in current platforms are scheduled manually without system context, but our solution  automates meeting creation when critical conditions like customer request for water analysis.
+131: 4. Email Response Tracking
+132: ● Most platforms send static meeting invites without tracking participation, while ours tracks email  responses in real time and confirms attendance automatically.
+133: 5. Lead Generation from Operations
+134: ● CRMs in existing systems rely on manual input for lead creation, whereas our system auto generates leads from meetings and tags them as Won or Lost based on real outcomes.
+135: 6. Traceability and Compliance
+136: ● Other systems provide partial traceability in specific modules, but our system ensures complete  traceability across goods, meetings, reports, and lead outcomes for full regulatory compliance.
+137: 7. Technology Stack and Flexibility
+138: ● Most systems use fixed or closed technologies with limited adaptability, while ours is built on Odoo  18, offering modular design, customization, and scalability.
+139: 8. Proactive vs. Reactive Actions
+140: ● Current software reacts to issues based on user input, but our platform proactively detects problems  and initiates actions like meetings and CRM updates without manual effort.
+141: Page: 14
+142: Requirements Analysis
+143: ● Functional Requirements:
+144: 1. User Management
+145: ● The system should allow the creation, modification, and deletion of user accounts with  different roles (e.g., product manager, veterinarians, suppliers).
+146: ● Each user should have the same login but access level based on their role in the system. 2. Inventory and Purchasing Management
+147: ● The system should track the inventory levels of farming goods and notify users when  stock is low.
+148: ● Users should be able to create purchase orders for products and generate a Bill of  Materials (BoM) for each purchase.
+149: ● The system should handle supplier information and automatically generate reorder  suggestions based on inventory levels.
+150: 3. Water Analysis
+151: ● The system provides an integration with Meeting Rooms and CRM, to provide a smooth  interface to users to generate meetings.
+152: ● The system should allow users to create and schedule meetings and send mail with the  meeting details to all the attendees, representatives, and the admin.
+153: ● Once the Water analysis is confirmed and is in done state, it automatically generates lead  in the CRM.
+154: 4. Meeting Management
+155: ● The system should allow the creation and scheduling of meetings, Invitations should be  sent automatically to salesperson and attendees and their responses should be tracked. ● Post-meeting, the system should allow for the tracking of outcomes and actions, with  status indicators for each meeting (e.g., "Successful" or "Unsuccessful").
+156: 5. Lead Generation and CRM Integration
+157: ● The system should automatically generate leads based on discussions and decisions made  during meetings.
+158: ● Each lead should be linked to a customer profile and tracked in the CRM system,  including status updates (e.g., "Won," "Lost").
+159: ● The CRM system should allow users to monitor the progress of leads, including follow up actions and potential sales opportunities.
+160: 6. Reporting
+161: ● The system should provide comprehensive reports on various aspects of the farm,  including inventory levels, water analysis, purchase, and sales.
+162: Page: 15
+163: ● Non-functional Requirements:
+164: 1. Data Security
+165: ● Ensure secure access to the system, preventing unauthorized manipulation of customer  and inventory data.
+166: ● Protect sensitive information such as customer orders and meeting details.
+167: 2. User-Friendly Interface
+168: ● The system should be easy to use, even for people with limited technical knowledge. ● The interface should be intuitive and simple, enabling users to perform tasks without  confusion.
+169: 3. High Performance and Scalability
+170: ● The system should perform efficiently even with multiple users accessing it
+171: simultaneously.
+172: ● Ensure the system can handle increased usage as the farm grows without slowing down.
+173: Page: 16
+174: Feasibility Study
+175: ● Technical:
+176: ○ This technical feasibility study reports on whether there exist correct required resources and  technologies that will be used for project development, the feasibility study also analyzes the  technical skills and capabilities of the technical team, whether existing technology can be used or  not, maintenance and up-gradation are easy or not for the chosen technology, etc.
+177: ● Operational:
+178: ○ The Operational feasibility of providing service to requirements is analyzed along with how easy  the product will be to operate and maintain after deployment.
+179: ● Economic:
+180: ○ In this feasibility study, a detailed analysis will be carried out of the cost of the project for  development, which includes all required costs for final development hardware and software  resources, design and development operational costs, and so on.
+181: Page: 17
+182: System Design
+183: 1. Use case Diagram:
+184: ● A use-case diagram provides a simple and fast means to decide & describe the  purpose of a project.
+185: ● It is one type of interaction model & it describes how objects interact to produce a  useful result.
+186: ● At a high level, a use-case describes how a system interacts with the outside actor. ● Each use-case represents the functionality of a system along with its users. ● A system involves a set of use cases and a set of actors.
+187: ● Each use-case represents the functionality of the system & set of use-cases  represents the complete functionality of the system.
+188: Symbols of Use Case Diagram:
+189: ● Actor :
+190: ● Use Case :
+191: ● System Boundary :
+192: ● Relationship :
+193: Page: 18
+194: Use case Admin
+195: Page: 19
+196: Use case User
+197: Page: 20
+198: Use case Product Manager.
+199: Page: 21
+200: 2. Activity Diagram:
+201: ● It is the equivalent of a flowchart diagram.
+202: ● It shows a flow of control from activity to activity.
+203: ● It is used to model the logic captured by a single use-case scenario.  ● An activity diagram illustrates, simply and perspective-wise, what happens in a  workflow, what activities can be done in parallel, and whether there are alternative  paths through the workflow.
+204: ● It shows the workflow from start to finish, detailing the many decision paths  involved in the progression of events in the activity.
+205: Symbols of Activity Diagram:
+206: ● Initial State :
+207: ● Final State :
+208: ● Action :
+209: ● Decision :
+210: ● Fork :
+211: ● Join :
+212: Page: 22
+213: Activity diagram Admin
+214: Page: 23
+215: Activity diagram User
+216: Page: 24
+217: Activity diagram Product Manager
+218: Page: 25
+219: 3. Sequence Diagram:
+220: ● The sequence diagram is used to show the interaction between objects that occur in  sequential order by sending & receiving messages among them.
+221: ● A sequence diagram is in the transition from the requirements expressed as a use  case to the next & more formal level of refinement.
+222: ● The main purpose of a sequence diagram is to define the event sequences that  result in some desired outcome.
+223: ● A sequence diagram communicates what messages are sent between objects as well  as the order in which messages occur.
+224: Symbols of a Sequence Diagram:
+225: ● Lifeline :
+226: ● Message :
+227: ● Message(Return) :
+228: ● Activation :
+229: Page: 26
+230: Sequence diagram Admin
+231: +
+232: Page: 27
+233: Sequence diagram User
+234: Page: 28
+235: Sequence diagram Product Manager
+236: Page: 29
+237: 3. Class Diagram:
+238: ● The purpose of a class diagram is to show the static structure of the system being  modeled.
+239: ● It represents the classes & relationships in the system.
+240: ● The class diagram has mainly 2 purposes.
+241: ● Understanding the requirements describing the detailed design. ● There are two types of class diagrams
+242: ○ Analysis of class diagram
+243: ○ Design class diagram
+244: Symbols of Class Diagram:
+245: ● Class :
+246: ● Relation :
+247: Page: 30
+248: Class Diagram
+249: Page: 31
+250: List of Tables
+254: Page: 32
+255: Data Dictionary
+256: 1. User
+259: 2. Product
+260: Page: 33
+263: 3. Sales
+266: Page: 34
+267: 4. Purchase
+270: 5. Delivery
+273: Page: 35
+276: 6. Invoice
+279: Page: 36
+280: 7. RoomBooking
+283: 8. Appointment
+286: Page: 37
+289: 9. Lead
+292: 10. ProductLicense
+295: Page: 38
+298: 11. CustomerLicense
+301: Page: 39
+302: 12. Feedback
+305: Page: 40
+306: System Screenshots
+307: 1. User registration page
+308: Page: 41
+309: 2. Reset Password
+310: Page: 42
+311: 3. Reset Password
+312: Page: 43
+313: 4. Reset Password
+314: Page: 44
+315: 5. Reset Password Mail
+316: Page: 45
+317: 6. Home Page
+318: Page: 46
+319: 7. Admin Login Page
+320: Page: 47
+321: 8. Home Page
+322: Page: 48
+323: 9. Show Different Types Of Access Rights: Administrator
+324: Page: 49
+325: 10. Contacts Module
+326: Page: 50
+327: 11. Create Customer
+328: Page: 51
+329: 12. Water Analysis Module
+330: Page: 52
+331: 13. Dashboard of Water Analysis Module
+332: Page: 53
+333: 14. Display Set Representative In Customer
+334: Page: 54
+335: 15. Create Water Analysis Lead Without Attachments
+336: Page: 55
+337: 16. Stage Change To Error & Click On Reset To Draft Button
+338: Page: 56
+339: 17. Set Attachments & Send
+340: Page: 57
+341: 18. Create Lead
+342: Page: 58
+343: 19. Convert to Opportunity
+344: Page: 59
+345: 20. Create Opportunity
+346: Page: 60
+347: 21. Create Meeting
+348: Page: 61
+349: 22. Select Date
+350: Page: 62
+351: 23. Add Attendees
+352: Page: 63
+353: 24. Edit Meeting Room
+354: Page: 64
+355: 25. Create Meeting Room
+356: Page: 65
+357: 26. Meeting Room
+358: Page: 66
+359: 27. Meeting Room Detail
+360: Page: 67
+361: 28. Email to Sales Person
+362: Page: 68
+363: 29. Accept Mail Invitation
+364: Page: 69
+365: 30. Send Mail to Attendees
+366: Page: 70
+367: 31. Move To Document
+368: Page: 71
+369: 32. Click On Water Analysis Folder
+370: Page: 72
+371: 33. Display Attachments Of Water Analysis
+372: Page: 73
+373: 34. Navigate CRM Module
+374: Page: 74
+375: 35. CRM Dashboard
+376: Page: 75
+377: 36. Won Lead
+378: Page: 76
+379: 37. Create Helpdesk Ticket
+380: Page: 77
+381: 38. Helpdesk Ticket
+382: Page: 78
+383: 39. Helpdesk Entry
+384: Page: 79
+385: 40. Dashboard of Product Portfolio
+386: Page: 80

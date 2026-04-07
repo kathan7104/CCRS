@@ -149,9 +149,13 @@ public class StaffController {
     public String collectOffline(@PathVariable Long invoiceId,
                                  @RequestParam Payment.PaymentMethod method,
                                  @RequestParam(required = false) BigDecimal amount,
+                                 @RequestParam(required = false) String chequeNumber,
+                                 @RequestParam(required = false) String chequeBankName,
+                                 @RequestParam(required = false) String chequeIfscCode,
                                  RedirectAttributes redirectAttributes) {
         try {
-            var payment = staffBillingService.recordOfflinePayment(invoiceId, method, amount);
+            var payment = staffBillingService.recordOfflinePayment(
+                    invoiceId, method, amount, chequeNumber, chequeBankName, chequeIfscCode);
             redirectAttributes.addFlashAttribute("successMessage",
                     "Offline payment recorded. Transaction ID: " + payment.getTransactionId());
         } catch (Exception ex) {

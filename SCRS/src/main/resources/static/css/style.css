@@ -613,6 +613,51 @@ body.role-staff .dashboard-header {
     background: #f8fafc;
 }
 
+.data-table.wide {
+    min-width: 1500px;
+}
+
+.dataTables_wrapper {
+    padding: 1rem;
+    background: #fff;
+}
+
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    margin: 0.4rem 0;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.35rem 0.6rem;
+    margin-left: 0.4rem;
+    font-family: 'Work Sans', sans-serif;
+}
+
+.dataTables_wrapper .dt-buttons {
+    margin-bottom: 0.6rem;
+}
+
+.dataTables_wrapper .dt-button {
+    border-radius: 10px !important;
+    border: 1px solid var(--primary) !important;
+    background: transparent !important;
+    color: var(--primary) !important;
+    font-weight: 600;
+    padding: 0.45rem 0.75rem !important;
+    font-family: 'Work Sans', sans-serif;
+}
+
+.dataTables_wrapper .dt-button:hover {
+    background: rgba(11, 45, 89, 0.08) !important;
+}
+
 /* Status badges */
 .status-badge {
     display: inline-flex;

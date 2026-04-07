@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Enrollment Approval - KOR Institute</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"/>
 </head>
 <body class="role-admin">
 <header class="dashboard-header">
@@ -24,7 +26,7 @@
             <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
             <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
             <div class="table-wrap">
-                <table class="data-table">
+                <table class="data-table js-data-table">
                     <thead>
                     <tr>
                         <th>Student</th>
@@ -54,7 +56,68 @@
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(pendingEnrollments)}">
-                        <td colspan="6" style="text-align: center;">No pending approvals.</td>
+                        <td style="text-align: center;">No pending approvals.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="dashboard-section">
+            <h2>Enrolled Students</h2>
+            <div class="table-wrap">
+                <table class="data-table wide js-data-table js-export-table" data-export-title="Enrolled Students">
+                    <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Department</th>
+                        <th>Course</th>
+                        <th>Program</th>
+                        <th>Level</th>
+                        <th>Status</th>
+                        <th>Applied</th>
+                        <th>Finalized</th>
+                        <th>Past Marks</th>
+                        <th>Personal Info</th>
+                        <th>Documents</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="enrollment : ${enrolledEnrollments}">
+                        <td th:text="${enrollment.student.fullName}">Student</td>
+                        <td th:text="${enrollment.student.email}">mail</td>
+                        <td th:text="${enrollment.student.mobileNumber}">mobile</td>
+                        <td th:text="${enrollment.student.department}">dept</td>
+                        <td th:text="${enrollment.course.code + ' - ' + enrollment.course.name}">Course</td>
+                        <td th:text="${enrollment.course.programName}">Program</td>
+                        <td th:text="${enrollment.course.programLevel}">Level</td>
+                        <td><span class="status-badge enrolled" th:text="${enrollment.status}">ENROLLED</span></td>
+                        <td th:text="${#temporals.format(enrollment.registeredAt, 'yyyy-MM-dd HH:mm')}">date</td>
+                        <td th:text="${enrollment.finalizedAt != null ? #temporals.format(enrollment.finalizedAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                        <td th:text="${enrollment.pastEducationMarks != null ? enrollment.pastEducationMarks : '-'}">-</td>
+                        <td th:text="${enrollment.personalInfo != null ? enrollment.personalInfo : '-'}">info</td>
+                        <td th:text="${enrollment.documents != null ? enrollment.documents.size() : 0}">0</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(enrolledEnrollments)}">
+                        <td style="text-align: center;">No enrolled students yet.</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     </tbody>
                 </table>
@@ -62,6 +125,31 @@
         </section>
     </main>
 </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.js-data-table').forEach(function (table) {
+            var hasExport = table.classList.contains('js-export-table');
+            var options = {
+                pageLength: 10,
+                order: [],
+                language: { search: "Filter:" }
+            };
+            if (hasExport) {
+                options.dom = 'Bfrtip';
+                options.buttons = [{
+                    extend: 'excelHtml5',
+                    title: table.getAttribute('data-export-title') || 'Report'
+                }];
+            }
+            $(table).DataTable(options);
+        });
+    });
+</script>
 </body>
 </html>
 

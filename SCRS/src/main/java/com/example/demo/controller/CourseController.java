@@ -4,6 +4,7 @@ import com.example.demo.entity.EnrollmentDocument;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.security.CustomUserDetails;
 import com.example.demo.service.EnrollmentService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,11 +30,14 @@ import org.springframework.web.multipart.MultipartFile;
 public class CourseController {
     private final CourseRepository courseRepository;
     private final EnrollmentService enrollmentService;
-    private static final String UPLOAD_DIR = "uploads/documents/";
+    private final String documentUploadDir;
     private static final long MAX_SINGLE_DOCUMENT_SIZE_BYTES = 20L * 1024L * 1024L; // 20MB
-    public CourseController(CourseRepository courseRepository, EnrollmentService enrollmentService) {
+    public CourseController(CourseRepository courseRepository,
+                            EnrollmentService enrollmentService,
+                            @Value("${ccrs.upload.documents-dir:uploads/documents}") String documentUploadDir) {
         this.courseRepository = courseRepository;
         this.enrollmentService = enrollmentService;
+        this.documentUploadDir = documentUploadDir;
     }
     @GetMapping
     public String listCourses(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -139,7 +143,7 @@ public class CourseController {
             Integer passingYear = Integer.parseInt(passingYearStr);
             validateEnrollmentForm(fullName, dob, pastMarks, highestQualification, boardUniversity, passingYear);
 
-            Path uploadPath = Paths.get(UPLOAD_DIR);
+            Path uploadPath = Paths.get(documentUploadDir).toAbsolutePath().normalize();
             // 4. Check a rule -> decide what to do next
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);

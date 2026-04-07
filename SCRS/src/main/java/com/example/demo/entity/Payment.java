@@ -16,6 +16,12 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(name = "method", nullable = false, length = 20)
     private PaymentMethod method;
+    @Column(name = "cheque_number", length = 50)
+    private String chequeNumber;
+    @Column(name = "cheque_bank_name", length = 100)
+    private String chequeBankName;
+    @Column(name = "cheque_ifsc_code", length = 20)
+    private String chequeIfscCode;
     @Column(name = "transaction_id", length = 255)
     private String transactionId;
     @Column(name = "gateway_order_id", length = 255)
@@ -77,6 +83,24 @@ public class Payment {
     }
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+    public String getChequeNumber() {
+        return chequeNumber;
+    }
+    public void setChequeNumber(String chequeNumber) {
+        this.chequeNumber = chequeNumber;
+    }
+    public String getChequeBankName() {
+        return chequeBankName;
+    }
+    public void setChequeBankName(String chequeBankName) {
+        this.chequeBankName = chequeBankName;
+    }
+    public String getChequeIfscCode() {
+        return chequeIfscCode;
+    }
+    public void setChequeIfscCode(String chequeIfscCode) {
+        this.chequeIfscCode = chequeIfscCode;
     }
     public PaymentStatus getStatus() {
         // 1. Send the result back to the screen
