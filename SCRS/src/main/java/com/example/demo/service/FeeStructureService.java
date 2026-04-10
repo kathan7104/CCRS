@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/service/FeeStructureService.java
+ * Role: Service
+ * MVC Fit: Contains business logic used by controllers.
+ * Connects To: Controller calls Service, Service calls Repository
+ */
+
 package com.example.demo.service;
 
 import com.example.demo.entity.FeeStructure;
@@ -11,35 +18,45 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+// Class Summary: Service class that contains business logic used by controllers.
+// @Service marks the business logic layer for Spring to manage as a bean.
 @Service
 public class FeeStructureService {
+// Field: stores feeStructureRepository for this class.
     private final FeeStructureRepository feeStructureRepository;
+// Field: stores feeStructureAuditLogRepository for this class.
     private final FeeStructureAuditLogRepository feeStructureAuditLogRepository;
 
+// Constructor: Spring injects dependencies here.
     public FeeStructureService(FeeStructureRepository feeStructureRepository,
                                FeeStructureAuditLogRepository feeStructureAuditLogRepository) {
         this.feeStructureRepository = feeStructureRepository;
         this.feeStructureAuditLogRepository = feeStructureAuditLogRepository;
     }
 
+// Service method: contains business logic and coordinates repositories.
     public List<FeeStructure> getAll() {
         return feeStructureRepository.findAllByOrderByEffectiveFromDesc();
     }
 
+// Service method: contains business logic and coordinates repositories.
     public List<FeeStructureAuditLog> getRecentAuditLogs() {
         return feeStructureAuditLogRepository.findTop20ByOrderByChangedAtDesc();
     }
 
+// Service method: contains business logic and coordinates repositories.
     public FeeStructure getById(Long id) {
         return feeStructureRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Fee structure not found"));
     }
 
+// Service method: contains business logic and coordinates repositories.
     public FeeStructure getActive() {
         return feeStructureRepository.findFirstByActiveTrueOrderByEffectiveFromDesc().orElse(null);
     }
 
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public FeeStructure createOrUpdate(FeeStructure feeStructure, String actor, String action) {
         normalize(feeStructure);
         if (feeStructure.isActive()) {
@@ -51,12 +68,14 @@ public class FeeStructureService {
     }
 
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public void delete(Long id, String actor) {
         FeeStructure existing = getById(id);
         feeStructureRepository.delete(existing);
         logChange(existing, actor, "DELETE", "Deleted fee structure: " + existing.getName());
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void deactivateOthers(Long currentId) {
         List<FeeStructure> all = feeStructureRepository.findAll();
         for (FeeStructure candidate : all) {
@@ -70,6 +89,7 @@ public class FeeStructureService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void normalize(FeeStructure feeStructure) {
         if (feeStructure.getEffectiveFrom() == null) {
             feeStructure.setEffectiveFrom(LocalDate.now());
@@ -80,6 +100,7 @@ public class FeeStructureService {
         feeStructure.setLatePenalty(positive(feeStructure.getLatePenalty()));
     }
 
+// Service method: contains business logic and coordinates repositories.
     private BigDecimal positive(BigDecimal value) {
         if (value == null || value.compareTo(BigDecimal.ZERO) < 0) {
             return BigDecimal.ZERO;
@@ -87,6 +108,7 @@ public class FeeStructureService {
         return value;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String buildSummary(FeeStructure feeStructure) {
         return "name=" + feeStructure.getName()
                 + ", perCredit=" + feeStructure.getCostPerCredit()
@@ -96,6 +118,7 @@ public class FeeStructureService {
                 + ", active=" + feeStructure.isActive();
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void logChange(FeeStructure feeStructure, String actor, String action, String summary) {
         FeeStructureAuditLog log = new FeeStructureAuditLog();
         log.setFeeStructure(feeStructure);

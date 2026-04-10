@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/service/EnrollmentService.java
+ * Role: Service
+ * MVC Fit: Contains business logic used by controllers.
+ * Connects To: Controller calls Service, Service calls Repository
+ */
+
 package com.example.demo.service;
 import com.example.demo.entity.Course;
 import com.example.demo.entity.Enrollment;
@@ -14,17 +21,24 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+// Class Summary: Service class that contains business logic used by controllers.
+// @Service marks the business logic layer for Spring to manage as a bean.
 @Service
 public class EnrollmentService {
+// Field: stores courseRepository for this class.
     private final CourseRepository courseRepository;
+// Field: stores enrollmentRepository for this class.
     private final EnrollmentRepository enrollmentRepository;
+// Field: stores userRepository for this class.
     private final UserRepository userRepository;
+// Constructor: Spring injects dependencies here.
     public EnrollmentService(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository, UserRepository userRepository) {
         this.courseRepository = courseRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.userRepository = userRepository;
     }
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public Enrollment enrollStudent(String userEmail, Long courseId, String comments, 
                                     String fullName, LocalDate dob, Double pastMarks,
                                     String highestQualification, String boardUniversity, Integer passingYear,
@@ -93,6 +107,7 @@ public class EnrollmentService {
         return enrollmentRepository.save(enrollment);
     }
 
+// Service method: contains business logic and coordinates repositories.
     public void validateCanApplyForCourse(String userEmail, Long courseId) {
         User student = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -112,6 +127,7 @@ public class EnrollmentService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private Optional<Enrollment> findBlockingEnrollment(User student, Long targetCourseId) {
         return enrollmentRepository.findByStudentId(student.getId()).stream()
                 .filter(e -> e.getCourse() != null)
@@ -120,11 +136,13 @@ public class EnrollmentService {
                 .findFirst();
     }
 
+// Service method: contains business logic and coordinates repositories.
     private boolean checkPrerequisites(User student, Course course) {
         // 1. Send the result back to the screen
         return true; 
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void validateMandatoryDocuments(Course course, List<DocumentPayload> documents) {
         Set<EnrollmentDocument.DocumentType> uploadedTypes = documents.stream()
                 .map(DocumentPayload::documentType)
@@ -152,6 +170,7 @@ public class EnrollmentService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private boolean isMarksheetType(EnrollmentDocument.DocumentType type) {
         return type == EnrollmentDocument.DocumentType.MARKSHEET
                 || type == EnrollmentDocument.DocumentType.SSC_MARKSHEET
@@ -159,6 +178,7 @@ public class EnrollmentService {
                 || type == EnrollmentDocument.DocumentType.BACHELOR_SEMESTER_MARKSHEET;
     }
 
+// Service method: contains business logic and coordinates repositories.
     public record DocumentPayload(EnrollmentDocument.DocumentType documentType,
                                   String fileName,
                                   String filePath,

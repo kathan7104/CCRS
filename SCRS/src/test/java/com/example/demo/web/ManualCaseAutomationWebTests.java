@@ -1,3 +1,10 @@
+/*
+ * File: src/test/java/com/example/demo/web/ManualCaseAutomationWebTests.java
+ * Role: Test
+ * MVC Fit: Automated tests for application behavior.
+ * Connects To: Verifies layers in isolation or integration
+ */
+
 package com.example.demo.web;
 
 import com.example.demo.TestSupportConfig;
@@ -48,38 +55,59 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "ccrs.otp.send-email=false",
         "ccrs.otp.send-sms=false"
 })
+// Class Summary: Test class that verifies application behavior.
 @AutoConfigureMockMvc
 @Import({TestSupportConfig.class, ManualCaseAutomationWebTests.MockServicesConfig.class})
 class ManualCaseAutomationWebTests {
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores mockMvc for this class.
     private MockMvc mockMvc;
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores userRepository for this class.
     private UserRepository userRepository;
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores otpVerificationRepository for this class.
     private OtpVerificationRepository otpVerificationRepository;
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores courseRepository for this class.
     private CourseRepository courseRepository;
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores departmentRepository for this class.
     private DepartmentRepository departmentRepository;
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores passwordEncoder for this class.
     private PasswordEncoder passwordEncoder;
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores reportingService for this class.
     private ReportingService reportingService;
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores facultyRosterService for this class.
     private FacultyRosterService facultyRosterService;
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores feeStructureService for this class.
     private FeeStructureService feeStructureService;
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores staffBillingService for this class.
     private StaffBillingService staffBillingService;
 
     @Test
@@ -228,6 +256,7 @@ class ManualCaseAutomationWebTests {
                 .andExpect(model().attributeExists("subjectRosters"));
     }
 
+// Test method: verifies behavior with assertions and test setup.
     private CustomUserDetails buildUser(String email, String role, String fullName, String department) {
         User user = new User();
         user.setEmail(email);
@@ -240,6 +269,7 @@ class ManualCaseAutomationWebTests {
         return new CustomUserDetails(user);
     }
 
+// Test method: verifies behavior with assertions and test setup.
     private Course sampleCourse(String code) {
         Course course = new Course();
         course.setCode(code);
@@ -260,21 +290,25 @@ class ManualCaseAutomationWebTests {
 
     @TestConfiguration
     static class MockServicesConfig {
+// @Bean tells Spring to manage the returned object as a bean.
         @Bean
         ReportingService reportingService() {
             return mock(ReportingService.class);
         }
 
+// @Bean tells Spring to manage the returned object as a bean.
         @Bean
         FacultyRosterService facultyRosterService() {
             return mock(FacultyRosterService.class);
         }
 
+// @Bean tells Spring to manage the returned object as a bean.
         @Bean
         FeeStructureService feeStructureService() {
             return mock(FeeStructureService.class);
         }
 
+// @Bean tells Spring to manage the returned object as a bean.
         @Bean
         StaffBillingService staffBillingService() {
             return mock(StaffBillingService.class);

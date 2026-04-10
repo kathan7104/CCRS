@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/service/TeachingSchemaSubjectIngestionService.java
+ * Role: Service
+ * MVC Fit: Contains business logic used by controllers.
+ * Connects To: Controller calls Service, Service calls Repository
+ */
+
 package com.example.demo.service;
 
 import com.example.demo.entity.Subject;
@@ -29,23 +36,40 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+// Class Summary: Service class that contains business logic used by controllers.
+// @Service marks the business logic layer for Spring to manage as a bean.
 @Service
 public class TeachingSchemaSubjectIngestionService {
+// Field: stores log for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Logger log = LoggerFactory.getLogger(TeachingSchemaSubjectIngestionService.class);
+// Field: stores SEMESTER_PATTERN for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Pattern SEMESTER_PATTERN = Pattern.compile("(?i)\\bsem(?:ester)?\\s*[-:]?\\s*(\\d{1,2})\\b");
+// Field: stores SEMESTER_INDEX_PATTERN for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Pattern SEMESTER_INDEX_PATTERN = Pattern.compile("(?i)\\bsem(?:ester)?\\s*[-:]?\\s*(\\d{1,2})\\b");
+// Field: stores LINE_PATTERN for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Pattern LINE_PATTERN = Pattern.compile(
             "^([A-Za-z]{2,}[A-Za-z0-9-]{1,20})\\s*[:|-]?\\s+(.+)$"
     );
+// Field: stores SUBJECT_CODE_PATTERN for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Pattern SUBJECT_CODE_PATTERN = Pattern.compile("\\b([A-Za-z]{2,}[A-Za-z0-9-]{1,20}\\d[A-Za-z0-9-]*)\\b");
+// Field: stores TRAILING_NUMBERS_PATTERN for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Pattern TRAILING_NUMBERS_PATTERN = Pattern.compile("\\s+\\d+(?:\\.\\d+)?(?:\\s+\\d+(?:\\.\\d+)?){0,3}\\s*$");
 
+// Field: stores subjectRepository for this class.
     private final SubjectRepository subjectRepository;
 
+// Constructor: Spring injects dependencies here.
     public TeachingSchemaSubjectIngestionService(SubjectRepository subjectRepository) {
         this.subjectRepository = subjectRepository;
     }
 
+// Service method: contains business logic and coordinates repositories.
     public int ingestSubjects(TeachingSchema schema, Path filePath, String originalFileName) throws IOException {
         if (schema == null || filePath == null || !Files.exists(filePath)) {
             return 0;
@@ -89,6 +113,7 @@ public class TeachingSchemaSubjectIngestionService {
         return savedCount;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String extractText(Path filePath, String originalFileName) throws IOException {
         String lower = originalFileName.toLowerCase();
         if (lower.endsWith(".pdf")) {
@@ -108,6 +133,7 @@ public class TeachingSchemaSubjectIngestionService {
         return "";
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String extractPdfText(Path filePath) throws IOException {
         try (PDDocument document = Loader.loadPDF(filePath.toFile())) {
             PDFTextStripper stripper = new PDFTextStripper();
@@ -115,6 +141,7 @@ public class TeachingSchemaSubjectIngestionService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String extractDocxText(Path filePath) throws IOException {
         try (InputStream in = Files.newInputStream(filePath);
              XWPFDocument doc = new XWPFDocument(in);
@@ -123,6 +150,7 @@ public class TeachingSchemaSubjectIngestionService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String extractDocText(Path filePath) throws IOException {
         try (InputStream in = Files.newInputStream(filePath);
              HWPFDocument doc = new HWPFDocument(in);
@@ -131,6 +159,7 @@ public class TeachingSchemaSubjectIngestionService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String extractDocxTextFallback(Path filePath) throws IOException {
         try (ZipFile zipFile = new ZipFile(filePath.toFile(), StandardCharsets.UTF_8)) {
             ZipEntry entry = zipFile.getEntry("word/document.xml");
@@ -144,6 +173,7 @@ public class TeachingSchemaSubjectIngestionService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String cleanDocxXmlText(String xml) {
         if (xml == null || xml.isBlank()) {
             return "";
@@ -160,6 +190,7 @@ public class TeachingSchemaSubjectIngestionService {
         return text;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private List<ParsedSubject> parse(String text) {
         String[] lines = text.split("\\R");
         Integer semester = null;
@@ -189,6 +220,7 @@ public class TeachingSchemaSubjectIngestionService {
         return new ArrayList<>(byCode.values());
     }
 
+// Service method: contains business logic and coordinates repositories.
     private List<ParsedSubject> parseByCodeSpans(String text) {
         String normalizedText = normalizeExtractedText(text);
         Matcher semesterMatcher = SEMESTER_INDEX_PATTERN.matcher(normalizedText);
@@ -241,6 +273,7 @@ public class TeachingSchemaSubjectIngestionService {
         return new ArrayList<>(parsed.values());
     }
 
+// Service method: contains business logic and coordinates repositories.
     private Integer resolveSemesterForIndex(List<int[]> semesterMarks, int index) {
         Integer semester = null;
         for (int[] mark : semesterMarks) {
@@ -252,6 +285,7 @@ public class TeachingSchemaSubjectIngestionService {
         return semester;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private ParsedSubject parseLine(String line, Integer semester) {
         String normalizedLine = line
                 .replaceAll("^[\\p{Punct}\\s•·]+", "")
@@ -288,6 +322,7 @@ public class TeachingSchemaSubjectIngestionService {
         return buildSubject(code, name, semester, normalizedLine);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private ParsedSubject buildSubject(String code, String name, Integer semester, String fullLine) {
         String normalizedCode = code.toUpperCase();
         if (!isValidCode(normalizedCode)) {
@@ -303,6 +338,7 @@ public class TeachingSchemaSubjectIngestionService {
         return new ParsedSubject(normalizedCode, cleanedName, semester, credits);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private Integer extractCredits(String line) {
         Matcher matcher = Pattern.compile("(?i)\\bcredits?\\s*[:=-]?\\s*(\\d{1,2})\\b").matcher(line);
         if (matcher.find()) {
@@ -311,6 +347,7 @@ public class TeachingSchemaSubjectIngestionService {
         return null;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private boolean isValidCode(String code) {
         if (code == null || code.length() < 4 || code.length() > 22) {
             return false;
@@ -321,6 +358,7 @@ public class TeachingSchemaSubjectIngestionService {
         return code.chars().anyMatch(Character::isDigit);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private boolean isValidName(String name) {
         if (name == null || name.length() < 3 || name.length() > 255) {
             return false;
@@ -335,6 +373,7 @@ public class TeachingSchemaSubjectIngestionService {
                 && !lower.contains("syllabus");
     }
 
+// Service method: contains business logic and coordinates repositories.
     private boolean looksLikeHeader(String line) {
         String lower = line.toLowerCase();
         return lower.contains("subject code")
@@ -343,6 +382,7 @@ public class TeachingSchemaSubjectIngestionService {
                 || lower.contains("program") && lower.contains("department");
     }
 
+// Service method: contains business logic and coordinates repositories.
     private Integer parseInteger(String value) {
         try {
             return Integer.parseInt(value);
@@ -351,6 +391,7 @@ public class TeachingSchemaSubjectIngestionService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String normalize(String value) {
         if (value == null) {
             return "";
@@ -358,6 +399,7 @@ public class TeachingSchemaSubjectIngestionService {
         return value.replace('\u00A0', ' ').trim().replaceAll("\\s+", " ");
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String normalizeExtractedText(String value) {
         if (value == null) {
             return "";
@@ -368,6 +410,7 @@ public class TeachingSchemaSubjectIngestionService {
                 .replace('\r', '\n');
     }
 
+// Service method: contains business logic and coordinates repositories.
     private record ParsedSubject(String subjectCode, String subjectName, Integer semester, Integer credits) {
     }
 }

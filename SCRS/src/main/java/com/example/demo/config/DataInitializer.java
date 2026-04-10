@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/config/DataInitializer.java
+ * Role: Config
+ * MVC Fit: Spring configuration and bean wiring.
+ * Connects To: Bootstraps app behavior
+ */
+
 package com.example.demo.config;
 import com.example.demo.entity.Course;
 import com.example.demo.entity.Department;
@@ -24,30 +31,52 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+// Class Summary: Config class that defines Spring configuration and beans.
+// @Configuration marks this class as a source of Spring bean definitions.
 @Configuration
 public class DataInitializer implements CommandLineRunner {
+// Field: stores userRepository for this class.
     private final UserRepository userRepository;
+// Field: stores courseRepository for this class.
     private final CourseRepository courseRepository;
+// Field: stores departmentRepository for this class.
     private final DepartmentRepository departmentRepository;
+// Field: stores enrollmentRepository for this class.
     private final EnrollmentRepository enrollmentRepository;
+// Field: stores subjectRepository for this class.
     private final SubjectRepository subjectRepository;
+// Field: stores teachingSchemaRepository for this class.
     private final TeachingSchemaRepository teachingSchemaRepository;
+// Field: stores teachingSchemaSubjectIngestionService for this class.
     private final TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService;
+// Field: stores facultySubjectAssignmentRepository for this class.
     private final FacultySubjectAssignmentRepository facultySubjectAssignmentRepository;
+// Field: stores feeStructureRepository for this class.
     private final FeeStructureRepository feeStructureRepository;
+// Field: stores passwordEncoder for this class.
     private final PasswordEncoder passwordEncoder;
+// Field: stores jdbcTemplate for this class.
     private final JdbcTemplate jdbcTemplate;
+// @Value injects a property value from application.properties.
     @Value("${ccrs.dev.create-authority:false}")
+// Field: stores createAuthority for this class.
     private boolean createAuthority;
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.dev.seed-sample-academics:false}")
+// Field: stores seedSampleAcademics for this class.
     private boolean seedSampleAcademics;
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.dev.seed-demo-faculty:false}")
+// Field: stores seedDemoFaculty for this class.
     private boolean seedDemoFaculty;
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.upload.teaching-schema-dir:uploads/teaching-schemas}")
+// Field: stores teachingSchemaUploadDir for this class.
     private String teachingSchemaUploadDir;
+// Constructor: Spring injects dependencies here.
     public DataInitializer(UserRepository userRepository,
                            CourseRepository courseRepository,
                            DepartmentRepository departmentRepository,
@@ -72,6 +101,7 @@ public class DataInitializer implements CommandLineRunner {
         this.jdbcTemplate = jdbcTemplate;
     }
     @Override
+// Configuration method: defines how Spring should create/manage a bean.
     public void run(String... args) throws Exception {
         patchLegacyCourseSchema();
         seedDepartments();
@@ -169,6 +199,7 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
     }
+// Configuration method: defines how Spring should create/manage a bean.
     private void patchLegacyCourseSchema() {
         // Make old MySQL schemas compatible with new Course fields.
         executeSql("CREATE TABLE IF NOT EXISTS departments (" +
@@ -225,6 +256,7 @@ public class DataInitializer implements CommandLineRunner {
         executeSql("ALTER TABLE payments ADD COLUMN IF NOT EXISTS gateway_order_id VARCHAR(255) NULL");
         executeSql("ALTER TABLE payments ADD COLUMN IF NOT EXISTS gateway_signature VARCHAR(500) NULL");
     }
+// Configuration method: defines how Spring should create/manage a bean.
     private void seedDepartments() {
         try {
             for (String name : DepartmentCatalog.departments()) {
@@ -240,6 +272,7 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Skipped department seed at startup: " + ex.getMessage());
         }
     }
+// Configuration method: defines how Spring should create/manage a bean.
     private void executeSql(String sql) {
         try {
             jdbcTemplate.execute(sql);
@@ -247,6 +280,7 @@ public class DataInitializer implements CommandLineRunner {
             // Ignore compatibility SQL errors if DB is already in desired state.
         }
     }
+// Configuration method: defines how Spring should create/manage a bean.
     private void resetAndCreateSampleCourses() {
         int batchYear = LocalDate.now().getYear();
         createCourse("BBA-" + batchYear + "-001", "Business Fundamentals", "Management", "BBA", batchYear, 120, 120, 3, 120000, "UG", 6, "12th pass (Commerce/Any stream) with minimum 50%");
@@ -259,6 +293,7 @@ public class DataInitializer implements CommandLineRunner {
         createCourse("MTECH-" + batchYear + "-001", "Research Methods in Computing", "Engineering", "MTECH", batchYear, 60, 60, 3, 260000, "PG", 4, "B.Tech/BE in CSE/IT (60%+)");
         System.out.println("Reset and created sample courses.");
     }
+// Configuration method: defines how Spring should create/manage a bean.
     private void resetAndCreateSampleSubjects() {
         // BCA
         createSubject("Computer Applications", "BCA", "BCA-S1-101", "Programming Fundamentals", 1, 4);
@@ -321,6 +356,7 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Reset and created sample subjects with full details.");
     }
 
+// Configuration method: defines how Spring should create/manage a bean.
     private void seedDefaultFeeStructure() {
         if (feeStructureRepository.findFirstByActiveTrueOrderByEffectiveFromDesc().isPresent()) {
             return;
@@ -338,6 +374,7 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Created default fee structure: Dummy Course Fee Aligned Plan");
     }
 
+// Configuration method: defines how Spring should create/manage a bean.
     private void ensureDemoFaculty() {
         String facultyEmail = "faculty@college.edu";
         if (userRepository.findByEmail(facultyEmail).isEmpty()
@@ -360,6 +397,7 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Ensured demo faculty account: " + facultyEmail + " (password: Faculty123!)");
     }
 
+// Configuration method: defines how Spring should create/manage a bean.
     private void createCourse(String code, String name, String department, String programName, int batchYear, int capacity, int remainingSeats, int credits, int fee,
                               String programLevel, int durationSemesters, String requiredQualification) {
         Course c = courseRepository.findByCode(code).orElseGet(Course::new);
@@ -380,6 +418,7 @@ public class DataInitializer implements CommandLineRunner {
         courseRepository.save(c);
     }
 
+// Configuration method: defines how Spring should create/manage a bean.
     private void createSubject(String department, String programName, String code, String name, int semester, int credits) {
         Subject subject = subjectRepository
                 .findByDepartmentIgnoreCaseAndSubjectCodeIgnoreCase(department, code)
@@ -393,6 +432,7 @@ public class DataInitializer implements CommandLineRunner {
         subjectRepository.save(subject);
     }
 
+// Configuration method: defines how Spring should create/manage a bean.
     private void backfillTeachingSchemaSubjects() {
         int totalSaved = 0;
         for (TeachingSchema schema : teachingSchemaRepository.findAll()) {
@@ -422,6 +462,7 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("Teaching schema backfill completed. Total subjects added/updated: " + totalSaved);
     }
 
+// Configuration method: defines how Spring should create/manage a bean.
     private Path resolveSchemaPath(String rawPath) {
         Path candidate = Paths.get(rawPath);
         if (candidate.isAbsolute()) {

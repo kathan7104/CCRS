@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/controller/DirectorManagementController.java
+ * Role: Controller
+ * MVC Fit: Handles HTTP requests in the MVC layer.
+ * Connects To: Client -> Controller -> Service -> Repository -> Database -> Response
+ */
+
 package com.example.demo.controller;
 
 import com.example.demo.entity.Course;
@@ -34,24 +41,42 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+// Class Summary: Controller class that handles HTTP requests in the MVC layer.
+// @Controller marks this class as an MVC controller that returns views.
 @Controller
+// @RequestMapping defines a common URL prefix for all endpoints in this controller.
 @RequestMapping("/director")
 public class DirectorManagementController {
+// Field: stores MANAGED_ROLES for this class.
+// Endpoint handler for REQUEST /director: reads inputs, calls service, returns a view/JSON.
     private static final Set<String> MANAGED_ROLES = Set.of("STUDENT", "AUTHORITY_FACULTY", "ROLE_STUDENT", "ROLE_AUTHORITY_FACULTY");
+// Field: stores FACULTY_ROLE for this class.
     private static final String FACULTY_ROLE = "AUTHORITY_FACULTY";
 
+// Field: stores userRepository for this class.
     private final UserRepository userRepository;
+// Field: stores courseRepository for this class.
     private final CourseRepository courseRepository;
+// Field: stores departmentRepository for this class.
     private final DepartmentRepository departmentRepository;
+// Field: stores enrollmentRepository for this class.
     private final EnrollmentRepository enrollmentRepository;
+// Field: stores facultySubjectAssignmentRepository for this class.
     private final FacultySubjectAssignmentRepository facultySubjectAssignmentRepository;
+// Field: stores subjectRepository for this class.
     private final SubjectRepository subjectRepository;
+// Field: stores teachingSchemaRepository for this class.
     private final TeachingSchemaRepository teachingSchemaRepository;
+// Field: stores teachingSchemaSubjectIngestionService for this class.
     private final TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService;
+// Field: stores passwordEncoder for this class.
     private final PasswordEncoder passwordEncoder;
+// Field: stores jdbcTemplate for this class.
     private final JdbcTemplate jdbcTemplate;
+// Field: stores teachingSchemaUploadDir for this class.
     private final String teachingSchemaUploadDir;
 
+// Constructor: Spring injects dependencies here.
     public DirectorManagementController(UserRepository userRepository,
                                         CourseRepository courseRepository,
                                         DepartmentRepository departmentRepository,
@@ -62,6 +87,7 @@ public class DirectorManagementController {
                                         TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService,
                                         PasswordEncoder passwordEncoder,
                                         JdbcTemplate jdbcTemplate,
+// @Value injects a property value from application.properties.
                                         @Value("${ccrs.upload.teaching-schema-dir:uploads/teaching-schemas}") String teachingSchemaUploadDir) {
         this.userRepository = userRepository;
         this.courseRepository = courseRepository;
@@ -76,7 +102,9 @@ public class DirectorManagementController {
         this.teachingSchemaUploadDir = teachingSchemaUploadDir;
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/dashboard")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String dashboard(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
         String department = resolveDepartment(principal);
         model.addAttribute("department", department);
@@ -96,7 +124,9 @@ public class DirectorManagementController {
         return "director/dashboard";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/users")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String users(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
         String department = resolveDepartment(principal);
         List<User> faculty = userRepository.findAll().stream()
@@ -136,7 +166,9 @@ public class DirectorManagementController {
         return "director/users/list";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/users/new")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String newUser(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("selectedRole", FACULTY_ROLE);
@@ -144,10 +176,15 @@ public class DirectorManagementController {
         return "director/users/form";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/users")
+// Endpoint handler for POST /users: reads inputs, calls service, returns a view/JSON.
     public String createUser(@AuthenticationPrincipal CustomUserDetails principal,
+// @ModelAttribute binds form fields to an object and adds it to the model.
                              @ModelAttribute User user,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam("role") String role,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam("department") String department,
                              RedirectAttributes redirectAttributes) {
         if (!FACULTY_ROLE.equals(normalizeRole(role))) {
@@ -165,7 +202,9 @@ public class DirectorManagementController {
         return "redirect:/director/users";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/users/{id}/edit")
+// Endpoint handler for GET /users/{id}/edit: reads inputs, calls service, returns a view/JSON.
     public String editUser(@PathVariable Long id,
                            @AuthenticationPrincipal CustomUserDetails principal,
                            Model model,
@@ -186,14 +225,22 @@ public class DirectorManagementController {
         return "director/users/form";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/users/{id}")
+// Endpoint handler for POST /users/{id}: reads inputs, calls service, returns a view/JSON.
     public String updateUser(@PathVariable Long id,
                              @AuthenticationPrincipal CustomUserDetails principal,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam String fullName,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam String email,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam String mobileNumber,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam String role,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam(required = false) String department,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam(required = false) String password,
                              RedirectAttributes redirectAttributes) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -231,7 +278,9 @@ public class DirectorManagementController {
         return "redirect:/director/users";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/users/{id}/deactivate")
+// Endpoint handler for POST /users/{id}/deactivate: reads inputs, calls service, returns a view/JSON.
     public String deactivateUser(@PathVariable Long id,
                                  @AuthenticationPrincipal CustomUserDetails principal,
                                  RedirectAttributes redirectAttributes) {
@@ -250,7 +299,9 @@ public class DirectorManagementController {
         return "redirect:/director/users";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/users/{id}/activate")
+// Endpoint handler for POST /users/{id}/activate: reads inputs, calls service, returns a view/JSON.
     public String activateUser(@PathVariable Long id,
                                @AuthenticationPrincipal CustomUserDetails principal,
                                RedirectAttributes redirectAttributes) {
@@ -269,7 +320,9 @@ public class DirectorManagementController {
         return "redirect:/director/users";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/assignments")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String assignments(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
         String department = resolveDepartment(principal);
         int syncedCount = syncSubjectsFromAllCourseSchemas();
@@ -291,9 +344,13 @@ public class DirectorManagementController {
         return "director/assignments/list";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/assignments")
+// Endpoint handler for POST /assignments: reads inputs, calls service, returns a view/JSON.
     public String assignSubject(@AuthenticationPrincipal CustomUserDetails principal,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                 @RequestParam Long facultyId,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                 @RequestParam("subjectIds") List<Long> subjectIds,
                                 RedirectAttributes redirectAttributes) {
         User faculty = userRepository.findById(facultyId).orElseThrow(() -> new IllegalArgumentException("Faculty not found"));
@@ -347,7 +404,9 @@ public class DirectorManagementController {
         return "redirect:/director/assignments";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/assignments/{id}/delete")
+// Endpoint handler for POST /assignments/{id}/delete: reads inputs, calls service, returns a view/JSON.
     public String removeAssignment(@PathVariable Long id,
                                    @AuthenticationPrincipal CustomUserDetails principal,
                                    RedirectAttributes redirectAttributes) {
@@ -358,19 +417,23 @@ public class DirectorManagementController {
         return "redirect:/director/assignments";
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String resolveDepartment(CustomUserDetails principal) {
         String department = normalize(principal.getUser().getDepartment());
         return department == null || department.isBlank() ? "Engineering" : department;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String normalize(String value) {
         return value == null ? "" : value.trim();
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private boolean isManagedUser(User user) {
         return user.getRoles().stream().map(this::normalizeRole).anyMatch(r -> Set.of("STUDENT", FACULTY_ROLE).contains(r));
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private boolean canManageUser(String directorDepartment, User user) {
         if (hasRole(user, FACULTY_ROLE)) {
             return true;
@@ -381,10 +444,12 @@ public class DirectorManagementController {
         return hasAnyActiveEnrollment(user.getId());
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private boolean hasAnyActiveEnrollment(Long studentId) {
         return findLatestActiveEnrollment(studentId) != null;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private Enrollment findLatestActiveEnrollment(Long studentId) {
         return enrollmentRepository.findByStudentId(studentId).stream()
                 .filter(e -> e.getCourse() != null)
@@ -393,12 +458,14 @@ public class DirectorManagementController {
                 .orElse(null);
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private List<String> getActiveDepartmentNames() {
         return departmentRepository.findByActiveTrueOrderByNameAsc().stream()
                 .map(d -> d.getName())
                 .toList();
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private boolean hasRole(User user, String role) {
         String normalized = normalizeRole(role);
         return user.getRoles().stream()
@@ -406,6 +473,7 @@ public class DirectorManagementController {
                 .anyMatch(normalized::equalsIgnoreCase);
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String normalizeRole(String role) {
         if (role == null) {
             return "";
@@ -417,11 +485,13 @@ public class DirectorManagementController {
         return value;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private int countAllAssignments() {
         Integer count = jdbcTemplate.queryForObject("select count(*) from faculty_subject_assignments", Integer.class);
         return count == null ? 0 : count;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private List<AssignmentTableRow> fetchAssignmentRows() {
         return jdbcTemplate.query(
                 """
@@ -454,6 +524,7 @@ public class DirectorManagementController {
         );
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private int syncSubjectsFromAllCourseSchemas() {
         int syncedCount = 0;
         List<Course> coursesWithSchema = courseRepository.findAll().stream()
@@ -512,6 +583,7 @@ public class DirectorManagementController {
         return syncedCount;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private int syncFromSchemaFilesDirectory() {
         int synced = 0;
         Path dir = Paths.get(teachingSchemaUploadDir).toAbsolutePath().normalize();
@@ -556,6 +628,7 @@ public class DirectorManagementController {
         return synced;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String inferProgramFromFileName(String fileName) {
         String upper = normalize(fileName).toUpperCase(Locale.ROOT);
         List<String> knownPrograms = List.of("BCA", "MCA", "BBA", "MBA", "BTECH", "MTECH", "BHM", "BCOM", "MCOM");
@@ -567,6 +640,7 @@ public class DirectorManagementController {
         return "BCA";
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String inferDepartmentFromProgram(String program) {
         return switch (normalize(program).toUpperCase(Locale.ROOT)) {
             case "BCA", "MCA" -> "Computer Applications";
@@ -578,6 +652,7 @@ public class DirectorManagementController {
         };
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private Path resolveSchemaPath(String rawPath) {
         Path candidate = Path.of(rawPath);
         if (candidate.isAbsolute()) {
@@ -598,9 +673,11 @@ public class DirectorManagementController {
         return direct;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public record DirectorUserRow(User user, String enrolledDepartment, String enrolledCourse) {
     }
 
+// Endpoint handler: reads inputs, calls service layer, and returns a response/view.
     public record AssignmentTableRow(Long id,
                                      String facultyName,
                                      String facultyDepartment,

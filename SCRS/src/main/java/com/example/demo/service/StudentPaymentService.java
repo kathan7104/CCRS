@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/service/StudentPaymentService.java
+ * Role: Service
+ * MVC Fit: Contains business logic used by controllers.
+ * Connects To: Controller calls Service, Service calls Repository
+ */
+
 package com.example.demo.service;
 
 import com.example.demo.entity.Course;
@@ -31,28 +38,47 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+// Class Summary: Service class that contains business logic used by controllers.
+// @Service marks the business logic layer for Spring to manage as a bean.
 @Service
 public class StudentPaymentService {
+// Field: stores ZERO for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final BigDecimal ZERO = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+// Field: stores PROVIDER_RAZORPAY for this class.
     private static final String PROVIDER_RAZORPAY = "razorpay";
+// Field: stores PROVIDER_MOCK for this class.
     private static final String PROVIDER_MOCK = "mock";
 
+// Field: stores enrollmentRepository for this class.
     private final EnrollmentRepository enrollmentRepository;
+// Field: stores feeStructureRepository for this class.
     private final FeeStructureRepository feeStructureRepository;
+// Field: stores invoiceRepository for this class.
     private final InvoiceRepository invoiceRepository;
+// Field: stores paymentRepository for this class.
     private final PaymentRepository paymentRepository;
+// Field: stores userRepository for this class.
     private final UserRepository userRepository;
+// Field: stores razorpayGatewayService for this class.
     private final RazorpayGatewayService razorpayGatewayService;
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.payment.razorpay.company-name:CCRS College}")
+// Field: stores companyName for this class.
     private String companyName;
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.payment.razorpay.key-secret:}")
+// Field: stores razorpayKeySecret for this class.
     private String razorpayKeySecret;
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.payment.provider:mock}")
+// Field: stores paymentProvider for this class.
     private String paymentProvider;
 
+// Constructor: Spring injects dependencies here.
     public StudentPaymentService(EnrollmentRepository enrollmentRepository,
                                  FeeStructureRepository feeStructureRepository,
                                  InvoiceRepository invoiceRepository,
@@ -67,6 +93,7 @@ public class StudentPaymentService {
         this.razorpayGatewayService = razorpayGatewayService;
     }
 
+// Service method: contains business logic and coordinates repositories.
     public PaymentDashboardData getPaymentDashboard(User student) {
         FeeStructure activeFee = feeStructureRepository.findFirstByActiveTrueOrderByEffectiveFromDesc().orElse(null);
         List<Enrollment> enrollments = enrollmentRepository.findByStudentId(student.getId()).stream()
@@ -123,6 +150,7 @@ public class StudentPaymentService {
     }
 
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public CheckoutSession createCheckoutSession(User student, Long invoiceId) {
         Invoice invoice = getOwnedInvoice(student, invoiceId);
         ensurePayable(invoice);
@@ -183,6 +211,7 @@ public class StudentPaymentService {
     }
 
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public Payment verifyRazorpayPayment(User student,
                                          Long invoiceId,
                                          String razorpayOrderId,
@@ -243,6 +272,7 @@ public class StudentPaymentService {
     }
 
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public Payment completeMockPayment(User student,
                                        Long invoiceId,
                                        String gatewayOrderId,
@@ -279,6 +309,7 @@ public class StudentPaymentService {
         return payment;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private Invoice getOwnedInvoice(User student, Long invoiceId) {
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new IllegalArgumentException("Invoice not found."));
@@ -288,6 +319,7 @@ public class StudentPaymentService {
         return invoice;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void ensurePayable(Invoice invoice) {
         if (invoice.getStatus() == Invoice.InvoiceStatus.PAID) {
             throw new IllegalStateException("Invoice is already paid.");
@@ -297,6 +329,7 @@ public class StudentPaymentService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void refreshInvoiceStatus(Invoice invoice) {
         BigDecimal totalPaid = paidAmount(invoice.getId());
         BigDecimal remaining = invoice.getTotalAmount().subtract(totalPaid).setScale(2, RoundingMode.HALF_UP);
@@ -311,20 +344,24 @@ public class StudentPaymentService {
         invoiceRepository.save(invoice);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private Optional<Invoice> findLatestSemesterInvoice(Long studentId, int semester) {
         return invoiceRepository.findByStudentIdAndInvoiceNumberStartingWith(studentId, "SEM-" + semester + "-").stream()
                 .max(Comparator.comparing(Invoice::getIssuedAt));
     }
 
+// Service method: contains business logic and coordinates repositories.
     private BigDecimal paidAmount(Long invoiceId) {
         BigDecimal value = paymentRepository.getSuccessfulAmountByInvoiceId(invoiceId);
         return (value == null ? BigDecimal.ZERO : value).setScale(2, RoundingMode.HALF_UP);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private BigDecimal dueAmount(Long invoiceId, BigDecimal total) {
         return total.subtract(paidAmount(invoiceId)).max(BigDecimal.ZERO).setScale(2, RoundingMode.HALF_UP);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private BigDecimal calculateSemesterCourseFee(Course course, FeeStructure feeStructure) {
         if (course == null) {
             return ZERO;
@@ -343,14 +380,17 @@ public class StudentPaymentService {
         return semesterTuition.add(creditFee).add(fixed).setScale(2, RoundingMode.HALF_UP);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private int safeSemesterLimit(Integer value) {
         return value == null || value < 1 ? 1 : value;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private long toPaise(BigDecimal rupees) {
         return rupees.setScale(2, RoundingMode.HALF_UP).movePointRight(2).longValueExact();
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String hmacSha256(String data, String secret) {
         if (secret == null || secret.isBlank()) {
             throw new IllegalStateException("Razorpay secret key is missing.");
@@ -364,6 +404,7 @@ public class StudentPaymentService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void validateMockPaymentDetails(MockPaymentDetails paymentDetails) {
         if (paymentDetails == null || paymentDetails.paymentMode() == null || paymentDetails.paymentMode().isBlank()) {
             throw new IllegalArgumentException("Select a payment option (UPI or CARD).");
@@ -397,6 +438,7 @@ public class StudentPaymentService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String buildMockTransactionId(MockPaymentDetails paymentDetails) {
         String mode = paymentDetails.paymentMode().trim().toUpperCase();
         String suffix;
@@ -410,6 +452,7 @@ public class StudentPaymentService {
         return "mock_" + mode.toLowerCase() + "_" + suffix + "_" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String buildMockSignatureSummary(MockPaymentDetails paymentDetails) {
         String mode = paymentDetails.paymentMode().trim().toUpperCase();
         if ("UPI".equals(mode)) {
@@ -420,10 +463,12 @@ public class StudentPaymentService {
         return "mock_signature_ok|mode=CARD|card=" + masked + "|holder=" + safe(paymentDetails.cardHolderName());
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String safe(String value) {
         return value == null ? "" : value.trim();
     }
 
+// Service method: contains business logic and coordinates repositories.
     private boolean constantTimeEquals(String a, String b) {
         return java.security.MessageDigest.isEqual(
                 a.getBytes(StandardCharsets.UTF_8),
@@ -431,6 +476,7 @@ public class StudentPaymentService {
         );
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void markStudentEnrolledIfFirstSemesterPaid(Invoice invoice) {
         if (invoice == null || invoice.getInvoiceNumber() == null || !invoice.getInvoiceNumber().startsWith("SEM-1-")) {
             return;
@@ -463,6 +509,7 @@ public class StudentPaymentService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void syncStudentDepartmentFromEnrollment(Enrollment enrollment) {
         if (enrollment == null || enrollment.getStudent() == null || enrollment.getCourse() == null) {
             return;
@@ -479,14 +526,17 @@ public class StudentPaymentService {
         userRepository.save(student);
     }
 
+// Service method: contains business logic and coordinates repositories.
     public String getPaymentProviderLabel() {
         return PROVIDER_RAZORPAY.equals(getActiveProvider()) ? "Razorpay" : "Mock Gateway";
     }
 
+// Service method: contains business logic and coordinates repositories.
     public boolean isMockProviderActive() {
         return PROVIDER_MOCK.equals(getActiveProvider());
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String getActiveProvider() {
         if (paymentProvider == null) {
             return PROVIDER_MOCK;
@@ -498,11 +548,13 @@ public class StudentPaymentService {
         return PROVIDER_MOCK;
     }
 
+// Service method: contains business logic and coordinates repositories.
     public record PaymentDashboardData(FeeStructure activeFee,
                                        List<SemesterSummary> semesters,
                                        List<StudentInvoiceRow> invoices) {
     }
 
+// Service method: contains business logic and coordinates repositories.
     public record SemesterSummary(int semester,
                                   int enrolledCourses,
                                   BigDecimal expectedAmount,
@@ -513,6 +565,7 @@ public class StudentPaymentService {
                                   LocalDateTime dueDate) {
     }
 
+// Service method: contains business logic and coordinates repositories.
     public record StudentInvoiceRow(Long invoiceId,
                                     String invoiceNumber,
                                     String status,
@@ -523,6 +576,7 @@ public class StudentPaymentService {
                                     LocalDateTime dueDate) {
     }
 
+// Service method: contains business logic and coordinates repositories.
     public record CheckoutSession(Long invoiceId,
                                   String invoiceNumber,
                                   String orderId,
@@ -536,6 +590,7 @@ public class StudentPaymentService {
                                   String merchantName) {
     }
 
+// Service method: contains business logic and coordinates repositories.
     public record MockPaymentDetails(String paymentMode,
                                      String upiId,
                                      String cardNumber,

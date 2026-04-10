@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/controller/GlobalWebExceptionHandler.java
+ * Role: Controller
+ * MVC Fit: Handles HTTP requests in the MVC layer.
+ * Connects To: Client -> Controller -> Service -> Repository -> Database -> Response
+ */
+
 package com.example.demo.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,8 +20,11 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+// Class Summary: Controller class that handles HTTP requests in the MVC layer.
 @ControllerAdvice(annotations = Controller.class)
 public class GlobalWebExceptionHandler {
+// Field: stores log for this class.
+// Endpoint handler: reads inputs, calls service layer, and returns a response/view.
     private static final Logger log = LoggerFactory.getLogger(GlobalWebExceptionHandler.class);
 
     @ExceptionHandler({
@@ -26,6 +36,7 @@ public class GlobalWebExceptionHandler {
             IllegalArgumentException.class,
             IllegalStateException.class
     })
+// Endpoint handler: reads inputs, calls service layer, and returns a response/view.
     public String handleWebErrors(Exception ex,
                                   HttpServletRequest request,
                                   RedirectAttributes redirectAttributes) {
@@ -51,6 +62,7 @@ public class GlobalWebExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
+// Endpoint handler: reads inputs, calls service layer, and returns a response/view.
     public String handleUnexpected(Exception ex,
                                    HttpServletRequest request,
                                    RedirectAttributes redirectAttributes) {
@@ -68,6 +80,7 @@ public class GlobalWebExceptionHandler {
         return "redirect:/dashboard";
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String buildSafeMessage(Exception ex) {
         Throwable current = ex;
         while (current.getCause() != null && current.getCause() != current) {

@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/repository/FacultyCourseAssignmentRepository.java
+ * Role: Repository
+ * MVC Fit: Data access layer using Spring Data JPA.
+ * Connects To: Service uses Repository for CRUD queries
+ */
+
 package com.example.demo.repository;
 
 import com.example.demo.entity.FacultyCourseAssignment;
@@ -7,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
+// Class Summary: Repository class that is the data access layer using Spring Data JPA.
 public interface FacultyCourseAssignmentRepository extends JpaRepository<FacultyCourseAssignment, Long> {
     List<FacultyCourseAssignment> findByFacultyDepartmentIgnoreCase(String department);
     boolean existsByFacultyIdAndCourseId(Long facultyId, Long courseId);

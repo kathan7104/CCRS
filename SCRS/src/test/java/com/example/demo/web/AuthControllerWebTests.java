@@ -1,3 +1,10 @@
+/*
+ * File: src/test/java/com/example/demo/web/AuthControllerWebTests.java
+ * Role: Test
+ * MVC Fit: Automated tests for application behavior.
+ * Connects To: Verifies layers in isolation or integration
+ */
+
 package com.example.demo.web;
 
 import com.example.demo.TestSupportConfig;
@@ -17,11 +24,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "ccrs.dev.create-authority=false",
         "ccrs.dev.seed-demo-faculty=false"
 })
+// Class Summary: Test class that verifies application behavior.
 @AutoConfigureMockMvc
 @Import(TestSupportConfig.class)
 class AuthControllerWebTests {
 
+// @Autowired asks Spring to inject this dependency.
     @Autowired
+// Field: stores mockMvc for this class.
     private MockMvc mockMvc;
 
     @Test

@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/controller/DashboardController.java
+ * Role: Controller
+ * MVC Fit: Handles HTTP requests in the MVC layer.
+ * Connects To: Client -> Controller -> Service -> Repository -> Database -> Response
+ */
+
 package com.example.demo.controller;
 import com.example.demo.entity.Enrollment;
 import com.example.demo.entity.FacultySubjectAssignment;
@@ -11,16 +18,23 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.Collections;
 import java.util.List;
+// Class Summary: Controller class that handles HTTP requests in the MVC layer.
+// @Controller marks this class as an MVC controller that returns views.
 @Controller
 public class DashboardController {
+// Field: stores enrollmentRepository for this class.
     private final EnrollmentRepository enrollmentRepository;
+// Field: stores facultySubjectAssignmentRepository for this class.
     private final FacultySubjectAssignmentRepository facultySubjectAssignmentRepository;
+// Constructor: Spring injects dependencies here.
     public DashboardController(EnrollmentRepository enrollmentRepository,
                                FacultySubjectAssignmentRepository facultySubjectAssignmentRepository) {
         this.enrollmentRepository = enrollmentRepository;
         this.facultySubjectAssignmentRepository = facultySubjectAssignmentRepository;
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/dashboard")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String dashboard(@AuthenticationPrincipal CustomUserDetails userDetails, Model model, HttpServletRequest request) {
         List<Enrollment> enrollments = Collections.emptyList();
         List<FacultySubjectAssignment> assignedSubjects = Collections.emptyList();
@@ -64,7 +78,9 @@ public class DashboardController {
         // 9. Send the result back to the screen
         return "dashboard";
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/dashboard/authority")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String authorityDashboard(@AuthenticationPrincipal CustomUserDetails userDetails, Model model, HttpServletRequest request) {
         if (userDetails != null && userDetails.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_AUTHORITY_FACULTY".equals(a.getAuthority()))) {
@@ -94,6 +110,7 @@ public class DashboardController {
         return "dashboard";
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String resolveOverviewText(CustomUserDetails userDetails) {
         boolean isFaculty = userDetails.getAuthorities().stream()
                 .anyMatch(a -> "ROLE_AUTHORITY_FACULTY".equals(a.getAuthority()));

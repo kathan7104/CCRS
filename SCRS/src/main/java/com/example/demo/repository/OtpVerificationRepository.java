@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/repository/OtpVerificationRepository.java
+ * Role: Repository
+ * MVC Fit: Data access layer using Spring Data JPA.
+ * Connects To: Service uses Repository for CRUD queries
+ */
+
 package com.example.demo.repository;
 import com.example.demo.entity.OtpVerification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,6 +14,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.Optional;
+// Class Summary: Repository class that is the data access layer using Spring Data JPA.
+// @Repository marks the data access layer and enables exception translation.
 @Repository
 public interface OtpVerificationRepository extends JpaRepository<OtpVerification, Long> {
     @Query("SELECT o FROM OtpVerification o WHERE o.identifier = :identifier AND o.otp = :otp " +

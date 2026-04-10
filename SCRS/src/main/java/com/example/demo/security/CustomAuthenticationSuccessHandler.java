@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/security/CustomAuthenticationSuccessHandler.java
+ * Role: Security
+ * MVC Fit: Spring Security customization and filters.
+ * Connects To: Protects requests and authentication
+ */
+
 package com.example.demo.security;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,9 +15,12 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Collection;
+// Class Summary: Security class that customizes Spring Security behavior.
+// @Component registers a generic Spring-managed bean.
 @Component
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
     @Override
+// Method: performs a focused unit of work in this class.
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
         String loginType = request.getParameter("loginType");

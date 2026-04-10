@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/controller/CourseController.java
+ * Role: Controller
+ * MVC Fit: Handles HTTP requests in the MVC layer.
+ * Connects To: Client -> Controller -> Service -> Repository -> Database -> Response
+ */
+
 package com.example.demo.controller;
 import com.example.demo.entity.Course;
 import com.example.demo.entity.EnrollmentDocument;
@@ -25,21 +32,32 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
+// Class Summary: Controller class that handles HTTP requests in the MVC layer.
+// @Controller marks this class as an MVC controller that returns views.
 @Controller
+// @RequestMapping defines a common URL prefix for all endpoints in this controller.
 @RequestMapping("/courses")
 public class CourseController {
+// Field: stores courseRepository for this class.
     private final CourseRepository courseRepository;
+// Field: stores enrollmentService for this class.
     private final EnrollmentService enrollmentService;
+// Field: stores documentUploadDir for this class.
     private final String documentUploadDir;
+// Field: stores MAX_SINGLE_DOCUMENT_SIZE_BYTES for this class.
     private static final long MAX_SINGLE_DOCUMENT_SIZE_BYTES = 20L * 1024L * 1024L; // 20MB
+// Constructor: Spring injects dependencies here.
     public CourseController(CourseRepository courseRepository,
                             EnrollmentService enrollmentService,
+// @Value injects a property value from application.properties.
                             @Value("${ccrs.upload.documents-dir:uploads/documents}") String documentUploadDir) {
         this.courseRepository = courseRepository;
         this.enrollmentService = enrollmentService;
         this.documentUploadDir = documentUploadDir;
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String listCourses(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         // 1. Get or save data in the database
         List<Course> courses = courseRepository.findAll();
@@ -66,7 +84,9 @@ public class CourseController {
         // 8. Send the result back to the screen
         return "courses/list";
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/{id}")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String courseDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         // 1. Get or save data in the database
         Course course = courseRepository.findById(id)
@@ -80,7 +100,9 @@ public class CourseController {
         // 4. Send the result back to the screen
         return "courses/detail";
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/{id}/enroll")
+// Endpoint handler for GET /{id}/enroll: reads inputs, calls service, returns a view/JSON.
     public String showEnrollmentForm(@PathVariable Long id,
                                      Model model,
                                      @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -115,16 +137,27 @@ public class CourseController {
         // 7. Send the result back to the screen
         return "courses/enroll";
     }
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/{id}/enroll")
+// Endpoint handler for POST /{id}/enroll: reads inputs, calls service, returns a view/JSON.
     public String processEnrollment(@PathVariable Long id, 
+// @RequestParam binds a query parameter or form field to a method parameter.
                                    @RequestParam("fullName") String fullName,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                    @RequestParam("dob") String dobStr,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                    @RequestParam("pastMarks") String pastMarksStr,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                    @RequestParam("highestQualification") String highestQualification,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                    @RequestParam("boardUniversity") String boardUniversity,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                    @RequestParam("passingYear") String passingYearStr,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                    @RequestParam("documentTypes") List<String> documentTypes,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                    @RequestParam("documentFiles") List<MultipartFile> documentFiles,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                    @RequestParam(required = false) String comments,
                                    @AuthenticationPrincipal CustomUserDetails userDetails,
                                    RedirectAttributes redirectAttributes) {
@@ -209,6 +242,7 @@ public class CourseController {
         }
     }
 
+// Endpoint handler: reads inputs, calls service layer, and returns a response/view.
     private void validateEnrollmentForm(String fullName,
                                         LocalDate dob,
                                         Double pastMarks,
@@ -236,6 +270,7 @@ public class CourseController {
         }
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private void validateUploadedDocument(MultipartFile file, String safeOriginalName) {
         if (file.getSize() > MAX_SINGLE_DOCUMENT_SIZE_BYTES) {
             throw new IllegalArgumentException("Each file must be 20MB or smaller.");
@@ -251,6 +286,7 @@ public class CourseController {
         }
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private void validateRequiredCourseDocuments(Long courseId, List<EnrollmentService.DocumentPayload> documents) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid course Id:" + courseId));
@@ -273,6 +309,7 @@ public class CourseController {
         }
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private Map<String, String> documentTypeOptions() {
         Map<String, String> options = new LinkedHashMap<>();
         options.put("SSC_MARKSHEET", "SSC Marksheet");

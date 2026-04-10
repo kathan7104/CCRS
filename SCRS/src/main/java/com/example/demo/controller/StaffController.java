@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/controller/StaffController.java
+ * Role: Controller
+ * MVC Fit: Handles HTTP requests in the MVC layer.
+ * Connects To: Client -> Controller -> Service -> Repository -> Database -> Response
+ */
+
 package com.example.demo.controller;
 
 import com.example.demo.entity.FeeStructure;
@@ -15,13 +22,20 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+// Class Summary: Controller class that handles HTTP requests in the MVC layer.
+// @Controller marks this class as an MVC controller that returns views.
 @Controller
+// @RequestMapping defines a common URL prefix for all endpoints in this controller.
 @RequestMapping("/staff")
 public class StaffController {
+// Field: stores feeStructureService for this class.
     private final FeeStructureService feeStructureService;
+// Field: stores reportingService for this class.
     private final ReportingService reportingService;
+// Field: stores staffBillingService for this class.
     private final StaffBillingService staffBillingService;
 
+// Constructor: Spring injects dependencies here.
     public StaffController(FeeStructureService feeStructureService,
                            ReportingService reportingService,
                            StaffBillingService staffBillingService) {
@@ -30,7 +44,9 @@ public class StaffController {
         this.staffBillingService = staffBillingService;
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/dashboard")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String dashboard(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
         model.addAttribute("userName", principal.getUser().getFullName());
         model.addAttribute("activeFee", feeStructureService.getActive());
@@ -39,14 +55,18 @@ public class StaffController {
         return "staff/dashboard";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/fee-structures")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String feeStructures(Model model) {
         model.addAttribute("fees", feeStructureService.getAll());
         model.addAttribute("logs", feeStructureService.getRecentAuditLogs());
         return "staff/fees/list";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/fee-structures/new")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String newFeeStructure(Model model) {
         FeeStructure fee = new FeeStructure();
         fee.setEffectiveFrom(LocalDate.now());
@@ -54,14 +74,23 @@ public class StaffController {
         return "staff/fees/form";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/fee-structures")
+// Endpoint handler for POST /fee-structures: reads inputs, calls service, returns a view/JSON.
     public String createFeeStructure(@AuthenticationPrincipal CustomUserDetails principal,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam String name,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam BigDecimal costPerCredit,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam BigDecimal labFee,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam BigDecimal differentialFee,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam BigDecimal latePenalty,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam LocalDate effectiveFrom,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam(defaultValue = "false") boolean active,
                                      RedirectAttributes redirectAttributes) {
         FeeStructure fee = new FeeStructure();
@@ -77,21 +106,32 @@ public class StaffController {
         return "redirect:/staff/fee-structures";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/fee-structures/{id}/edit")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String editFeeStructure(@PathVariable Long id, Model model) {
         model.addAttribute("fee", feeStructureService.getById(id));
         return "staff/fees/form";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/fee-structures/{id}")
+// Endpoint handler for POST /fee-structures/{id}: reads inputs, calls service, returns a view/JSON.
     public String updateFeeStructure(@PathVariable Long id,
                                      @AuthenticationPrincipal CustomUserDetails principal,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam String name,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam BigDecimal costPerCredit,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam BigDecimal labFee,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam BigDecimal differentialFee,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam BigDecimal latePenalty,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam LocalDate effectiveFrom,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                      @RequestParam(defaultValue = "false") boolean active,
                                      RedirectAttributes redirectAttributes) {
         FeeStructure fee = feeStructureService.getById(id);
@@ -107,7 +147,9 @@ public class StaffController {
         return "redirect:/staff/fee-structures";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/fee-structures/{id}/delete")
+// Endpoint handler for POST /fee-structures/{id}/delete: reads inputs, calls service, returns a view/JSON.
     public String deleteFeeStructure(@PathVariable Long id,
                                      @AuthenticationPrincipal CustomUserDetails principal,
                                      RedirectAttributes redirectAttributes) {
@@ -116,7 +158,9 @@ public class StaffController {
         return "redirect:/staff/fee-structures";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/reports")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String reports(@RequestParam(defaultValue = "unpaid") String reportType, Model model) {
         model.addAttribute("reportType", reportType);
         model.addAttribute("snapshot", reportingService.getFinancialSnapshot());
@@ -125,15 +169,20 @@ public class StaffController {
         return "staff/reports";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/invoices")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String invoices(Model model) {
         model.addAttribute("students", staffBillingService.getActiveStudents());
         model.addAttribute("invoiceRows", staffBillingService.getInvoiceRows());
         return "staff/invoices/list";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/invoices/generate")
+// Endpoint handler for POST /invoices/generate: reads inputs, calls service, returns a view/JSON.
     public String generateSemesterInvoice(@RequestParam Long studentId,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                           @RequestParam int semester,
                                           RedirectAttributes redirectAttributes) {
         try {
@@ -145,12 +194,19 @@ public class StaffController {
         return "redirect:/staff/invoices";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/invoices/{invoiceId}/offline-payment")
+// Endpoint handler for POST /invoices/{invoiceId}/offline-payment: reads inputs, calls service, returns a view/JSON.
     public String collectOffline(@PathVariable Long invoiceId,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                  @RequestParam Payment.PaymentMethod method,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                  @RequestParam(required = false) BigDecimal amount,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                  @RequestParam(required = false) String chequeNumber,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                  @RequestParam(required = false) String chequeBankName,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                  @RequestParam(required = false) String chequeIfscCode,
                                  RedirectAttributes redirectAttributes) {
         try {

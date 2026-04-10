@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/controller/DirectorCourseController.java
+ * Role: Controller
+ * MVC Fit: Handles HTTP requests in the MVC layer.
+ * Connects To: Client -> Controller -> Service -> Repository -> Database -> Response
+ */
+
 package com.example.demo.controller;
 
 import com.example.demo.entity.Course;
@@ -32,10 +39,16 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Class Summary: Controller class that handles HTTP requests in the MVC layer.
+// @Controller marks this class as an MVC controller that returns views.
 @Controller
+// @RequestMapping defines a common URL prefix for all endpoints in this controller.
 @RequestMapping("/director/courses")
 public class DirectorCourseController {
+// Field: stores OTHER_PROGRAM_VALUE for this class.
     private static final String OTHER_PROGRAM_VALUE = "__OTHER__";
+// Field: stores PROGRAM_NAMES for this class.
+// Endpoint handler for REQUEST /director/courses: reads inputs, calls service, returns a view/JSON.
     private static final List<String> PROGRAM_NAMES = List.of(
             "BCA",
             "MCA",
@@ -47,18 +60,27 @@ public class DirectorCourseController {
             "BCOM",
             "MCOM"
     );
+// Field: stores TRAILING_NUMBER_PATTERN for this class.
+// Endpoint handler: reads inputs, calls service layer, and returns a response/view.
     private static final Pattern TRAILING_NUMBER_PATTERN = Pattern.compile("-(\\d+)$");
 
+// Field: stores courseRepository for this class.
     private final CourseRepository courseRepository;
+// Field: stores departmentRepository for this class.
     private final DepartmentRepository departmentRepository;
+// Field: stores teachingSchemaRepository for this class.
     private final TeachingSchemaRepository teachingSchemaRepository;
+// Field: stores teachingSchemaSubjectIngestionService for this class.
     private final TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService;
+// Field: stores teachingSchemaUploadDir for this class.
     private final String teachingSchemaUploadDir;
 
+// Constructor: Spring injects dependencies here.
     public DirectorCourseController(CourseRepository courseRepository,
                                     DepartmentRepository departmentRepository,
                                     TeachingSchemaRepository teachingSchemaRepository,
                                     TeachingSchemaSubjectIngestionService teachingSchemaSubjectIngestionService,
+// @Value injects a property value from application.properties.
                                     @Value("${ccrs.upload.teaching-schema-dir:uploads/teaching-schemas}") String teachingSchemaUploadDir) {
         this.courseRepository = courseRepository;
         this.departmentRepository = departmentRepository;
@@ -67,13 +89,17 @@ public class DirectorCourseController {
         this.teachingSchemaUploadDir = teachingSchemaUploadDir;
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String list(Model model) {
         model.addAttribute("courses", courseRepository.findAll());
         return "director/courses/list";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/new")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String createForm(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
         Course course = new Course();
         course.setDepartment(resolveDepartment(principal));
@@ -87,11 +113,17 @@ public class DirectorCourseController {
         return "director/courses/form";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping
+// Endpoint handler: reads inputs, calls service layer, and returns a response/view.
     public String create(@ModelAttribute Course course,
+// @RequestParam binds a query parameter or form field to a method parameter.
                          @RequestParam(name = "requiredDocumentTypes", required = false) List<String> requiredDocumentTypes,
+// @RequestParam binds a query parameter or form field to a method parameter.
                          @RequestParam(name = "programNameCustom", required = false) String programNameCustom,
+// @RequestParam binds a query parameter or form field to a method parameter.
                          @RequestParam(name = "existingTeachingSchemaId", required = false) Long existingTeachingSchemaId,
+// @RequestParam binds a query parameter or form field to a method parameter.
                          @RequestParam(name = "teachingSchemaFile", required = false) MultipartFile teachingSchemaFile,
                          RedirectAttributes redirectAttributes) {
         try {
@@ -120,7 +152,9 @@ public class DirectorCourseController {
         }
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/{id}/edit")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String editForm(@PathVariable Long id, Model model) {
         Course course = courseRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid course Id:" + id));
@@ -131,12 +165,19 @@ public class DirectorCourseController {
         return "director/courses/form";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/{id}")
+// Endpoint handler for POST /{id}: reads inputs, calls service, returns a view/JSON.
     public String update(@PathVariable Long id,
+// @ModelAttribute binds form fields to an object and adds it to the model.
                          @ModelAttribute Course form,
+// @RequestParam binds a query parameter or form field to a method parameter.
                          @RequestParam(name = "requiredDocumentTypes", required = false) List<String> requiredDocumentTypes,
+// @RequestParam binds a query parameter or form field to a method parameter.
                          @RequestParam(name = "programNameCustom", required = false) String programNameCustom,
+// @RequestParam binds a query parameter or form field to a method parameter.
                          @RequestParam(name = "existingTeachingSchemaId", required = false) Long existingTeachingSchemaId,
+// @RequestParam binds a query parameter or form field to a method parameter.
                          @RequestParam(name = "teachingSchemaFile", required = false) MultipartFile teachingSchemaFile,
                          RedirectAttributes redirectAttributes) {
         try {
@@ -176,7 +217,9 @@ public class DirectorCourseController {
         }
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/{id}/delete")
+// Endpoint handler for POST /{id}/delete: reads inputs, calls service, returns a view/JSON.
     public String delete(@PathVariable Long id,
                          RedirectAttributes redirectAttributes) {
         Course course = courseRepository.findById(id)
@@ -186,6 +229,7 @@ public class DirectorCourseController {
         return "redirect:/director/courses";
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private void loadFormOptions(Model model, Course course, List<Course> explicitAllCourses) {
         List<Course> allCourses = explicitAllCourses != null ? explicitAllCourses : courseRepository.findAll().stream()
                 .filter(c -> nullSafe(c.getDepartment()).equalsIgnoreCase(nullSafe(course.getDepartment())))
@@ -207,6 +251,7 @@ public class DirectorCourseController {
                 .toList());
     }
 
+// Endpoint handler: reads inputs, calls service layer, and returns a response/view.
     private TeachingSchema resolveTeachingSchema(Course course,
                                                  Long existingTeachingSchemaId,
                                                  MultipartFile teachingSchemaFile) throws IOException {
@@ -265,6 +310,7 @@ public class DirectorCourseController {
         return null;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private void normalizeCapacity(Course course) {
         if (course.getCapacity() == null || course.getCapacity() < 0) {
             course.setCapacity(0);
@@ -286,6 +332,7 @@ public class DirectorCourseController {
         }
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String resolveDepartment(CustomUserDetails principal) {
         if (principal == null || principal.getUser() == null) {
             return "Computer Applications";
@@ -294,10 +341,12 @@ public class DirectorCourseController {
         return department == null || department.isBlank() ? "Computer Applications" : department;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String cleanText(String value) {
         return value == null ? "" : value.trim();
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String resolveProgramName(String selectedProgram, String customProgram) {
         String selected = cleanText(selectedProgram);
         if (isOtherProgramSelection(selected)) {
@@ -309,20 +358,24 @@ public class DirectorCourseController {
         return selected;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private boolean isOtherProgramSelection(String value) {
         return OTHER_PROGRAM_VALUE.equals(value) || "OTHER".equalsIgnoreCase(value);
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String nullSafe(String value) {
         return value == null ? "" : value;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private List<String> getActiveDepartmentNames() {
         return departmentRepository.findByActiveTrueOrderByNameAsc().stream()
                 .map(d -> d.getName())
                 .toList();
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private List<String> resolveProgramOptions() {
         Set<String> values = new HashSet<>(PROGRAM_NAMES);
         courseRepository.findAll().stream()
@@ -342,6 +395,7 @@ public class DirectorCourseController {
         return ordered;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private List<String> normalizeDocumentTypes(List<String> rawValues) {
         if (rawValues == null || rawValues.isEmpty()) {
             return List.of();
@@ -360,6 +414,7 @@ public class DirectorCourseController {
         return result;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private Set<Course> resolvePrerequisites(List<Long> prerequisiteIds, Long currentCourseId) {
         if (prerequisiteIds == null || prerequisiteIds.isEmpty()) {
             return Set.of();
@@ -371,6 +426,7 @@ public class DirectorCourseController {
                 .collect(Collectors.toSet());
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private Map<String, String> documentTypeOptions() {
         Map<String, String> options = new LinkedHashMap<>();
         options.put("SSC_MARKSHEET", "SSC Marksheet");
@@ -389,6 +445,7 @@ public class DirectorCourseController {
         return options;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private boolean isCodeMatchingCourseAndBatch(String currentCode, String courseName, Integer batchYear) {
         if (batchYear == null) {
             return false;
@@ -397,6 +454,7 @@ public class DirectorCourseController {
         return currentCode != null && currentCode.startsWith(prefix);
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private void ensureSubjectsExtracted(TeachingSchema schema) {
         if (schema == null || schema.getId() == null) {
             return;
@@ -416,6 +474,7 @@ public class DirectorCourseController {
         }
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String generateNextCourseCode(String courseName, Integer batchYear) {
         if (batchYear == null) {
             throw new IllegalArgumentException("Batch year is required to generate course code.");
@@ -431,6 +490,7 @@ public class DirectorCourseController {
         return codePrefix + String.format("%03d", nextNumber);
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private int extractTrailingNumber(String code) {
         if (code == null) {
             return 0;
@@ -446,6 +506,7 @@ public class DirectorCourseController {
         }
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String codePrefixFromName(String courseName) {
         String normalizedName = nullSafe(courseName).trim();
         if (normalizedName.isBlank()) {
@@ -465,6 +526,7 @@ public class DirectorCourseController {
         return prefix.length() > 8 ? prefix.substring(0, 8) : prefix;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private String rootCauseMessage(Throwable throwable) {
         Throwable current = throwable;
         while (current.getCause() != null && current.getCause() != current) {
@@ -480,6 +542,7 @@ public class DirectorCourseController {
         return msg;
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private Path resolveSchemaPath(String rawPath) {
         Path candidate = Paths.get(rawPath);
         if (candidate.isAbsolute()) {

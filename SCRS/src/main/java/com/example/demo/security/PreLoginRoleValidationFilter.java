@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/security/PreLoginRoleValidationFilter.java
+ * Role: Security
+ * MVC Fit: Spring Security customization and filters.
+ * Connects To: Protects requests and authentication
+ */
+
 package com.example.demo.security;
 import com.example.demo.entity.Enrollment;
 import com.example.demo.entity.User;
@@ -14,12 +21,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
+// Class Summary: Security class that customizes Spring Security behavior.
+// @Component registers a generic Spring-managed bean.
 @Component
 public class PreLoginRoleValidationFilter extends OncePerRequestFilter {
+// Method: performs a focused unit of work in this class.
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PreLoginRoleValidationFilter.class);
+// Field: stores userRepository for this class.
     private final UserRepository userRepository;
+// Field: stores enrollmentRepository for this class.
     private final EnrollmentRepository enrollmentRepository;
+// Field: stores courseRepository for this class.
     private final CourseRepository courseRepository;
+// Constructor: Spring injects dependencies here.
     public PreLoginRoleValidationFilter(UserRepository userRepository,
                                         EnrollmentRepository enrollmentRepository,
                                         CourseRepository courseRepository) {
@@ -28,6 +42,7 @@ public class PreLoginRoleValidationFilter extends OncePerRequestFilter {
         this.courseRepository = courseRepository;
     }
     @Override
+// Method: performs a focused unit of work in this class.
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 1. Check a rule -> decide what to do next
         if (!HttpMethod.POST.name().equalsIgnoreCase(request.getMethod()) || !"/auth/login".equals(request.getServletPath())) {

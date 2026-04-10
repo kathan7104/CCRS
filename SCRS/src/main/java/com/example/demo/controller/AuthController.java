@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/controller/AuthController.java
+ * Role: Controller
+ * MVC Fit: Handles HTTP requests in the MVC layer.
+ * Connects To: Client -> Controller -> Service -> Repository -> Database -> Response
+ */
+
 package com.example.demo.controller;
 import com.example.demo.dto.*;
 import com.example.demo.entity.OtpVerification;
@@ -22,15 +29,25 @@ import org.springframework.dao.DataIntegrityViolationException;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.Optional;
+// Class Summary: Controller class that handles HTTP requests in the MVC layer.
+// @Controller marks this class as an MVC controller that returns views.
 @Controller
+// @RequestMapping defines a common URL prefix for all endpoints in this controller.
 @RequestMapping("/auth")
 public class AuthController {
+// Field: stores userService for this class.
     private final UserService userService;
+// Field: stores otpService for this class.
     private final OtpService otpService;
+// Field: stores passwordEncoder for this class.
     private final PasswordEncoder passwordEncoder;
+// Field: stores otpVerificationRepository for this class.
     private final OtpVerificationRepository otpVerificationRepository;
+// @Value injects a property value from application.properties.
     @Value("${ccrs.otp.send-email: true}")
+// Field: stores sendEmailOtp for this class.
     private boolean sendEmailOtp;
+// Constructor: Spring injects dependencies here.
     public AuthController(UserService userService,
                           OtpService otpService,
                           PasswordEncoder passwordEncoder,
@@ -40,10 +57,15 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.otpVerificationRepository = otpVerificationRepository;
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/login")
+// Endpoint handler for GET /login: reads inputs, calls service, returns a view/JSON.
     public String loginPage(Model model,
+// @RequestParam binds a query parameter or form field to a method parameter.
                             @RequestParam(value = "error", required = false) String error,
+// @RequestParam binds a query parameter or form field to a method parameter.
                             @RequestParam(value = "type", required = false) String type,
+// @RequestParam binds a query parameter or form field to a method parameter.
                             @RequestParam(value = "m", required = false) String messageCode) {
         // 1. Put data on the page so the user can see it
         model.addAttribute("loginRequest", new LoginRequest());
@@ -62,14 +84,18 @@ public class AuthController {
         // 4. Send the result back to the screen
         return "auth/login";
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/register")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String registerPage(Model model) {
         // 1. Put data on the page so the user can see it
         model.addAttribute("registerRequest", new RegisterRequest());
         // 2. Send the result back to the screen
         return "auth/register";
     }
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/register")
+// Endpoint handler for POST /register: reads inputs, calls service, returns a view/JSON.
     public String register(@Valid @ModelAttribute("registerRequest") RegisterRequest request,
                            BindingResult bindingResult,
                            RedirectAttributes redirectAttributes,
@@ -134,7 +160,9 @@ public class AuthController {
             return "auth/register";
         }
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/verify-registration")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String verifyRegistrationPage(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
         // 1. Find the user session so we can remember them
         HttpSession session = request.getSession(false);
@@ -180,7 +208,9 @@ public class AuthController {
         // 18. Send the result back to the screen
         return "auth/verify-registration";
     }
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/verify-email-otp")
+// Endpoint handler for POST /verify-email-otp: reads inputs, calls service, returns a view/JSON.
     public String verifyEmailOtp(@RequestParam String email, @RequestParam String otp,
                                  RedirectAttributes redirectAttributes, HttpServletRequest request) {
         // 1. Ask the service to do the main work
@@ -198,7 +228,9 @@ public class AuthController {
         // 6. Send the result back to the screen
         return "redirect:/auth/verify-registration";
     }
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/verify-mobile-otp")
+// Endpoint handler for POST /verify-mobile-otp: reads inputs, calls service, returns a view/JSON.
     public String verifyMobileOtp(@RequestParam String mobile, @RequestParam String otp,
                                   RedirectAttributes redirectAttributes) {
         // 1. Ask the service to do the main work
@@ -216,7 +248,9 @@ public class AuthController {
         // 6. Send the result back to the screen
         return "redirect:/auth/verify-registration";
     }
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/resend-otp")
+// Endpoint handler for POST /resend-otp: reads inputs, calls service, returns a view/JSON.
     public String resendOtp(@RequestParam String type, @RequestParam String identifier,
                            RedirectAttributes redirectAttributes, HttpServletRequest request) {
         // 1. Find the user session so we can remember them
@@ -248,8 +282,11 @@ public class AuthController {
         // 12. Send the result back to the screen
         return "redirect:/auth/verify-registration";
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/verify-otp")
+// Endpoint handler for GET /verify-otp: reads inputs, calls service, returns a view/JSON.
     public String verifyOtpPage(@RequestParam(required = false) String type,
+// @RequestParam binds a query parameter or form field to a method parameter.
                                 @RequestParam(required = false) String identifier,
                                 Model model) {
         VerifyOtpRequest req = new VerifyOtpRequest();
@@ -264,7 +301,9 @@ public class AuthController {
         // 4. Send the result back to the screen
         return "auth/verify-otp";
     }
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/verify-otp")
+// Endpoint handler for POST /verify-otp: reads inputs, calls service, returns a view/JSON.
     public String verifyOtp(@Valid @ModelAttribute("verifyOtpRequest") VerifyOtpRequest request,
                             BindingResult bindingResult,
                             RedirectAttributes redirectAttributes,
@@ -328,14 +367,18 @@ public class AuthController {
         // 26. Send the result back to the screen
         return "redirect:/auth/login";
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/forgot-password")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String forgotPasswordPage(Model model) {
         // 1. Put data on the page so the user can see it
         model.addAttribute("forgotPasswordRequest", new ForgotPasswordRequest());
         // 2. Send the result back to the screen
         return "auth/forgot-password";
     }
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/forgot-password")
+// Endpoint handler for POST /forgot-password: reads inputs, calls service, returns a view/JSON.
     public String forgotPassword(@Valid @ModelAttribute("forgotPasswordRequest") ForgotPasswordRequest request,
                                  BindingResult bindingResult,
                                  RedirectAttributes redirectAttributes,
@@ -370,7 +413,9 @@ public class AuthController {
         // 11. Send the result back to the screen
         return "redirect:/auth/reset-password?email=" + user.getEmail();
     }
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/reset-password")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String resetPasswordPage(@RequestParam(required = false) String email, Model model) {
         ResetPasswordRequest req = new ResetPasswordRequest();
         req.setEmail(email != null ? email : "");
@@ -389,7 +434,9 @@ public class AuthController {
         // 3. Send the result back to the screen
         return "auth/reset-password";
     }
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/reset-password")
+// Endpoint handler for POST /reset-password: reads inputs, calls service, returns a view/JSON.
     public String resetPassword(@Valid @ModelAttribute("resetPasswordRequest") ResetPasswordRequest request,
                                 BindingResult bindingResult,
                                 RedirectAttributes redirectAttributes,
@@ -432,6 +479,7 @@ public class AuthController {
         // 16. Send the result back to the screen
         return "redirect:/auth/login";
     }
+// Endpoint handler: reads inputs, calls service layer, and returns a response/view.
     private static OtpVerification.OtpType mapOtpType(String value) {
         // 1. Check a rule -> decide what to do next
         if (value == null) return null;
@@ -443,7 +491,9 @@ public class AuthController {
             default -> null;
         };
     }
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/logout")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         // 1. Check a rule -> decide what to do next

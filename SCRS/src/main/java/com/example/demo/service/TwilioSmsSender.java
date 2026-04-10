@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/service/TwilioSmsSender.java
+ * Role: Service
+ * MVC Fit: Contains business logic used by controllers.
+ * Connects To: Controller calls Service, Service calls Repository
+ */
+
 package com.example.demo.service;
 import com.example.demo.entity.OtpVerification;
 import org.slf4j.Logger;
@@ -12,17 +19,28 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+// Class Summary: Service class that contains business logic used by controllers.
+// @Component registers a generic Spring-managed bean.
 @Component
 @ConditionalOnProperty(name = "ccrs.sms.provider", havingValue = "twilio")
 public class TwilioSmsSender implements SmsSender {
+// Field: stores log for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Logger log = LoggerFactory.getLogger(TwilioSmsSender.class);
+// @Value injects a property value from application.properties.
     @Value("${twilio.account-sid:}")
+// Field: stores twilioAccountSid for this class.
     private String twilioAccountSid;
+// @Value injects a property value from application.properties.
     @Value("${twilio.auth-token:}")
+// Field: stores twilioAuthToken for this class.
     private String twilioAuthToken;
+// @Value injects a property value from application.properties.
     @Value("${twilio.from-number:}")
+// Field: stores twilioFromNumber for this class.
     private String twilioFromNumber;
     @Override
+// Service method: contains business logic and coordinates repositories.
     public void send(String mobile, String otp, OtpVerification.OtpType type, int validMinutes) {
         // 1. Check a rule -> decide what to do next
         if (twilioAccountSid == null || twilioAccountSid.isBlank()

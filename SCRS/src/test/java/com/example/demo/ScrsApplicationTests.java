@@ -1,3 +1,10 @@
+/*
+ * File: src/test/java/com/example/demo/ScrsApplicationTests.java
+ * Role: Test
+ * MVC Fit: Automated tests for application behavior.
+ * Connects To: Verifies layers in isolation or integration
+ */
+
 // Package declaration: groups related classes in a namespace.
 package com.example.demo;
 
@@ -20,6 +27,7 @@ import org.springframework.context.annotation.Import;
 })
 @Import(TestSupportConfig.class)
 // Class declaration: defines a new type.
+// Class Summary: Test class that verifies application behavior.
 class ScrsApplicationTests {
 
 	// Annotation: adds metadata used by frameworks/tools.

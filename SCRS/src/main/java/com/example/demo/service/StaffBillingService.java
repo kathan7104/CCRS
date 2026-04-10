@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/service/StaffBillingService.java
+ * Role: Service
+ * MVC Fit: Contains business logic used by controllers.
+ * Connects To: Controller calls Service, Service calls Repository
+ */
+
 package com.example.demo.service;
 
 import com.example.demo.entity.Course;
@@ -25,16 +32,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+// Class Summary: Service class that contains business logic used by controllers.
+// @Service marks the business logic layer for Spring to manage as a bean.
 @Service
 public class StaffBillingService {
+// Field: stores ZERO for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final BigDecimal ZERO = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
 
+// Field: stores userRepository for this class.
     private final UserRepository userRepository;
+// Field: stores enrollmentRepository for this class.
     private final EnrollmentRepository enrollmentRepository;
+// Field: stores feeStructureRepository for this class.
     private final FeeStructureRepository feeStructureRepository;
+// Field: stores invoiceRepository for this class.
     private final InvoiceRepository invoiceRepository;
+// Field: stores paymentRepository for this class.
     private final PaymentRepository paymentRepository;
 
+// Constructor: Spring injects dependencies here.
     public StaffBillingService(UserRepository userRepository,
                               EnrollmentRepository enrollmentRepository,
                               FeeStructureRepository feeStructureRepository,
@@ -47,6 +64,7 @@ public class StaffBillingService {
         this.paymentRepository = paymentRepository;
     }
 
+// Service method: contains business logic and coordinates repositories.
     public List<User> getActiveStudents() {
         return userRepository.findByRole("STUDENT").stream()
                 .filter(User::isActive)
@@ -54,6 +72,7 @@ public class StaffBillingService {
                 .toList();
     }
 
+// Service method: contains business logic and coordinates repositories.
     public List<StaffInvoiceRow> getInvoiceRows() {
         return invoiceRepository.findAll().stream()
                 .sorted(Comparator.comparing(Invoice::getIssuedAt).reversed())
@@ -77,6 +96,7 @@ public class StaffBillingService {
     }
 
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public Invoice generateSemesterInvoice(Long studentId, int semester) {
         if (semester < 1) {
             throw new IllegalArgumentException("Semester must be 1 or greater.");
@@ -138,6 +158,7 @@ public class StaffBillingService {
     }
 
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public Payment recordOfflinePayment(Long invoiceId,
                                         Payment.PaymentMethod method,
                                         BigDecimal amount,
@@ -225,16 +246,19 @@ public class StaffBillingService {
         return saved;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private Optional<Invoice> findLatestSemesterInvoice(Long studentId, int semester) {
         return invoiceRepository.findByStudentIdAndInvoiceNumberStartingWith(studentId, "SEM-" + semester + "-").stream()
                 .max(Comparator.comparing(Invoice::getIssuedAt));
     }
 
+// Service method: contains business logic and coordinates repositories.
     private BigDecimal paidAmount(Long invoiceId) {
         BigDecimal value = paymentRepository.getSuccessfulAmountByInvoiceId(invoiceId);
         return (value == null ? BigDecimal.ZERO : value).setScale(2, RoundingMode.HALF_UP);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private BigDecimal calculateSemesterCourseFee(Course course, FeeStructure feeStructure) {
         if (course == null) {
             return ZERO;
@@ -249,10 +273,12 @@ public class StaffBillingService {
         return semesterTuition.add(creditFee).add(fixed).setScale(2, RoundingMode.HALF_UP);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private int safeSemesterLimit(Integer value) {
         return value == null || value < 1 ? 1 : value;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void markStudentEnrolledIfFirstSemesterPaid(Invoice invoice) {
         if (invoice == null || invoice.getInvoiceNumber() == null || !invoice.getInvoiceNumber().startsWith("SEM-1-")) {
             return;
@@ -285,6 +311,7 @@ public class StaffBillingService {
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void syncStudentDepartmentFromEnrollment(Enrollment enrollment) {
         if (enrollment == null || enrollment.getStudent() == null || enrollment.getCourse() == null) {
             return;
@@ -301,6 +328,7 @@ public class StaffBillingService {
         userRepository.save(student);
     }
 
+// Service method: contains business logic and coordinates repositories.
     public record StaffInvoiceRow(Long invoiceId,
                                   String invoiceNumber,
                                   String studentName,

@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/service/UserService.java
+ * Role: Service
+ * MVC Fit: Contains business logic used by controllers.
+ * Connects To: Controller calls Service, Service calls Repository
+ */
+
 package com.example.demo.service;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.dto.RegistrationResult;
@@ -9,20 +16,30 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
+// Class Summary: Service class that contains business logic used by controllers.
+// @Service marks the business logic layer for Spring to manage as a bean.
 @Service
 public class UserService {
+// Field: stores STUDENT_ROLE for this class.
     private static final String STUDENT_ROLE = "STUDENT";
+// Field: stores userRepository for this class.
     private final UserRepository userRepository;
+// Field: stores passwordEncoder for this class.
     private final PasswordEncoder passwordEncoder;
+// Field: stores otpService for this class.
     private final OtpService otpService;
+// @Value injects a property value from application.properties.
     @Value("${ccrs.otp.send-email: true}")
+// Field: stores sendEmailOtp for this class.
     private boolean sendEmailOtp;
+// Constructor: Spring injects dependencies here.
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, OtpService otpService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.otpService = otpService;
     }
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public RegistrationResult register(RegisterRequest request) {
         // 1. Get or save data in the database
         Optional<User> byEmail = userRepository.findByEmail(request.getEmail());
@@ -77,14 +94,17 @@ public class UserService {
         // 17. Send the result back to the screen
         return new RegistrationResult(user, emailOtpForDisplay, mobileOtpForDisplay);
     }
+// Service method: contains business logic and coordinates repositories.
     public Optional<User> findByEmail(String email) {
         // 1. Send the result back to the screen
         return userRepository.findByEmail(email);
     }
+// Service method: contains business logic and coordinates repositories.
     public Optional<User> findByMobileNumber(String mobile) {
         // 1. Send the result back to the screen
         return userRepository.findByMobileNumber(mobile);
     }
+// Service method: contains business logic and coordinates repositories.
     public Optional<User> findByEmailOrMobile(String emailOrMobile) {
         // 1. Send the result back to the screen
         return userRepository.findByEmail(emailOrMobile)
@@ -92,6 +112,7 @@ public class UserService {
                 .or(() -> userRepository.findByMobileNumber(emailOrMobile));
     }
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public void markEmailVerified(String email) {
         // 1. Get or save data in the database
         userRepository.findByEmail(email).ifPresent(u -> {
@@ -101,6 +122,7 @@ public class UserService {
         });
     }
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public void markMobileVerified(String mobile) {
         // 1. Get or save data in the database
         userRepository.findByMobileNumber(mobile).ifPresent(u -> {
@@ -110,6 +132,7 @@ public class UserService {
         });
     }
     @Transactional
+// Service method: contains business logic and coordinates repositories.
     public void updatePassword(Long userId, String newPasswordEncoded) {
         // 1. Get or save data in the database
         userRepository.findById(userId).ifPresent(u -> {

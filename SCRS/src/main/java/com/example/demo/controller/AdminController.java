@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/controller/AdminController.java
+ * Role: Controller
+ * MVC Fit: Handles HTTP requests in the MVC layer.
+ * Connects To: Client -> Controller -> Service -> Repository -> Database -> Response
+ */
+
 package com.example.demo.controller;
 
 import com.example.demo.entity.Department;
@@ -19,19 +26,32 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Set;
 
+// Class Summary: Controller class that handles HTTP requests in the MVC layer.
+// @Controller marks this class as an MVC controller that returns views.
 @Controller
+// @RequestMapping defines a common URL prefix for all endpoints in this controller.
 @RequestMapping("/admin")
 public class AdminController {
+// Field: stores SUPER_ADMIN_ROLE for this class.
     private static final String SUPER_ADMIN_ROLE = "AUTHORITY_SUPER_ADMIN";
+// Field: stores MANAGED_ROLES for this class.
+// Endpoint handler for REQUEST /admin: reads inputs, calls service, returns a view/JSON.
     private static final Set<String> MANAGED_ROLES = Set.of("AUTHORITY_ADMIN", "AUTHORITY_DIRECTOR", "AUTHORITY_STAFF", SUPER_ADMIN_ROLE);
 
+// Field: stores enrollmentRepository for this class.
     private final EnrollmentRepository enrollmentRepository;
+// Field: stores departmentRepository for this class.
     private final DepartmentRepository departmentRepository;
+// Field: stores userRepository for this class.
     private final UserRepository userRepository;
+// Field: stores adminWorkflowService for this class.
     private final AdminWorkflowService adminWorkflowService;
+// Field: stores reportingService for this class.
     private final ReportingService reportingService;
+// Field: stores passwordEncoder for this class.
     private final PasswordEncoder passwordEncoder;
 
+// Constructor: Spring injects dependencies here.
     public AdminController(EnrollmentRepository enrollmentRepository,
                            DepartmentRepository departmentRepository,
                            UserRepository userRepository,
@@ -46,7 +66,9 @@ public class AdminController {
         this.passwordEncoder = passwordEncoder;
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/dashboard")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String dashboard(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("userName", userDetails.getUser().getFullName());
         model.addAttribute("pendingApprovals", enrollmentRepository.findByStatusOrderByRegisteredAtDesc(Enrollment.EnrollmentStatus.PENDING).size());
@@ -55,7 +77,9 @@ public class AdminController {
         return "admin/dashboard";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/enrollments")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String enrollmentApprovals(Model model) {
         List<Enrollment> pending = enrollmentRepository.findByStatusOrderByRegisteredAtDesc(Enrollment.EnrollmentStatus.PENDING);
         model.addAttribute("pendingEnrollments", pending);
@@ -64,8 +88,11 @@ public class AdminController {
         return "admin/enrollments";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/enrollments/{id}/approve")
+// Endpoint handler for POST /enrollments/{id}/approve: reads inputs, calls service, returns a view/JSON.
     public String approve(@PathVariable Long id,
+// @RequestParam binds a query parameter or form field to a method parameter.
                           @RequestParam(required = false) String note,
                           RedirectAttributes redirectAttributes) {
         try {
@@ -77,8 +104,11 @@ public class AdminController {
         return "redirect:/admin/enrollments";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/enrollments/{id}/reject")
+// Endpoint handler for POST /enrollments/{id}/reject: reads inputs, calls service, returns a view/JSON.
     public String reject(@PathVariable Long id,
+// @RequestParam binds a query parameter or form field to a method parameter.
                          @RequestParam(required = false) String note,
                          RedirectAttributes redirectAttributes) {
         try {
@@ -90,7 +120,9 @@ public class AdminController {
         return "redirect:/admin/enrollments";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/users")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String listSuperUsers(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
         model.addAttribute("users", getManagedUsers());
         model.addAttribute("currentUserId", principal.getUser().getId());
@@ -99,7 +131,9 @@ public class AdminController {
         return "admin/users/list";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/users/new")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String createUserForm(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
         model.addAttribute("user", new User());
         model.addAttribute("selectedRole", "AUTHORITY_STAFF");
@@ -108,9 +142,13 @@ public class AdminController {
         return "admin/users/form";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/users")
+// Endpoint handler for POST /users: reads inputs, calls service, returns a view/JSON.
     public String createUser(@AuthenticationPrincipal CustomUserDetails principal,
+// @ModelAttribute binds form fields to an object and adds it to the model.
                              @ModelAttribute User user,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam("role") String role,
                              RedirectAttributes redirectAttributes) {
         if (!MANAGED_ROLES.contains(role)) {
@@ -131,7 +169,9 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/users/{id}/edit")
+// Endpoint handler for GET /users/{id}/edit: reads inputs, calls service, returns a view/JSON.
     public String editUserForm(@PathVariable Long id,
                                @AuthenticationPrincipal CustomUserDetails principal,
                                Model model,
@@ -149,14 +189,22 @@ public class AdminController {
         return "admin/users/form";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/users/{id}")
+// Endpoint handler for POST /users/{id}: reads inputs, calls service, returns a view/JSON.
     public String updateUser(@PathVariable Long id,
                              @AuthenticationPrincipal CustomUserDetails principal,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam String fullName,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam String email,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam String mobileNumber,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam String department,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam String role,
+// @RequestParam binds a query parameter or form field to a method parameter.
                              @RequestParam(required = false) String password,
                              RedirectAttributes redirectAttributes) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -191,7 +239,9 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/users/{id}/delete")
+// Endpoint handler for POST /users/{id}/delete: reads inputs, calls service, returns a view/JSON.
     public String deleteUser(@PathVariable Long id,
                              @AuthenticationPrincipal CustomUserDetails principal,
                              RedirectAttributes redirectAttributes) {
@@ -209,7 +259,9 @@ public class AdminController {
         return "redirect:/admin/users";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/reports")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String reports(Model model) {
         model.addAttribute("snapshot", reportingService.getFinancialSnapshot());
         model.addAttribute("unpaidRows", reportingService.getUnpaidStudentsReport());
@@ -217,7 +269,9 @@ public class AdminController {
         return "admin/reports";
     }
 
+// @GetMapping handles HTTP GET requests for the given path.
     @GetMapping("/departments")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String departments(Model model) {
         model.addAttribute("departments", departmentRepository.findAll().stream()
                 .sorted((a, b) -> a.getName().compareToIgnoreCase(b.getName()))
@@ -225,7 +279,9 @@ public class AdminController {
         return "admin/departments";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/departments")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String createDepartment(@RequestParam String name, RedirectAttributes redirectAttributes) {
         String cleaned = name == null ? "" : name.trim();
         if (cleaned.isBlank()) {
@@ -244,7 +300,9 @@ public class AdminController {
         return "redirect:/admin/departments";
     }
 
+// @PostMapping handles HTTP POST requests for the given path.
     @PostMapping("/departments/{id}/deactivate")
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String deactivateDepartment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         Department department = departmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Department not found"));
@@ -254,7 +312,9 @@ public class AdminController {
         return "redirect:/admin/departments";
     }
 
+// @RequestMapping defines a common URL prefix for all endpoints in this controller.
     @RequestMapping(value = {"/departments/{id}/activate", "/departments/{id}/active"}, method = {RequestMethod.POST, RequestMethod.GET})
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     public String activateDepartment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         Department department = departmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Department not found"));
@@ -264,18 +324,21 @@ public class AdminController {
         return "redirect:/admin/departments";
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private List<User> getManagedUsers() {
         return userRepository.findAll().stream()
                 .filter(u -> u.getRoles().stream().anyMatch(MANAGED_ROLES::contains))
                 .toList();
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private List<String> getActiveDepartmentNames() {
         return departmentRepository.findByActiveTrueOrderByNameAsc().stream()
                 .map(Department::getName)
                 .toList();
     }
 
+// Endpoint handler: validates input, calls service layer, and returns a response/view.
     private boolean hasRole(User user, String role) {
         if (user == null || role == null) {
             return false;

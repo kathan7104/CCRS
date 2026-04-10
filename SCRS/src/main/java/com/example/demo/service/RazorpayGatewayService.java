@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/service/RazorpayGatewayService.java
+ * Role: Service
+ * MVC Fit: Contains business logic used by controllers.
+ * Connects To: Controller calls Service, Service calls Repository
+ */
+
 package com.example.demo.service;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,24 +23,41 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Class Summary: Service class that contains business logic used by controllers.
+// @Service marks the business logic layer for Spring to manage as a bean.
 @Service
 public class RazorpayGatewayService {
+// Field: stores httpClient for this class.
+// Service method: contains business logic and coordinates repositories.
     private final HttpClient httpClient = HttpClient.newHttpClient();
+// Field: stores STRING_FIELD for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Pattern STRING_FIELD = Pattern.compile("\"([^\"]+)\"\\s*:\\s*\"([^\"]*)\"");
+// Field: stores NUMBER_FIELD for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Pattern NUMBER_FIELD = Pattern.compile("\"([^\"]+)\"\\s*:\\s*(\\d+)");
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.payment.razorpay.base-url:https://api.razorpay.com}")
+// Field: stores baseUrl for this class.
     private String baseUrl;
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.payment.razorpay.key-id:}")
+// Field: stores keyId for this class.
     private String keyId;
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.payment.razorpay.key-secret:}")
+// Field: stores keySecret for this class.
     private String keySecret;
 
+// @Value injects a property value from application.properties.
     @Value("${ccrs.payment.razorpay.enabled:false}")
+// Field: stores enabled for this class.
     private boolean enabled;
 
+// Service method: contains business logic and coordinates repositories.
     public RazorpayOrder createOrder(long amountPaise, String receipt, Map<String, String> notes)
             throws IOException, InterruptedException {
         validateConfig();
@@ -60,6 +84,7 @@ public class RazorpayGatewayService {
         );
     }
 
+// Service method: contains business logic and coordinates repositories.
     public RazorpayPayment fetchPayment(String paymentId) throws IOException, InterruptedException {
         validateConfig();
         HttpRequest request = HttpRequest.newBuilder()
@@ -86,20 +111,24 @@ public class RazorpayGatewayService {
         );
     }
 
+// Service method: contains business logic and coordinates repositories.
     public String getKeyId() {
         validateConfig();
         return keyId;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private BigDecimal paiseToRupees(long paise) {
         return BigDecimal.valueOf(paise).movePointLeft(2);
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String basicAuth() {
         String raw = keyId + ":" + keySecret;
         return "Basic " + Base64.getEncoder().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String buildOrderPayload(long amountPaise, String receipt, Map<String, String> notes) {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
@@ -121,6 +150,7 @@ public class RazorpayGatewayService {
         return sb.toString();
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String escapeJson(String value) {
         if (value == null) {
             return "";
@@ -130,6 +160,7 @@ public class RazorpayGatewayService {
                 .replace("\"", "\\\"");
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String extractString(String json, String field) {
         Matcher matcher = STRING_FIELD.matcher(json);
         while (matcher.find()) {
@@ -140,6 +171,7 @@ public class RazorpayGatewayService {
         return "";
     }
 
+// Service method: contains business logic and coordinates repositories.
     private long extractLong(String json, String field) {
         Matcher matcher = NUMBER_FIELD.matcher(json);
         while (matcher.find()) {
@@ -150,19 +182,23 @@ public class RazorpayGatewayService {
         return 0L;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private String defaultIfBlank(String value, String fallback) {
         return value == null || value.isBlank() ? fallback : value;
     }
 
+// Service method: contains business logic and coordinates repositories.
     private void validateConfig() {
         if (!enabled || keyId == null || keyId.isBlank() || keySecret == null || keySecret.isBlank()) {
             throw new IllegalStateException("Razorpay is not configured. Set ccrs.payment.razorpay.enabled=true, key-id, and key-secret.");
         }
     }
 
+// Service method: contains business logic and coordinates repositories.
     public record RazorpayOrder(String orderId, String currency, long amountPaise, String status) {
     }
 
+// Service method: contains business logic and coordinates repositories.
     public record RazorpayPayment(String paymentId, String orderId, String status, BigDecimal amount) {
     }
 }

@@ -1,3 +1,10 @@
+/*
+ * File: src/main/java/com/example/demo/service/MockSmsSender.java
+ * Role: Service
+ * MVC Fit: Contains business logic used by controllers.
+ * Connects To: Controller calls Service, Service calls Repository
+ */
+
 package com.example.demo.service;
 import com.example.demo.entity.OtpVerification;
 import org.slf4j.Logger;
@@ -12,13 +19,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
+// Class Summary: Service class that contains business logic used by controllers.
+// @Component registers a generic Spring-managed bean.
 @Component
 @ConditionalOnProperty(name = "ccrs.sms.provider", havingValue = "mock", matchIfMissing = true)
 public class MockSmsSender implements SmsSender {
+// Field: stores log for this class.
+// Service method: contains business logic and coordinates repositories.
     private static final Logger log = LoggerFactory.getLogger(MockSmsSender.class);
+// @Value injects a property value from application.properties.
     @Value("${ccrs.sms.mock-file:logs/sms-otp.log}")
+// Field: stores mockFilePath for this class.
     private String mockFilePath;
     @Override
+// Service method: contains business logic and coordinates repositories.
     public void send(String mobile, String otp, OtpVerification.OtpType type, int validMinutes) {
         String line = LocalDateTime.now() + " | " + mobile + " | " + type
                 + " | OTP: " + otp + " | valid: " + validMinutes + "m";
