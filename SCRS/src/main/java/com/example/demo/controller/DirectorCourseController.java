@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 // Class Summary: Controller class that handles HTTP requests in the MVC layer.
 // @Controller marks this class as an MVC controller that returns views.

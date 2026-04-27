@@ -324,6 +324,17 @@ a:hover {
     color: var(--ink);
 }
 
+label.required::after,
+.form-group label:has(+ input[required]),
+.form-group label:has(+ select[required]),
+.form-group label:has(+ textarea[required]),
+label:has(input[required]:not([type=radio]):not([type=checkbox]))::after,
+label:has(select[required])::after,
+label:has(textarea[required])::after {
+    content: " *";
+    color: var(--danger);
+}
+
 .form-row {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -382,6 +393,17 @@ select:focus {
 .field-error {
     color: var(--danger);
     font-size: 0.85rem;
+    margin-top: 0.35rem;
+}
+
+input.invalid,
+textarea.invalid,
+select.invalid {
+    border-color: var(--danger) !important;
+}
+
+.form-group.invalid label {
+    color: var(--danger);
 }
 
 /* Messages */
@@ -435,6 +457,81 @@ select:focus {
 .dashboard-layout {
     min-height: 100vh;
     display: flex;
+    flex-direction: row;
+}
+
+.dashboard-sidebar {
+    width: 250px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.sidebar-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(90deg, #fdfcf7, #ffffff);
+}
+
+.sidebar-header h1 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sidebar-header h1::before {
+    content: "";
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: url('/images/kor-logo.svg') center/contain no-repeat;
+    flex-shrink: 0;
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: 1rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-nav .nav-link {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    color: var(--muted) !important;
+    text-decoration: none;
+    font-weight: 500;
+    border: none;
+    background: none;
+    text-align: left;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-nav .nav-link.active,
+.sidebar-nav .nav-link:hover {
+    color: var(--primary) !important;
+    background: rgba(11, 45, 89, 0.08);
+}
+
+.sidebar-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface-2);
+}
+
+.dashboard-main {
+    flex: 1;
+    margin-left: 250px;
+    display: flex;
     flex-direction: column;
 }
 
@@ -442,36 +539,30 @@ select:focus {
     background: linear-gradient(90deg, #fdfcf7, #ffffff);
     border-bottom: 1px solid var(--border);
     padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 5;
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    position: sticky;
-    top: 0;
-    z-index: 20;
+    flex-wrap: wrap;
 }
 
 .dashboard-header h1 {
-    font-size: 1.25rem;
-    color: var(--primary);
+    margin: 0;
     white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
 }
 
-.dashboard-header h1::before {
-    content: "";
-    width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    background: url('/images/kor-logo.svg') center/contain no-repeat;
-    flex-shrink: 0;
+.dashboard-header h2 {
+    color: var(--primary);
+    margin: 0;
 }
 
 .dashboard-nav {
     display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
 }
 
 .nav-link {
@@ -506,10 +597,11 @@ select:focus {
 }
 
 .dashboard-main {
-    width: 100%;
-    max-width: 1200px;
-    margin: 1.75rem auto 3rem auto;
-    padding: 0 1.25rem;
+    flex: 1;
+    margin-left: 250px;
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem 1.25rem 3rem;
 }
 
 .dashboard-section {
@@ -533,24 +625,57 @@ select:focus {
 }
 
 .metric-card {
-    background: #f8fafc;
-    border: 1px solid var(--border);
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     border-radius: 12px;
-    padding: 0.9rem 1rem;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #007bff, #28a745, #ffc107, #dc3545);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.metric-card:hover::before {
+    opacity: 1;
 }
 
 .metric-label {
     display: block;
-    color: var(--muted);
     font-size: 0.9rem;
-    margin-bottom: 0.4rem;
+    color: #6c757d;
+    margin-bottom: 8px;
+    font-weight: 500;
 }
 
 .metric-value {
     display: block;
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.5rem;
-    color: var(--ink);
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #495057;
+    margin-top: 5px;
+}
+
+body.role-admin .sidebar-header {
+    background: linear-gradient(90deg, #fff4f4, #ffffff);
+    border-bottom-color: #fecaca;
 }
 
 body.role-admin .dashboard-header {
@@ -558,9 +683,19 @@ body.role-admin .dashboard-header {
     border-bottom-color: #fecaca;
 }
 
+body.role-director .sidebar-header {
+    background: linear-gradient(90deg, #ecfeff, #ffffff);
+    border-bottom-color: #a5f3fc;
+}
+
 body.role-director .dashboard-header {
     background: linear-gradient(90deg, #ecfeff, #ffffff);
     border-bottom-color: #a5f3fc;
+}
+
+body.role-staff .sidebar-header {
+    background: linear-gradient(90deg, #fef9c3, #ffffff);
+    border-bottom-color: #fde047;
 }
 
 body.role-staff .dashboard-header {
@@ -568,8 +703,98 @@ body.role-staff .dashboard-header {
     border-bottom-color: #fde047;
 }
 
+/* Remove sidebar margin for director and staff (no sidebar) */
+body.role-director .dashboard-main {
+    margin-left: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+body.role-staff .dashboard-main {
+    margin-left: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+body.role-student .dashboard-main {
+    margin-left: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+body.role-faculty .dashboard-main {
+    margin-left: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
 .detail-card {
     border-left: 4px solid rgba(14, 165, 165, 0.5);
+}
+
+/* Chart Container Styling */
+.chart-container {
+    position: relative;
+    margin: 20px 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.chart-container canvas {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+/* Revenue Display Cards */
+.revenue-card {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.revenue-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.revenue-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.revenue-card p {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Chart Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-section:has(canvas) {
+    animation: fadeInUp 0.8s ease-out;
 }
 
 /* Tables */
@@ -734,6 +959,12 @@ body.role-staff .dashboard-header {
     .login-hero {
         padding: 1.5rem;
     }
+    .dashboard-sidebar {
+        width: 200px;
+    }
+    .dashboard-main {
+        margin-left: 200px;
+    }
     .dashboard-header {
         flex-wrap: wrap;
         align-items: flex-start;
@@ -751,8 +982,20 @@ body.role-staff .dashboard-header {
 }
 
 @media (max-width: 600px) {
+    .dashboard-sidebar {
+        display: none; /* Hide sidebar on mobile, perhaps add a toggle later */
+    }
     .dashboard-main {
+        margin-left: 0;
         padding: 0 1rem;
+    }
+    .dashboard-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    .dashboard-header h2 {
+        font-size: 1.1rem;
     }
     .nav-link {
         padding: 0.35rem 0.6rem;

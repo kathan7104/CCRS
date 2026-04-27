@@ -7,7 +7,7 @@
     <title>Dashboard - KOR Institute</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
 </head>
-<body>
+<body th:classappend="${isFaculty} ? 'role-faculty' : 'role-student'">
     <header class="dashboard-header">
         <h1 th:text="${isFaculty} ? 'KOR Institute of Technology Faculty Portal' : 'KOR Institute of Technology Student Portal'">
             KOR Institute of Technology Student Portal
@@ -107,6 +107,7 @@
             </section>
         </main>
     </div>
+    <script src="/js/form-validation.js" defer></script>
 </body>
 </html>
 

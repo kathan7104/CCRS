@@ -1,55 +1,72 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>User Form - KOR Institute</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>User Form - KOR Institute</title>
+<link href="/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body class="role-admin">
-<header class="dashboard-header">
-    <h1>User Form</h1>
-    <nav class="dashboard-nav"><a th:href="@{/admin/users}" class="nav-link active">Back to Users</a></nav>
-</header>
 <div class="dashboard-layout">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h1>Admin Control Center</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a>
+            <a class="nav-link" th:href="@{/admin/enrollments}">Enrollment Approval</a>
+            <a class="nav-link active" th:href="@{/admin/users}">Super Users</a>
+            <a class="nav-link" th:href="@{/admin/departments}">Departments</a>
+            <a class="nav-link" th:href="@{/admin/reports}">Financial Oversight</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <span th:text="${userName}">Admin</span>
+                <form th:action="@{/auth/logout}" method="post"><button class="btn btn-outline btn-sm" type="submit">Logout</button></form>
+            </div>
+        </div>
+    </aside>
     <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h2>User Form</h2>
+        </header>
         <section class="dashboard-section">
-            <form th:action="${user.id == null} ? @{/admin/users} : @{/admin/users/{id}(id=${user.id})}" method="post">
-                <div class="form-row">
-                    <div class="form-group"><label>Name</label><input type="text" name="fullName" th:value="${user.fullName}" required/></div>
-                    <div class="form-group"><label>Email</label><input type="email" name="email" th:value="${user.email}" required/></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Mobile</label><input type="text" name="mobileNumber" th:value="${user.mobileNumber}" required/></div>
-                    <div class="form-group">
-                        <label>Department</label>
-                        <select name="department" required>
-                            <option value="">Select department</option>
-                            <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${user.department == d}"></option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Role</label>
-                        <select name="role" required>
-                            <option th:if="${showSuperAdminRole}" value="AUTHORITY_SUPER_ADMIN" th:selected="${selectedRole == 'AUTHORITY_SUPER_ADMIN'}">Super Admin</option>
-                            <option value="AUTHORITY_ADMIN" th:selected="${selectedRole == 'AUTHORITY_ADMIN'}">Admin</option>
-                            <option value="AUTHORITY_DIRECTOR" th:selected="${selectedRole == 'AUTHORITY_DIRECTOR'}">Director</option>
-                            <option value="AUTHORITY_STAFF" th:selected="${selectedRole == 'AUTHORITY_STAFF'}">Account Staff</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label th:text="${user.id == null ? 'Password' : 'New Password (optional)'}">Password</label>
-                        <input type="password" name="password" th:required="${user.id == null}"/>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </form>
-        </section>
-    </main>
+<form method="post" th:action="${user.id == null} ? @{/admin/users} : @{/admin/users/{id}(id=${user.id})}">
+<div class="form-row">
+<div class="form-group"><label class="required">Name</label><input name="fullName" required="" th:value="${user.fullName}" type="text"/></div>
+<div class="form-group"><label class="required">Email</label><input name="email" required="" th:value="${user.email}" type="email"/></div>
 </div>
+<div class="form-row">
+<div class="form-group"><label class="required">Mobile</label><input name="mobileNumber" required="" th:value="${user.mobileNumber}" type="text"/></div>
+<div class="form-group">
+<label class="required">Department</label>
+<select name="department" required="">
+<option value="">Select department</option>
+<option th:each="d : ${departments}" th:selected="${user.department == d}" th:text="${d}" th:value="${d}"></option>
+</select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required">Role</label>
+<select name="role" required="">
+<option th:if="${showSuperAdminRole}" th:selected="${selectedRole == 'AUTHORITY_SUPER_ADMIN'}" value="AUTHORITY_SUPER_ADMIN">Super Admin</option>
+<option th:selected="${selectedRole == 'AUTHORITY_ADMIN'}" value="AUTHORITY_ADMIN">Admin</option>
+<option th:selected="${selectedRole == 'AUTHORITY_DIRECTOR'}" value="AUTHORITY_DIRECTOR">Director</option>
+<option th:selected="${selectedRole == 'AUTHORITY_STAFF'}" value="AUTHORITY_STAFF">Account Staff</option>
+</select>
+</div>
+<div class="form-group">
+<label th:text="${user.id == null ? 'Password' : 'New Password (optional)'}">Password</label>
+<input name="password" th:required="${user.id == null}" type="password"/>
+</div>
+</div>
+<button class="btn btn-primary" type="submit">Save</button>
+</form>
+</section>
+</main>
+</div>
+    <script src="/js/form-validation.js" defer></script>
 </body>
 </html>
-
-

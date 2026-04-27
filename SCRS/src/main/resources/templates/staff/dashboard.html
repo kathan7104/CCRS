@@ -16,23 +16,60 @@
         <a th:href="@{/staff/reports}" class="nav-link">Financial Reports</a>
     </nav>
     <div class="user-info">
-        <span th:text="${userName}">Staff</span>
-        <form th:action="@{/auth/logout}" method="post"><button class="btn btn-outline btn-sm" type="submit">Logout</button></form>
+        <span style="margin-right: 1rem;">Welcome, <span th:text="${userName}">Staff</span></span>
+        <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-outline btn-sm">Logout</button>
+        </form>
     </div>
 </header>
 <div class="dashboard-layout">
     <main class="dashboard-main">
-        <section class="dashboard-section">
+        <header class="dashboard-header">
             <h2>Finance Snapshot</h2>
+        </header>
+        <section class="dashboard-section">
             <div class="metric-grid">
-                <div class="metric-card"><span class="metric-label">Configured Fee Structures</span><span class="metric-value" th:text="${feeCount}">0</span></div>
-                <div class="metric-card"><span class="metric-label">Total Revenue</span><span class="metric-value" th:text="${snapshot.totalRevenue}">0</span></div>
-                <div class="metric-card"><span class="metric-label">Unpaid Invoices</span><span class="metric-value" th:text="${snapshot.unpaidCount}">0</span></div>
-                <div class="metric-card"><span class="metric-label">Active Fee Plan</span><span class="metric-value" th:text="${activeFee != null ? activeFee.name : 'None'}">None</span></div>
+                <div class="metric-card">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ff6384, #ff9f40); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">💰</div>
+                        <div>
+                            <span class="metric-label">Configured Fee Structures</span>
+                            <span class="metric-value" th:text="${feeCount}">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #36a2eb, #4bc0c0); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">💵</div>
+                        <div>
+                            <span class="metric-label">Total Revenue</span>
+                            <span class="metric-value" th:text="${snapshot.totalRevenue}">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ffcd56, #ff9f40); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📄</div>
+                        <div>
+                            <span class="metric-label">Unpaid Invoices</span>
+                            <span class="metric-value" th:text="${snapshot.unpaidCount}">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ff6384, #c45850); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📋</div>
+                        <div>
+                            <span class="metric-label">Active Fee Plan</span>
+                            <span class="metric-value" th:text="${activeFee != null ? activeFee.name : 'None'}">None</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 </div>
+    <script src="/js/form-validation.js" defer></script>
 </body>
 </html>
 

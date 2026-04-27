@@ -1,167 +1,144 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Course Form - KOR Institute</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Course Form - KOR Institute</title>
+<link href="/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body class="role-director">
-    <header class="dashboard-header">
-        <h1>KOR Institute of Technology Student Portal</h1>
-        <nav class="dashboard-nav">
-            <a th:href="@{/director/dashboard}" class="nav-link">Dashboard</a>
-            <a th:href="@{/director/courses}" class="nav-link active">Courses</a>
-            <a th:href="@{/director/users}" class="nav-link">Faculty/Students</a>
-            <a th:href="@{/director/assignments}" class="nav-link">Assignments</a>
-        </nav>
-        <div class="user-info">
-            <span style="margin-right: 1rem;">Welcome, <span th:text="${#authentication.name}">Director</span></span>
-            <form th:action="@{/auth/logout}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-outline btn-sm">Logout</button>
-            </form>
-        </div>
-    </header>
-
-    <div class="dashboard-layout">
-        <main class="dashboard-main">
-            <section class="dashboard-section">
-                <h2 th:text="${course.id == null ? 'Add Course' : 'Edit Course'}">Course Form</h2>
-                <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
-                <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
-
-                <form th:action="${course.id == null} ? @{/director/courses} : @{/director/courses/{id}(id=${course.id})}" method="post" enctype="multipart/form-data">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="department">Department</label>
-                            <select id="department" name="department" required th:attr="data-current=${course.department}">
-                                <option value="">Select department</option>
-                                <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${course.department == d}"></option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="programName">Program</label>
-                            <select id="programName" name="programName" required th:attr="data-current=${course.programName}">
-                                <option value="">Select program</option>
-                                <option th:each="p : ${programNames}" th:value="${p}" th:text="${p}" th:selected="${course.programName == p}"></option>
-                                <option value="__OTHER__" th:selected="${course.programName != null and !#lists.contains(programNames, course.programName)}">Other</option>
-                            </select>
-                            <input id="programNameCustom"
-                                   type="text"
-                                   name="programNameCustom"
-                                   placeholder="Enter new program name"
-                                   style="margin-top: 0.6rem; display: none;"/>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="code">Course Code</label>
-                            <input id="code" type="text" name="code" th:value="${course.code}" readonly class="readonly"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="name">Course Name</label>
-                            <input id="name" type="text" name="name" th:value="${course.name}" readonly class="readonly"/>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="batchYear">Batch Year</label>
-                            <input id="batchYear" type="number" name="batchYear" th:value="${course.batchYear}" required min="2000" max="2100"/>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="programLevel">Program Level</label>
-                            <input id="programLevel" type="text" name="programLevel" th:value="${course.programLevel}" required/>
-                        </div>
-                        <div class="form-group">
-                            <label for="level">Level (Display)</label>
-                            <input id="level" type="text" name="level" th:value="${course.level}" required/>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="durationSemesters">Program Duration (Semesters)</label>
-                            <input id="durationSemesters" type="number" name="durationSemesters" th:value="${course.durationSemesters}" required min="1"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="requiredQualification">Required Qualification</label>
-                            <input id="requiredQualification" type="text" name="requiredQualification" th:value="${course.requiredQualification}" required/>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="capacity">Capacity</label>
-                            <input id="capacity" type="number" name="capacity" th:value="${course.capacity}" required min="0"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="remainingSeats">Remaining Seats</label>
-                            <input id="remainingSeats" type="number" name="remainingSeats" th:value="${course.remainingSeats}" min="0"/>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="credits">Credits</label>
-                            <input id="credits" type="number" name="credits" th:value="${course.credits}" required min="0"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="fee">Fee (INR)</label>
-                            <input id="fee" type="number" name="fee" th:value="${course.fee}" required min="0"/>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="existingTeachingSchemaId">Use Existing Teaching Schema Document</label>
-                        <select id="existingTeachingSchemaId" name="existingTeachingSchemaId">
-                            <option value="">Select existing schema (optional)</option>
-                            <option th:each="s : ${teachingSchemas}"
-                                    th:value="${s.id}"
-                                    th:attr="data-department=${s.department},data-program=${s.programName}"
-                                    th:text="${s.programName + ' | ' + s.department + ' | v' + s.schemaVersion + ' | ' + s.fileName}"
-                                    th:selected="${course.teachingSchema != null and course.teachingSchema.id == s.id}"></option>
-                        </select>
-                        <p class="muted" style="margin-top: 0.4rem;">If schema changed, upload a new document below. New upload creates a new schema version.</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="teachingSchemaFile">Upload New Teaching Schema (PDF/DOC/DOCX)</label>
-                        <input id="teachingSchemaFile" type="file" name="teachingSchemaFile" accept=".pdf,.doc,.docx"/>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Required Enrollment Documents</label>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
-                            <label th:each="entry : ${documentTypeOptions.entrySet()}" style="display: flex; align-items: center; gap: 0.5rem;">
-                                <input type="checkbox"
-                                       name="requiredDocumentTypes"
-                                       th:value="${entry.key}"
-                                       th:checked="${course.requiredDocumentTypeList.contains(entry.key)}"/>
-                                <span th:text="${entry.value}">Document Type</span>
-                            </label>
-                        </div>
-                        <p class="muted" style="margin-top: 0.4rem;">Students must upload all selected document types for enrollment.</p>
-                    </div>
-
-                    <div class="form-row align-center">
-                        <div class="form-group flex-1">
-                            <a th:href="@{/director/courses}" class="btn btn-outline">Cancel</a>
-                        </div>
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary">Save Course</button>
-                        </div>
-                    </div>
-                </form>
-            </section>
-        </main>
-    </div>
-
-    <script>
+<header class="dashboard-header">
+<h1>KOR Institute of Technology Student Portal</h1>
+<nav class="dashboard-nav">
+<a class="nav-link" th:href="@{/director/dashboard}">Dashboard</a>
+<a class="nav-link active" th:href="@{/director/courses}">Courses</a>
+<a class="nav-link" th:href="@{/director/users}">Faculty/Students</a>
+<a class="nav-link" th:href="@{/director/assignments}">Assignments</a>
+</nav>
+<div class="user-info">
+<span style="margin-right: 1rem;">Welcome, <span th:text="${#authentication.name}">Director</span></span>
+<form method="post" style="display: inline;" th:action="@{/auth/logout}">
+<button class="btn btn-outline btn-sm" type="submit">Logout</button>
+</form>
+</div>
+</header>
+<div class="dashboard-layout">
+<main class="dashboard-main">
+<section class="dashboard-section">
+<h2 th:text="${course.id == null ? 'Add Course' : 'Edit Course'}">Course Form</h2>
+<div class="msg success" th:if="${successMessage}" th:text="${successMessage}">Success</div>
+<div class="msg error" th:if="${errorMessage}" th:text="${errorMessage}">Error</div>
+<form enctype="multipart/form-data" method="post" th:action="${course.id == null} ? @{/director/courses} : @{/director/courses/{id}(id=${course.id})}">
+<div class="form-row">
+<div class="form-group">
+<label class="required" for="department">Department</label>
+<select id="department" name="department" required="" th:attr="data-current=${course.department}">
+<option value="">Select department</option>
+<option th:each="d : ${departments}" th:selected="${course.department == d}" th:text="${d}" th:value="${d}"></option>
+</select>
+</div>
+<div class="form-group">
+<label class="required" for="programName">Program</label>
+<select id="programName" name="programName" required="" th:attr="data-current=${course.programName}">
+<option value="">Select program</option>
+<option th:each="p : ${programNames}" th:selected="${course.programName == p}" th:text="${p}" th:value="${p}"></option>
+<option th:selected="${course.programName != null and !#lists.contains(programNames, course.programName)}" value="__OTHER__">Other</option>
+</select>
+<input id="programNameCustom" name="programNameCustom" placeholder="Enter new program name" style="margin-top: 0.6rem; display: none;" type="text"/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label for="code">Course Code</label>
+<input class="readonly" id="code" name="code" readonly="" th:value="${course.code}" type="text"/>
+</div>
+<div class="form-group">
+<label for="name">Course Name</label>
+<input class="readonly" id="name" name="name" readonly="" th:value="${course.name}" type="text"/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required" for="batchYear">Batch Year</label>
+<input id="batchYear" max="2100" min="2000" name="batchYear" required="" th:value="${course.batchYear}" type="number"/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required" for="programLevel">Program Level</label>
+<input id="programLevel" name="programLevel" required="" th:value="${course.programLevel}" type="text"/>
+</div>
+<div class="form-group">
+<label class="required" for="level">Level (Display)</label>
+<input id="level" name="level" required="" th:value="${course.level}" type="text"/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required" for="durationSemesters">Program Duration (Semesters)</label>
+<input id="durationSemesters" min="1" name="durationSemesters" required="" th:value="${course.durationSemesters}" type="number"/>
+</div>
+<div class="form-group">
+<label class="required" for="requiredQualification">Required Qualification</label>
+<input id="requiredQualification" name="requiredQualification" required="" th:value="${course.requiredQualification}" type="text"/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required" for="capacity">Capacity</label>
+<input id="capacity" min="0" name="capacity" required="" th:value="${course.capacity}" type="number"/>
+</div>
+<div class="form-group">
+<label for="remainingSeats">Remaining Seats</label>
+<input id="remainingSeats" min="0" name="remainingSeats" th:value="${course.remainingSeats}" type="number"/>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label class="required" for="credits">Credits</label>
+<input id="credits" min="0" name="credits" required="" th:value="${course.credits}" type="number"/>
+</div>
+<div class="form-group">
+<label class="required" for="fee">Fee (INR)</label>
+<input id="fee" min="0" name="fee" required="" th:value="${course.fee}" type="number"/>
+</div>
+</div>
+<div class="form-group">
+<label for="existingTeachingSchemaId">Use Existing Teaching Schema Document</label>
+<select id="existingTeachingSchemaId" name="existingTeachingSchemaId">
+<option value="">Select existing schema (optional)</option>
+<option th:attr="data-department=${s.department},data-program=${s.programName}" th:each="s : ${teachingSchemas}" th:selected="${course.teachingSchema != null and course.teachingSchema.id == s.id}" th:text="${s.programName + ' | ' + s.department + ' | v' + s.schemaVersion + ' | ' + s.fileName}" th:value="${s.id}"></option>
+</select>
+<p class="muted" style="margin-top: 0.4rem;">If schema changed, upload a new document below. New upload creates a new schema version.</p>
+</div>
+<div class="form-group">
+<label for="teachingSchemaFile">Upload New Teaching Schema (PDF/DOC/DOCX)</label>
+<input accept=".pdf,.doc,.docx" id="teachingSchemaFile" name="teachingSchemaFile" type="file"/>
+</div>
+<div class="form-group">
+<label>Required Enrollment Documents</label>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+<label style="display: flex; align-items: center; gap: 0.5rem;" th:each="entry : ${documentTypeOptions.entrySet()}">
+<input name="requiredDocumentTypes" th:checked="${course.requiredDocumentTypeList.contains(entry.key)}" th:value="${entry.key}" type="checkbox"/>
+<span th:text="${entry.value}">Document Type</span>
+</label>
+</div>
+<p class="muted" style="margin-top: 0.4rem;">Students must upload all selected document types for enrollment.</p>
+</div>
+<div class="form-row align-center">
+<div class="form-group flex-1">
+<a class="btn btn-outline" th:href="@{/director/courses}">Cancel</a>
+</div>
+<div class="form-group">
+<button class="btn btn-primary" type="submit">Save Course</button>
+</div>
+</div>
+</form>
+</section>
+</main>
+</div>
+<script>
         (function () {
             const departmentInput = document.getElementById('department');
             const programInput = document.getElementById('programName');
@@ -278,7 +255,6 @@
             applyProgramDefaults();
         })();
     </script>
+    <script src="/js/form-validation.js" defer></script>
 </body>
 </html>
-
-

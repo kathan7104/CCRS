@@ -1,0 +1,2882 @@
+FILE-BY-FILE EXPLANATION (Summaries + Function Flow)
+
+Note: These explanations are generalized and describe typical responsibilities and data flow.
+
+File: src/main/java/com/example/demo/config/DataInitializer.java
+Role: Config
+Class: DataInitializer
+Class Annotations and Meaning:
+- @Configuration: Marks a class that defines Spring beans.
+Summary (Plain English):
+- Defines application configuration, beans, or setup tasks.
+Function Flow and Theory (Each Method):
+- Method: patchLegacyCourseSchema
+  Signature: private void patchLegacyCourseSchema() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: seedDepartments
+  Signature: private void seedDepartments() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: executeSql
+  Signature: private void executeSql(String sql) {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: resetAndCreateSampleCourses
+  Signature: private void resetAndCreateSampleCourses() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: resetAndCreateSampleSubjects
+  Signature: private void resetAndCreateSampleSubjects() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: seedDefaultFeeStructure
+  Signature: private void seedDefaultFeeStructure() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: ensureDemoFaculty
+  Signature: private void ensureDemoFaculty() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: createSubject
+  Signature: private void createSubject(String department, String programName, String code, String name, int semester, int credits) {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: backfillTeachingSchemaSubjects
+  Signature: private void backfillTeachingSchemaSubjects() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: resolveSchemaPath
+  Signature: private Path resolveSchemaPath(String rawPath) {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/config/DepartmentCatalog.java
+Role: Config
+Class: (not detected)
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Defines application configuration, beans, or setup tasks.
+Function Flow and Theory (Each Method):
+- Method: DepartmentCatalog
+  Signature: private DepartmentCatalog() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: departments
+  Signature: public static List<String> departments() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/config/SecurityConfig.java
+Role: Config
+Class: SecurityConfig
+Class Annotations and Meaning:
+- @EnableMethodSecurity: Enables method-level security annotations.
+Summary (Plain English):
+- Defines application configuration, beans, or setup tasks.
+Function Flow and Theory (Each Method):
+- Method: passwordEncoder
+  Signature: public PasswordEncoder passwordEncoder() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: authenticationProvider
+  Signature: public DaoAuthenticationProvider authenticationProvider() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: logoutRequestMatcher
+  Signature: private boolean logoutRequestMatcher(HttpServletRequest request) {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/config/UploadConfig.java
+Role: Config
+Class: UploadConfig
+Class Annotations and Meaning:
+- @Configuration: Marks a class that defines Spring beans.
+Summary (Plain English):
+- Defines application configuration, beans, or setup tasks.
+Function Flow and Theory (Each Method):
+- Method: multipartConfigElement
+  Signature: public MultipartConfigElement multipartConfigElement() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+- Method: tomcatUploadCustomizer
+  Signature: public WebServerFactoryCustomizer<TomcatServletWebServerFactory> tomcatUploadCustomizer() {
+  Theory: Configures a bean or app behavior used by Spring at runtime.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/config/UploadConfigLogging.java
+Role: Config
+Class: UploadConfigLogging
+Class Annotations and Meaning:
+- @Configuration: Marks a class that defines Spring beans.
+Summary (Plain English):
+- Defines application configuration, beans, or setup tasks.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/controller/AdminController.java
+Role: Controller
+Class: AdminController
+Class Annotations and Meaning:
+- @RequestMapping: Sets a common URL prefix for all endpoints in the class or method.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: of
+  Signature: private static final Set<String> MANAGED_ROLES = Set.of("AUTHORITY_ADMIN", "AUTHORITY_DIRECTOR", "AUTHORITY_STAFF", SUPER_ADMIN_ROLE);
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: dashboard
+  Signature: public String dashboard(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: enrollmentApprovals
+  Signature: public String enrollmentApprovals(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: listSuperUsers
+  Signature: public String listSuperUsers(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: createUserForm
+  Signature: public String createUserForm(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: reports
+  Signature: public String reports(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: departments
+  Signature: public String departments(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: createDepartment
+  Signature: public String createDepartment(@RequestParam String name, RedirectAttributes redirectAttributes) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: deactivateDepartment
+  Signature: public String deactivateDepartment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: activateDepartment
+  Signature: public String activateDepartment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: getManagedUsers
+  Signature: private List<User> getManagedUsers() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: getActiveDepartmentNames
+  Signature: private List<String> getActiveDepartmentNames() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: hasRole
+  Signature: private boolean hasRole(User user, String role) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/AuthController.java
+Role: Controller
+Class: AuthController
+Class Annotations and Meaning:
+- @RequestMapping: Sets a common URL prefix for all endpoints in the class or method.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: registerPage
+  Signature: public String registerPage(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: verifyRegistrationPage
+  Signature: public String verifyRegistrationPage(HttpServletRequest request, Model model, RedirectAttributes redirectAttributes) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: forgotPasswordPage
+  Signature: public String forgotPasswordPage(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: resetPasswordPage
+  Signature: public String resetPasswordPage(@RequestParam(required = false) String email, Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: mapOtpType
+  Signature: private static OtpVerification.OtpType mapOtpType(String value) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: logout
+  Signature: public String logout(HttpServletRequest request, HttpServletResponse response) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/CourseController.java
+Role: Controller
+Class: CourseController
+Class Annotations and Meaning:
+- @RequestMapping: Sets a common URL prefix for all endpoints in the class or method.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: listCourses
+  Signature: public String listCourses(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: courseDetails
+  Signature: public String courseDetails(@PathVariable Long id, Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: validateUploadedDocument
+  Signature: private void validateUploadedDocument(MultipartFile file, String safeOriginalName) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: validateRequiredCourseDocuments
+  Signature: private void validateRequiredCourseDocuments(Long courseId, List<EnrollmentService.DocumentPayload> documents) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: documentTypeOptions
+  Signature: private Map<String, String> documentTypeOptions() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/DashboardController.java
+Role: Controller
+Class: DashboardController
+Class Annotations and Meaning:
+- @Controller: Marks an MVC controller that returns views.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: dashboard
+  Signature: public String dashboard(@AuthenticationPrincipal CustomUserDetails userDetails, Model model, HttpServletRequest request) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: authorityDashboard
+  Signature: public String authorityDashboard(@AuthenticationPrincipal CustomUserDetails userDetails, Model model, HttpServletRequest request) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: resolveOverviewText
+  Signature: private String resolveOverviewText(CustomUserDetails userDetails) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/DevController.java
+Role: Controller
+Class: DevController
+Class Annotations and Meaning:
+- @RequestMapping: Sets a common URL prefix for all endpoints in the class or method.
+- @ConditionalOnProperty: Framework annotation used for configuration/behavior in this class.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: DevController
+  Signature: public DevController(AuthenticationManager authenticationManager) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: authCheck
+  Signature: public ResponseEntity<?> authCheck(@RequestParam String username, @RequestParam String password) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/DirectorCourseController.java
+Role: Controller
+Class: DirectorCourseController
+Class Annotations and Meaning:
+- @RequestMapping: Sets a common URL prefix for all endpoints in the class or method.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: compile
+  Signature: private static final Pattern TRAILING_NUMBER_PATTERN = Pattern.compile("-(\\d+)$");
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: list
+  Signature: public String list(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: createForm
+  Signature: public String createForm(Model model, @AuthenticationPrincipal CustomUserDetails principal) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: editForm
+  Signature: public String editForm(@PathVariable Long id, Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: loadFormOptions
+  Signature: private void loadFormOptions(Model model, Course course, List<Course> explicitAllCourses) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: normalizeCapacity
+  Signature: private void normalizeCapacity(Course course) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: resolveDepartment
+  Signature: private String resolveDepartment(CustomUserDetails principal) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: cleanText
+  Signature: private String cleanText(String value) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: resolveProgramName
+  Signature: private String resolveProgramName(String selectedProgram, String customProgram) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: isOtherProgramSelection
+  Signature: private boolean isOtherProgramSelection(String value) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: nullSafe
+  Signature: private String nullSafe(String value) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: getActiveDepartmentNames
+  Signature: private List<String> getActiveDepartmentNames() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: resolveProgramOptions
+  Signature: private List<String> resolveProgramOptions() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: normalizeDocumentTypes
+  Signature: private List<String> normalizeDocumentTypes(List<String> rawValues) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: resolvePrerequisites
+  Signature: private Set<Course> resolvePrerequisites(List<Long> prerequisiteIds, Long currentCourseId) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: documentTypeOptions
+  Signature: private Map<String, String> documentTypeOptions() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: isCodeMatchingCourseAndBatch
+  Signature: private boolean isCodeMatchingCourseAndBatch(String currentCode, String courseName, Integer batchYear) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: ensureSubjectsExtracted
+  Signature: private void ensureSubjectsExtracted(TeachingSchema schema) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: generateNextCourseCode
+  Signature: private String generateNextCourseCode(String courseName, Integer batchYear) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: extractTrailingNumber
+  Signature: private int extractTrailingNumber(String code) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: codePrefixFromName
+  Signature: private String codePrefixFromName(String courseName) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: rootCauseMessage
+  Signature: private String rootCauseMessage(Throwable throwable) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: resolveSchemaPath
+  Signature: private Path resolveSchemaPath(String rawPath) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/DirectorManagementController.java
+Role: Controller
+Class: DirectorManagementController
+Class Annotations and Meaning:
+- @RequestMapping: Sets a common URL prefix for all endpoints in the class or method.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: of
+  Signature: private static final Set<String> MANAGED_ROLES = Set.of("STUDENT", "AUTHORITY_FACULTY", "ROLE_STUDENT", "ROLE_AUTHORITY_FACULTY");
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: dashboard
+  Signature: public String dashboard(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: users
+  Signature: public String users(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: newUser
+  Signature: public String newUser(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: assignments
+  Signature: public String assignments(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: resolveDepartment
+  Signature: private String resolveDepartment(CustomUserDetails principal) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: normalize
+  Signature: private String normalize(String value) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: isManagedUser
+  Signature: private boolean isManagedUser(User user) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: canManageUser
+  Signature: private boolean canManageUser(String directorDepartment, User user) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: hasAnyActiveEnrollment
+  Signature: private boolean hasAnyActiveEnrollment(Long studentId) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: findLatestActiveEnrollment
+  Signature: private Enrollment findLatestActiveEnrollment(Long studentId) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: getActiveDepartmentNames
+  Signature: private List<String> getActiveDepartmentNames() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: hasRole
+  Signature: private boolean hasRole(User user, String role) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: normalizeRole
+  Signature: private String normalizeRole(String role) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: countAllAssignments
+  Signature: private int countAllAssignments() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: fetchAssignmentRows
+  Signature: private List<AssignmentTableRow> fetchAssignmentRows() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: syncSubjectsFromAllCourseSchemas
+  Signature: private int syncSubjectsFromAllCourseSchemas() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: syncFromSchemaFilesDirectory
+  Signature: private int syncFromSchemaFilesDirectory() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: inferProgramFromFileName
+  Signature: private String inferProgramFromFileName(String fileName) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: inferDepartmentFromProgram
+  Signature: private String inferDepartmentFromProgram(String program) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: resolveSchemaPath
+  Signature: private Path resolveSchemaPath(String rawPath) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: DirectorUserRow
+  Signature: public record DirectorUserRow(User user, String enrolledDepartment, String enrolledCourse) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/FacultyController.java
+Role: Controller
+Class: FacultyController
+Class Annotations and Meaning:
+- @RequestMapping: Sets a common URL prefix for all endpoints in the class or method.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: FacultyController
+  Signature: public FacultyController(FacultyRosterService facultyRosterService) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/GlobalWebExceptionHandler.java
+Role: Controller
+Class: GlobalWebExceptionHandler
+Class Annotations and Meaning:
+- @ControllerAdvice: Framework annotation used for configuration/behavior in this class.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: getLogger
+  Signature: private static final Logger log = LoggerFactory.getLogger(GlobalWebExceptionHandler.class);
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: buildSafeMessage
+  Signature: private String buildSafeMessage(Exception ex) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/HomeController.java
+Role: Controller
+Class: HomeController
+Class Annotations and Meaning:
+- @Controller: Marks an MVC controller that returns views.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: home
+  Signature: public String home() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/StaffController.java
+Role: Controller
+Class: StaffController
+Class Annotations and Meaning:
+- @RequestMapping: Sets a common URL prefix for all endpoints in the class or method.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: dashboard
+  Signature: public String dashboard(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: feeStructures
+  Signature: public String feeStructures(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: newFeeStructure
+  Signature: public String newFeeStructure(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: editFeeStructure
+  Signature: public String editFeeStructure(@PathVariable Long id, Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: reports
+  Signature: public String reports(@RequestParam(defaultValue = "unpaid") String reportType, Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: invoices
+  Signature: public String invoices(Model model) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/controller/StudentPaymentController.java
+Role: Controller
+Class: StudentPaymentController
+Class Annotations and Meaning:
+- @RequestMapping: Sets a common URL prefix for all endpoints in the class or method.
+Summary (Plain English):
+- Receives web requests, validates inputs, calls service methods, and returns a view or JSON response.
+Function Flow and Theory (Each Method):
+- Method: paymentsAliasHome
+  Signature: public String paymentsAliasHome() {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+- Method: canAccessPayments
+  Signature: private boolean canAccessPayments(CustomUserDetails principal) {
+  Theory: Handles an HTTP request, reads parameters/body, calls a service, then returns a view/response.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/dto/FacultyCourseRoster.java
+Role: DTO
+Class: (not detected)
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Carries input or output data between layers without exposing entities directly.
+Function Flow and Theory (Each Method):
+- Method: FacultyCourseRoster
+  Signature: public record FacultyCourseRoster(Course course, List<Enrollment> enrollments) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/dto/FacultySubjectRoster.java
+Role: DTO
+Class: (not detected)
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Carries input or output data between layers without exposing entities directly.
+Function Flow and Theory (Each Method):
+- Method: FacultySubjectRoster
+  Signature: public record FacultySubjectRoster(Subject subject, List<Enrollment> enrollments) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/dto/ForgotPasswordRequest.java
+Role: DTO
+Class: ForgotPasswordRequest
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Carries input or output data between layers without exposing entities directly.
+Function Flow and Theory (Each Method):
+- Method: getEmail
+  Signature: public String getEmail() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setEmail
+  Signature: public void setEmail(String email) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/dto/LoginRequest.java
+Role: DTO
+Class: LoginRequest
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Carries input or output data between layers without exposing entities directly.
+Function Flow and Theory (Each Method):
+- Method: getUsername
+  Signature: public String getUsername() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setUsername
+  Signature: public void setUsername(String username) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getPassword
+  Signature: public String getPassword() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setPassword
+  Signature: public void setPassword(String password) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/dto/RegisterRequest.java
+Role: DTO
+Class: RegisterRequest
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Carries input or output data between layers without exposing entities directly.
+Function Flow and Theory (Each Method):
+- Method: getFullName
+  Signature: public String getFullName() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setFullName
+  Signature: public void setFullName(String fullName) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getEmail
+  Signature: public String getEmail() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setEmail
+  Signature: public void setEmail(String email) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getMobileNumber
+  Signature: public String getMobileNumber() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setMobileNumber
+  Signature: public void setMobileNumber(String mobileNumber) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getPassword
+  Signature: public String getPassword() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setPassword
+  Signature: public void setPassword(String password) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getConfirmPassword
+  Signature: public String getConfirmPassword() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setConfirmPassword
+  Signature: public void setConfirmPassword(String confirmPassword) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/dto/RegistrationResult.java
+Role: DTO
+Class: RegistrationResult
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Carries input or output data between layers without exposing entities directly.
+Function Flow and Theory (Each Method):
+- Method: RegistrationResult
+  Signature: public RegistrationResult(User user, String emailOtpForDisplay, String mobileOtpForDisplay) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getUser
+  Signature: public User getUser() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getEmailOtpForDisplay
+  Signature: public String getEmailOtpForDisplay() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getMobileOtpForDisplay
+  Signature: public String getMobileOtpForDisplay() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/dto/ResetPasswordRequest.java
+Role: DTO
+Class: ResetPasswordRequest
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Carries input or output data between layers without exposing entities directly.
+Function Flow and Theory (Each Method):
+- Method: getOtp
+  Signature: public String getOtp() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setOtp
+  Signature: public void setOtp(String otp) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getEmail
+  Signature: public String getEmail() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setEmail
+  Signature: public void setEmail(String email) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getNewPassword
+  Signature: public String getNewPassword() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setNewPassword
+  Signature: public void setNewPassword(String newPassword) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getConfirmPassword
+  Signature: public String getConfirmPassword() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setConfirmPassword
+  Signature: public void setConfirmPassword(String confirmPassword) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/dto/VerifyOtpRequest.java
+Role: DTO
+Class: VerifyOtpRequest
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Carries input or output data between layers without exposing entities directly.
+Function Flow and Theory (Each Method):
+- Method: getOtp
+  Signature: public String getOtp() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setOtp
+  Signature: public void setOtp(String otp) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getIdentifier
+  Signature: public String getIdentifier() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setIdentifier
+  Signature: public void setIdentifier(String identifier) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: getOtpType
+  Signature: public String getOtpType() {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+- Method: setOtpType
+  Signature: public void setOtpType(String otpType) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/Course.java
+Role: Entity
+Class: Course
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: method
+  Signature: private Set<Course> prerequisites = new HashSet<>();
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: onUpdate
+  Signature: protected void onUpdate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: Course
+  Signature: public Course() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setId
+  Signature: public void setId(Long id) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCode
+  Signature: public String getCode() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCode
+  Signature: public void setCode(String code) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getName
+  Signature: public String getName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setName
+  Signature: public void setName(String name) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDepartment
+  Signature: public String getDepartment() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setDepartment
+  Signature: public void setDepartment(String department) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getProgramName
+  Signature: public String getProgramName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setProgramName
+  Signature: public void setProgramName(String programName) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getBatchYear
+  Signature: public Integer getBatchYear() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setBatchYear
+  Signature: public void setBatchYear(Integer batchYear) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCapacity
+  Signature: public Integer getCapacity() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCapacity
+  Signature: public void setCapacity(Integer capacity) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getRemainingSeats
+  Signature: public Integer getRemainingSeats() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setRemainingSeats
+  Signature: public void setRemainingSeats(Integer remainingSeats) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCredits
+  Signature: public Integer getCredits() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCredits
+  Signature: public void setCredits(Integer credits) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFee
+  Signature: public Integer getFee() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFee
+  Signature: public void setFee(Integer fee) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getProgramLevel
+  Signature: public String getProgramLevel() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setProgramLevel
+  Signature: public void setProgramLevel(String programLevel) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getLevel
+  Signature: public String getLevel() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setLevel
+  Signature: public void setLevel(String level) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDurationSemesters
+  Signature: public Integer getDurationSemesters() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setDurationSemesters
+  Signature: public void setDurationSemesters(Integer durationSemesters) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getTeachingSchema
+  Signature: public TeachingSchema getTeachingSchema() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setTeachingSchema
+  Signature: public void setTeachingSchema(TeachingSchema teachingSchema) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getRequiredQualification
+  Signature: public String getRequiredQualification() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setRequiredQualification
+  Signature: public void setRequiredQualification(String requiredQualification) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getRequiredDocumentTypes
+  Signature: public String getRequiredDocumentTypes() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setRequiredDocumentTypes
+  Signature: public void setRequiredDocumentTypes(String requiredDocumentTypes) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getRequiredDocumentTypeList
+  Signature: public List<String> getRequiredDocumentTypeList() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setRequiredDocumentTypeList
+  Signature: public void setRequiredDocumentTypeList(List<String> values) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getPrerequisites
+  Signature: public Set<Course> getPrerequisites() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setPrerequisites
+  Signature: public void setPrerequisites(Set<Course> prerequisites) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getVersion
+  Signature: public Long getVersion() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setVersion
+  Signature: public void setVersion(Long version) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCreatedAt
+  Signature: public LocalDateTime getCreatedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getUpdatedAt
+  Signature: public LocalDateTime getUpdatedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/Department.java
+Role: Entity
+Class: Department
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: onUpdate
+  Signature: protected void onUpdate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getName
+  Signature: public String getName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setName
+  Signature: public void setName(String name) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: isActive
+  Signature: public boolean isActive() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setActive
+  Signature: public void setActive(boolean active) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/Enrollment.java
+Role: Entity
+Class: Enrollment
+Class Annotations and Meaning:
+- @Index: Framework annotation used for configuration/behavior in this class.
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: method
+  Signature: private List<EnrollmentDocument> documents = new ArrayList<>();
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: Enrollment
+  Signature: public Enrollment() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setId
+  Signature: public void setId(Long id) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getStudent
+  Signature: public User getStudent() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setStudent
+  Signature: public void setStudent(User student) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCourse
+  Signature: public Course getCourse() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCourse
+  Signature: public void setCourse(Course course) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getStatus
+  Signature: public EnrollmentStatus getStatus() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setStatus
+  Signature: public void setStatus(EnrollmentStatus status) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getRegisteredAt
+  Signature: public LocalDateTime getRegisteredAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFinalizedAt
+  Signature: public LocalDateTime getFinalizedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFinalizedAt
+  Signature: public void setFinalizedAt(LocalDateTime finalizedAt) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getComments
+  Signature: public String getComments() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setComments
+  Signature: public void setComments(String comments) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getPastEducationMarks
+  Signature: public Double getPastEducationMarks() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setPastEducationMarks
+  Signature: public void setPastEducationMarks(Double pastEducationMarks) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getMarksheetPath
+  Signature: public String getMarksheetPath() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setMarksheetPath
+  Signature: public void setMarksheetPath(String marksheetPath) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getPersonalInfo
+  Signature: public String getPersonalInfo() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setPersonalInfo
+  Signature: public void setPersonalInfo(String personalInfo) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDocuments
+  Signature: public List<EnrollmentDocument> getDocuments() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: addDocument
+  Signature: public void addDocument(EnrollmentDocument document) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/EnrollmentDocument.java
+Role: Entity
+Class: EnrollmentDocument
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getEnrollment
+  Signature: public Enrollment getEnrollment() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setEnrollment
+  Signature: public void setEnrollment(Enrollment enrollment) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDocumentType
+  Signature: public DocumentType getDocumentType() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setDocumentType
+  Signature: public void setDocumentType(DocumentType documentType) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFileName
+  Signature: public String getFileName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFileName
+  Signature: public void setFileName(String fileName) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFilePath
+  Signature: public String getFilePath() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFilePath
+  Signature: public void setFilePath(String filePath) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getContentType
+  Signature: public String getContentType() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setContentType
+  Signature: public void setContentType(String contentType) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getUploadedAt
+  Signature: public LocalDateTime getUploadedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/FacultyCourseAssignment.java
+Role: Entity
+Class: FacultyCourseAssignment
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFaculty
+  Signature: public User getFaculty() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFaculty
+  Signature: public void setFaculty(User faculty) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCourse
+  Signature: public Course getCourse() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCourse
+  Signature: public void setCourse(Course course) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getAssignedAt
+  Signature: public LocalDateTime getAssignedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/FacultySubjectAssignment.java
+Role: Entity
+Class: FacultySubjectAssignment
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFaculty
+  Signature: public User getFaculty() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFaculty
+  Signature: public void setFaculty(User faculty) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getSubject
+  Signature: public Subject getSubject() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setSubject
+  Signature: public void setSubject(Subject subject) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getAssignedAt
+  Signature: public LocalDateTime getAssignedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/FeeStructure.java
+Role: Entity
+Class: FeeStructure
+Class Annotations and Meaning:
+- @Table: Defines the database table name for an entity.
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: onUpdate
+  Signature: protected void onUpdate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setId
+  Signature: public void setId(Long id) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getName
+  Signature: public String getName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setName
+  Signature: public void setName(String name) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCostPerCredit
+  Signature: public BigDecimal getCostPerCredit() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCostPerCredit
+  Signature: public void setCostPerCredit(BigDecimal costPerCredit) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getLabFee
+  Signature: public BigDecimal getLabFee() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setLabFee
+  Signature: public void setLabFee(BigDecimal labFee) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDifferentialFee
+  Signature: public BigDecimal getDifferentialFee() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setDifferentialFee
+  Signature: public void setDifferentialFee(BigDecimal differentialFee) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getLatePenalty
+  Signature: public BigDecimal getLatePenalty() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setLatePenalty
+  Signature: public void setLatePenalty(BigDecimal latePenalty) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getEffectiveFrom
+  Signature: public LocalDate getEffectiveFrom() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setEffectiveFrom
+  Signature: public void setEffectiveFrom(LocalDate effectiveFrom) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: isActive
+  Signature: public boolean isActive() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setActive
+  Signature: public void setActive(boolean active) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCreatedAt
+  Signature: public LocalDateTime getCreatedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getUpdatedAt
+  Signature: public LocalDateTime getUpdatedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/FeeStructureAuditLog.java
+Role: Entity
+Class: FeeStructureAuditLog
+Class Annotations and Meaning:
+- @Table: Defines the database table name for an entity.
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFeeStructure
+  Signature: public FeeStructure getFeeStructure() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFeeStructure
+  Signature: public void setFeeStructure(FeeStructure feeStructure) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getAction
+  Signature: public String getAction() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setAction
+  Signature: public void setAction(String action) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getChangedBy
+  Signature: public String getChangedBy() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setChangedBy
+  Signature: public void setChangedBy(String changedBy) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getChangeSummary
+  Signature: public String getChangeSummary() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setChangeSummary
+  Signature: public void setChangeSummary(String changeSummary) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getChangedAt
+  Signature: public LocalDateTime getChangedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/Invoice.java
+Role: Entity
+Class: Invoice
+Class Annotations and Meaning:
+- @Table: Defines the database table name for an entity.
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: method
+  Signature: private Set<InvoiceItem> items = new HashSet<>();
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: Invoice
+  Signature: public Invoice() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setId
+  Signature: public void setId(Long id) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getInvoiceNumber
+  Signature: public String getInvoiceNumber() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setInvoiceNumber
+  Signature: public void setInvoiceNumber(String invoiceNumber) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getStudent
+  Signature: public User getStudent() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setStudent
+  Signature: public void setStudent(User student) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getTotalAmount
+  Signature: public BigDecimal getTotalAmount() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setTotalAmount
+  Signature: public void setTotalAmount(BigDecimal totalAmount) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getStatus
+  Signature: public InvoiceStatus getStatus() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setStatus
+  Signature: public void setStatus(InvoiceStatus status) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getIssuedAt
+  Signature: public LocalDateTime getIssuedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDueDate
+  Signature: public LocalDateTime getDueDate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setDueDate
+  Signature: public void setDueDate(LocalDateTime dueDate) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getItems
+  Signature: public Set<InvoiceItem> getItems() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setItems
+  Signature: public void setItems(Set<InvoiceItem> items) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/InvoiceItem.java
+Role: Entity
+Class: InvoiceItem
+Class Annotations and Meaning:
+- @Table: Defines the database table name for an entity.
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: InvoiceItem
+  Signature: public InvoiceItem() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setId
+  Signature: public void setId(Long id) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getInvoice
+  Signature: public Invoice getInvoice() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setInvoice
+  Signature: public void setInvoice(Invoice invoice) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCourse
+  Signature: public Course getCourse() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCourse
+  Signature: public void setCourse(Course course) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDescription
+  Signature: public String getDescription() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setDescription
+  Signature: public void setDescription(String description) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getAmount
+  Signature: public java.math.BigDecimal getAmount() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setAmount
+  Signature: public void setAmount(java.math.BigDecimal amount) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/OtpVerification.java
+Role: Entity
+Class: OtpVerification
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: OtpVerification
+  Signature: public OtpVerification() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: OtpVerification
+  Signature: public OtpVerification(String identifier, String otp, OtpType otpType, int validMinutes) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setId
+  Signature: public void setId(Long id) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getIdentifier
+  Signature: public String getIdentifier() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setIdentifier
+  Signature: public void setIdentifier(String identifier) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getOtp
+  Signature: public String getOtp() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setOtp
+  Signature: public void setOtp(String otp) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getOtpType
+  Signature: public OtpType getOtpType() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setOtpType
+  Signature: public void setOtpType(OtpType otpType) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCreatedAt
+  Signature: public LocalDateTime getCreatedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCreatedAt
+  Signature: public void setCreatedAt(LocalDateTime createdAt) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getExpiresAt
+  Signature: public LocalDateTime getExpiresAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setExpiresAt
+  Signature: public void setExpiresAt(LocalDateTime expiresAt) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: isUsed
+  Signature: public boolean isUsed() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setUsed
+  Signature: public void setUsed(boolean used) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getUserId
+  Signature: public Long getUserId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setUserId
+  Signature: public void setUserId(Long userId) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/Payment.java
+Role: Entity
+Class: Payment
+Class Annotations and Meaning:
+- @Table: Defines the database table name for an entity.
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: Payment
+  Signature: public Payment() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setId
+  Signature: public void setId(Long id) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getInvoice
+  Signature: public Invoice getInvoice() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setInvoice
+  Signature: public void setInvoice(Invoice invoice) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getAmount
+  Signature: public BigDecimal getAmount() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setAmount
+  Signature: public void setAmount(BigDecimal amount) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getMethod
+  Signature: public PaymentMethod getMethod() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setMethod
+  Signature: public void setMethod(PaymentMethod method) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getTransactionId
+  Signature: public String getTransactionId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setTransactionId
+  Signature: public void setTransactionId(String transactionId) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getChequeNumber
+  Signature: public String getChequeNumber() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setChequeNumber
+  Signature: public void setChequeNumber(String chequeNumber) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getChequeBankName
+  Signature: public String getChequeBankName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setChequeBankName
+  Signature: public void setChequeBankName(String chequeBankName) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getChequeIfscCode
+  Signature: public String getChequeIfscCode() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setChequeIfscCode
+  Signature: public void setChequeIfscCode(String chequeIfscCode) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getStatus
+  Signature: public PaymentStatus getStatus() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setStatus
+  Signature: public void setStatus(PaymentStatus status) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getGatewayOrderId
+  Signature: public String getGatewayOrderId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setGatewayOrderId
+  Signature: public void setGatewayOrderId(String gatewayOrderId) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getGatewaySignature
+  Signature: public String getGatewaySignature() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setGatewaySignature
+  Signature: public void setGatewaySignature(String gatewaySignature) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getPaidAt
+  Signature: public LocalDateTime getPaidAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setPaidAt
+  Signature: public void setPaidAt(LocalDateTime paidAt) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/Subject.java
+Role: Entity
+Class: Subject
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: onUpdate
+  Signature: protected void onUpdate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDepartment
+  Signature: public String getDepartment() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setDepartment
+  Signature: public void setDepartment(String department) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getProgramName
+  Signature: public String getProgramName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setProgramName
+  Signature: public void setProgramName(String programName) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getSubjectCode
+  Signature: public String getSubjectCode() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setSubjectCode
+  Signature: public void setSubjectCode(String subjectCode) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getSubjectName
+  Signature: public String getSubjectName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setSubjectName
+  Signature: public void setSubjectName(String subjectName) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getSemester
+  Signature: public Integer getSemester() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setSemester
+  Signature: public void setSemester(Integer semester) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCredits
+  Signature: public Integer getCredits() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCredits
+  Signature: public void setCredits(Integer credits) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getTeachingSchema
+  Signature: public TeachingSchema getTeachingSchema() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setTeachingSchema
+  Signature: public void setTeachingSchema(TeachingSchema teachingSchema) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCreatedAt
+  Signature: public LocalDateTime getCreatedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getUpdatedAt
+  Signature: public LocalDateTime getUpdatedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/TeachingSchema.java
+Role: Entity
+Class: TeachingSchema
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDepartment
+  Signature: public String getDepartment() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setDepartment
+  Signature: public void setDepartment(String department) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getProgramName
+  Signature: public String getProgramName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setProgramName
+  Signature: public void setProgramName(String programName) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getSchemaVersion
+  Signature: public Integer getSchemaVersion() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setSchemaVersion
+  Signature: public void setSchemaVersion(Integer schemaVersion) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFileName
+  Signature: public String getFileName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFileName
+  Signature: public void setFileName(String fileName) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFilePath
+  Signature: public String getFilePath() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFilePath
+  Signature: public void setFilePath(String filePath) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getUploadedAt
+  Signature: public LocalDateTime getUploadedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/entity/User.java
+Role: Entity
+Class: User
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Represents a table in the database and defines fields and relationships.
+Function Flow and Theory (Each Method):
+- Method: method
+  Signature: private Set<String> roles = new HashSet<>();
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: onCreate
+  Signature: protected void onCreate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: onUpdate
+  Signature: protected void onUpdate() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: User
+  Signature: public User() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: User
+  Signature: public User(String email, String mobileNumber, String password, String fullName) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getId
+  Signature: public Long getId() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setId
+  Signature: public void setId(Long id) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getEmail
+  Signature: public String getEmail() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setEmail
+  Signature: public void setEmail(String email) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getMobileNumber
+  Signature: public String getMobileNumber() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setMobileNumber
+  Signature: public void setMobileNumber(String mobileNumber) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getPassword
+  Signature: public String getPassword() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setPassword
+  Signature: public void setPassword(String password) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getFullName
+  Signature: public String getFullName() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setFullName
+  Signature: public void setFullName(String fullName) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getDepartment
+  Signature: public String getDepartment() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setDepartment
+  Signature: public void setDepartment(String department) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: isEmailVerified
+  Signature: public boolean isEmailVerified() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setEmailVerified
+  Signature: public void setEmailVerified(boolean emailVerified) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: isMobileVerified
+  Signature: public boolean isMobileVerified() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setMobileVerified
+  Signature: public void setMobileVerified(boolean mobileVerified) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: isActive
+  Signature: public boolean isActive() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setActive
+  Signature: public void setActive(boolean active) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getCreatedAt
+  Signature: public LocalDateTime getCreatedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setCreatedAt
+  Signature: public void setCreatedAt(LocalDateTime createdAt) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getUpdatedAt
+  Signature: public LocalDateTime getUpdatedAt() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setUpdatedAt
+  Signature: public void setUpdatedAt(LocalDateTime updatedAt) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: getRoles
+  Signature: public Set<String> getRoles() {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+- Method: setRoles
+  Signature: public void setRoles(Set<String> roles) {
+  Theory: Entity classes usually have getters/setters or utility methods for mapped fields.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/repository/CourseRepository.java
+Role: Repository
+Class: CourseRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/DepartmentRepository.java
+Role: Repository
+Class: DepartmentRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/EnrollmentDocumentRepository.java
+Role: Repository
+Class: EnrollmentDocumentRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/EnrollmentRepository.java
+Role: Repository
+Class: EnrollmentRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/FacultyCourseAssignmentRepository.java
+Role: Repository
+Class: FacultyCourseAssignmentRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/FacultySubjectAssignmentRepository.java
+Role: Repository
+Class: FacultySubjectAssignmentRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/FeeStructureAuditLogRepository.java
+Role: Repository
+Class: FeeStructureAuditLogRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/FeeStructureRepository.java
+Role: Repository
+Class: FeeStructureRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/InvoiceItemRepository.java
+Role: Repository
+Class: InvoiceItemRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/InvoiceRepository.java
+Role: Repository
+Class: InvoiceRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/OtpVerificationRepository.java
+Role: Repository
+Class: OtpVerificationRepository
+Class Annotations and Meaning:
+- @Repository: Marks the data access layer and enables exception translation.
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/PaymentRepository.java
+Role: Repository
+Class: PaymentRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/SubjectRepository.java
+Role: Repository
+Class: SubjectRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/TeachingSchemaRepository.java
+Role: Repository
+Class: TeachingSchemaRepository
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/repository/UserRepository.java
+Role: Repository
+Class: UserRepository
+Class Annotations and Meaning:
+- @Repository: Marks the data access layer and enables exception translation.
+Summary (Plain English):
+- Talks to the database and returns entities or query results.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/ScrsApplication.java
+Role: Application
+Class: ScrsApplication
+Class Annotations and Meaning:
+- @EnableAsync: Enables running methods asynchronously with @Async.
+Summary (Plain English):
+- Provides shared bootstrapping or utilities for the application.
+Function Flow and Theory (Each Method):
+- Method: main
+  Signature: public static void main(String[] args) {
+  Theory: Performs a focused unit of work inside this class.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/security/CustomAuthenticationSuccessHandler.java
+Role: Security
+Class: CustomAuthenticationSuccessHandler
+Class Annotations and Meaning:
+- @Component: Registers a generic Spring-managed bean.
+Summary (Plain English):
+- Handles authentication, authorization, or request filtering.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/security/CustomUserDetails.java
+Role: Security
+Class: CustomUserDetails
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Handles authentication, authorization, or request filtering.
+Function Flow and Theory (Each Method):
+- Method: CustomUserDetails
+  Signature: public CustomUserDetails(User user) {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+- Method: getAuthorities
+  Signature: public Collection<? extends GrantedAuthority> getAuthorities() {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+- Method: getPassword
+  Signature: public String getPassword() {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+- Method: getUsername
+  Signature: public String getUsername() {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+- Method: isAccountNonExpired
+  Signature: public boolean isAccountNonExpired() {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+- Method: isAccountNonLocked
+  Signature: public boolean isAccountNonLocked() {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+- Method: isCredentialsNonExpired
+  Signature: public boolean isCredentialsNonExpired() {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+- Method: isEnabled
+  Signature: public boolean isEnabled() {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+- Method: getUser
+  Signature: public User getUser() {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/security/CustomUserDetailsService.java
+Role: Security
+Class: CustomUserDetailsService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Handles authentication, authorization, or request filtering.
+Function Flow and Theory (Each Method):
+- Method: CustomUserDetailsService
+  Signature: public CustomUserDetailsService(UserRepository userRepository) {
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/security/PreLoginRoleValidationFilter.java
+Role: Security
+Class: PreLoginRoleValidationFilter
+Class Annotations and Meaning:
+- @Component: Registers a generic Spring-managed bean.
+Summary (Plain English):
+- Handles authentication, authorization, or request filtering.
+Function Flow and Theory (Each Method):
+- Method: getLogger
+  Signature: private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PreLoginRoleValidationFilter.class);
+  Theory: Applies security rules or handles authentication/authorization flow.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/AdminWorkflowService.java
+Role: Service
+Class: AdminWorkflowService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: approveEnrollment
+  Signature: public void approveEnrollment(Long enrollmentId, String adminNote) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: rejectEnrollment
+  Signature: public void rejectEnrollment(Long enrollmentId, String adminNote) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/EnrollmentService.java
+Role: Service
+Class: EnrollmentService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: EnrollmentService
+  Signature: public EnrollmentService(CourseRepository courseRepository, EnrollmentRepository enrollmentRepository, UserRepository userRepository) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: validateCanApplyForCourse
+  Signature: public void validateCanApplyForCourse(String userEmail, Long courseId) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: findBlockingEnrollment
+  Signature: private Optional<Enrollment> findBlockingEnrollment(User student, Long targetCourseId) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: checkPrerequisites
+  Signature: private boolean checkPrerequisites(User student, Course course) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: validateMandatoryDocuments
+  Signature: private void validateMandatoryDocuments(Course course, List<DocumentPayload> documents) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: isMarksheetType
+  Signature: private boolean isMarksheetType(EnrollmentDocument.DocumentType type) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/FacultyRosterService.java
+Role: Service
+Class: FacultyRosterService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: getFacultyRoster
+  Signature: public List<FacultySubjectRoster> getFacultyRoster(User faculty) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: normalize
+  Signature: private String normalize(String value) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/FeeStructureService.java
+Role: Service
+Class: FeeStructureService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: getAll
+  Signature: public List<FeeStructure> getAll() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getRecentAuditLogs
+  Signature: public List<FeeStructureAuditLog> getRecentAuditLogs() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getById
+  Signature: public FeeStructure getById(Long id) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getActive
+  Signature: public FeeStructure getActive() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: createOrUpdate
+  Signature: public FeeStructure createOrUpdate(FeeStructure feeStructure, String actor, String action) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: delete
+  Signature: public void delete(Long id, String actor) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: deactivateOthers
+  Signature: private void deactivateOthers(Long currentId) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: normalize
+  Signature: private void normalize(FeeStructure feeStructure) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: positive
+  Signature: private BigDecimal positive(BigDecimal value) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: buildSummary
+  Signature: private String buildSummary(FeeStructure feeStructure) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: logChange
+  Signature: private void logChange(FeeStructure feeStructure, String actor, String action, String summary) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/MockSmsSender.java
+Role: Service
+Class: MockSmsSender
+Class Annotations and Meaning:
+- @Component: Registers a generic Spring-managed bean.
+- @ConditionalOnProperty: Framework annotation used for configuration/behavior in this class.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: getLogger
+  Signature: private static final Logger log = LoggerFactory.getLogger(MockSmsSender.class);
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: send
+  Signature: public void send(String mobile, String otp, OtpVerification.OtpType type, int validMinutes) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/OtpService.java
+Role: Service
+Class: OtpService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: getLogger
+  Signature: private static final Logger log = LoggerFactory.getLogger(OtpService.class);
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: OtpService
+  Signature: public OtpService(OtpVerificationRepository otpRepository, JavaMailSender mailSender, SmsSender smsSender) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: generateOtp
+  Signature: public String generateOtp() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: createAndSendEmailOtp
+  Signature: public OtpVerification createAndSendEmailOtp(String email, OtpVerification.OtpType type) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: createAndSendMobileOtp
+  Signature: public OtpVerification createAndSendMobileOtp(String mobileNumber, OtpVerification.OtpType type) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: createForgotPasswordOtp
+  Signature: public OtpVerification createForgotPasswordOtp(String email, Long userId) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: sendEmailOtp
+  Signature: public void sendEmailOtp(String to, String otp, OtpVerification.OtpType type) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: sendSmsOtp
+  Signature: private void sendSmsOtp(String mobile, String otp, OtpVerification.OtpType type) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: verifyOtp
+  Signature: public Optional<OtpVerification> verifyOtp(String identifier, String otp, OtpVerification.OtpType type) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: invalidateOtpsForIdentifier
+  Signature: public void invalidateOtpsForIdentifier(String identifier, OtpVerification.OtpType type) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: resolveFromAddress
+  Signature: private String resolveFromAddress() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/RazorpayGatewayService.java
+Role: Service
+Class: RazorpayGatewayService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: newHttpClient
+  Signature: private final HttpClient httpClient = HttpClient.newHttpClient();
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: compile
+  Signature: private static final Pattern STRING_FIELD = Pattern.compile("\"([^\"]+)\"\\s*:\\s*\"([^\"]*)\"");
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: compile
+  Signature: private static final Pattern NUMBER_FIELD = Pattern.compile("\"([^\"]+)\"\\s*:\\s*(\\d+)");
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: createOrder
+  Signature: public RazorpayOrder createOrder(long amountPaise, String receipt, Map<String, String> notes)
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getKeyId
+  Signature: public String getKeyId() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: paiseToRupees
+  Signature: private BigDecimal paiseToRupees(long paise) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: basicAuth
+  Signature: private String basicAuth() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: buildOrderPayload
+  Signature: private String buildOrderPayload(long amountPaise, String receipt, Map<String, String> notes) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: escapeJson
+  Signature: private String escapeJson(String value) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: extractString
+  Signature: private String extractString(String json, String field) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: extractLong
+  Signature: private long extractLong(String json, String field) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: defaultIfBlank
+  Signature: private String defaultIfBlank(String value, String fallback) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: validateConfig
+  Signature: private void validateConfig() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: RazorpayOrder
+  Signature: public record RazorpayOrder(String orderId, String currency, long amountPaise, String status) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: RazorpayPayment
+  Signature: public record RazorpayPayment(String paymentId, String orderId, String status, BigDecimal amount) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/ReportingService.java
+Role: Service
+Class: ReportingService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: ReportingService
+  Signature: public ReportingService(InvoiceRepository invoiceRepository, PaymentRepository paymentRepository) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getFinancialSnapshot
+  Signature: public FinancialSnapshot getFinancialSnapshot() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getUnpaidStudentsReport
+  Signature: public List<UnpaidStudentRow> getUnpaidStudentsReport() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getReconciliationReport
+  Signature: public List<PaymentRow> getReconciliationReport() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/SmsSender.java
+Role: Service
+Class: SmsSender
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/main/java/com/example/demo/service/StaffBillingService.java
+Role: Service
+Class: StaffBillingService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: setScale
+  Signature: private static final BigDecimal ZERO = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getActiveStudents
+  Signature: public List<User> getActiveStudents() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getInvoiceRows
+  Signature: public List<StaffInvoiceRow> getInvoiceRows() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: generateSemesterInvoice
+  Signature: public Invoice generateSemesterInvoice(Long studentId, int semester) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: findLatestSemesterInvoice
+  Signature: private Optional<Invoice> findLatestSemesterInvoice(Long studentId, int semester) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: paidAmount
+  Signature: private BigDecimal paidAmount(Long invoiceId) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: calculateSemesterCourseFee
+  Signature: private BigDecimal calculateSemesterCourseFee(Course course, FeeStructure feeStructure) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: safeSemesterLimit
+  Signature: private int safeSemesterLimit(Integer value) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: markStudentEnrolledIfFirstSemesterPaid
+  Signature: private void markStudentEnrolledIfFirstSemesterPaid(Invoice invoice) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: syncStudentDepartmentFromEnrollment
+  Signature: private void syncStudentDepartmentFromEnrollment(Enrollment enrollment) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/StudentPaymentService.java
+Role: Service
+Class: StudentPaymentService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: setScale
+  Signature: private static final BigDecimal ZERO = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getPaymentDashboard
+  Signature: public PaymentDashboardData getPaymentDashboard(User student) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: createCheckoutSession
+  Signature: public CheckoutSession createCheckoutSession(User student, Long invoiceId) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getOwnedInvoice
+  Signature: private Invoice getOwnedInvoice(User student, Long invoiceId) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: ensurePayable
+  Signature: private void ensurePayable(Invoice invoice) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: refreshInvoiceStatus
+  Signature: private void refreshInvoiceStatus(Invoice invoice) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: findLatestSemesterInvoice
+  Signature: private Optional<Invoice> findLatestSemesterInvoice(Long studentId, int semester) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: paidAmount
+  Signature: private BigDecimal paidAmount(Long invoiceId) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: dueAmount
+  Signature: private BigDecimal dueAmount(Long invoiceId, BigDecimal total) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: calculateSemesterCourseFee
+  Signature: private BigDecimal calculateSemesterCourseFee(Course course, FeeStructure feeStructure) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: safeSemesterLimit
+  Signature: private int safeSemesterLimit(Integer value) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: toPaise
+  Signature: private long toPaise(BigDecimal rupees) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: hmacSha256
+  Signature: private String hmacSha256(String data, String secret) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: validateMockPaymentDetails
+  Signature: private void validateMockPaymentDetails(MockPaymentDetails paymentDetails) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: buildMockTransactionId
+  Signature: private String buildMockTransactionId(MockPaymentDetails paymentDetails) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: buildMockSignatureSummary
+  Signature: private String buildMockSignatureSummary(MockPaymentDetails paymentDetails) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: safe
+  Signature: private String safe(String value) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: constantTimeEquals
+  Signature: private boolean constantTimeEquals(String a, String b) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: markStudentEnrolledIfFirstSemesterPaid
+  Signature: private void markStudentEnrolledIfFirstSemesterPaid(Invoice invoice) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: syncStudentDepartmentFromEnrollment
+  Signature: private void syncStudentDepartmentFromEnrollment(Enrollment enrollment) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getPaymentProviderLabel
+  Signature: public String getPaymentProviderLabel() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: isMockProviderActive
+  Signature: public boolean isMockProviderActive() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: getActiveProvider
+  Signature: private String getActiveProvider() {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/TeachingSchemaSubjectIngestionService.java
+Role: Service
+Class: TeachingSchemaSubjectIngestionService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: getLogger
+  Signature: private static final Logger log = LoggerFactory.getLogger(TeachingSchemaSubjectIngestionService.class);
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: compile
+  Signature: private static final Pattern SEMESTER_PATTERN = Pattern.compile("(?i)\\bsem(?:ester)?\\s*[-:]?\\s*(\\d{1,2})\\b");
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: compile
+  Signature: private static final Pattern SEMESTER_INDEX_PATTERN = Pattern.compile("(?i)\\bsem(?:ester)?\\s*[-:]?\\s*(\\d{1,2})\\b");
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: compile
+  Signature: private static final Pattern SUBJECT_CODE_PATTERN = Pattern.compile("\\b([A-Za-z]{2,}[A-Za-z0-9-]{1,20}\\d[A-Za-z0-9-]*)\\b");
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: compile
+  Signature: private static final Pattern TRAILING_NUMBERS_PATTERN = Pattern.compile("\\s+\\d+(?:\\.\\d+)?(?:\\s+\\d+(?:\\.\\d+)?){0,3}\\s*$");
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: TeachingSchemaSubjectIngestionService
+  Signature: public TeachingSchemaSubjectIngestionService(SubjectRepository subjectRepository) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: cleanDocxXmlText
+  Signature: private String cleanDocxXmlText(String xml) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: parse
+  Signature: private List<ParsedSubject> parse(String text) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: parseByCodeSpans
+  Signature: private List<ParsedSubject> parseByCodeSpans(String text) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: resolveSemesterForIndex
+  Signature: private Integer resolveSemesterForIndex(List<int[]> semesterMarks, int index) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: parseLine
+  Signature: private ParsedSubject parseLine(String line, Integer semester) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: buildSubject
+  Signature: private ParsedSubject buildSubject(String code, String name, Integer semester, String fullLine) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: extractCredits
+  Signature: private Integer extractCredits(String line) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: isValidCode
+  Signature: private boolean isValidCode(String code) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: isValidName
+  Signature: private boolean isValidName(String name) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: looksLikeHeader
+  Signature: private boolean looksLikeHeader(String line) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: parseInteger
+  Signature: private Integer parseInteger(String value) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: normalize
+  Signature: private String normalize(String value) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: normalizeExtractedText
+  Signature: private String normalizeExtractedText(String value) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: ParsedSubject
+  Signature: private record ParsedSubject(String subjectCode, String subjectName, Integer semester, Integer credits) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/TwilioSmsSender.java
+Role: Service
+Class: TwilioSmsSender
+Class Annotations and Meaning:
+- @Component: Registers a generic Spring-managed bean.
+- @ConditionalOnProperty: Framework annotation used for configuration/behavior in this class.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: getLogger
+  Signature: private static final Logger log = LoggerFactory.getLogger(TwilioSmsSender.class);
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: send
+  Signature: public void send(String mobile, String otp, OtpVerification.OtpType type, int validMinutes) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/main/java/com/example/demo/service/UserService.java
+Role: Service
+Class: UserService
+Class Annotations and Meaning:
+- @Service: Marks the business logic layer for Spring to manage.
+Summary (Plain English):
+- Holds business rules and coordinates multiple repositories or utilities to complete a task.
+Function Flow and Theory (Each Method):
+- Method: UserService
+  Signature: public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, OtpService otpService) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: register
+  Signature: public RegistrationResult register(RegisterRequest request) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: findByEmail
+  Signature: public Optional<User> findByEmail(String email) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: findByMobileNumber
+  Signature: public Optional<User> findByMobileNumber(String mobile) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: findByEmailOrMobile
+  Signature: public Optional<User> findByEmailOrMobile(String emailOrMobile) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: markEmailVerified
+  Signature: public void markEmailVerified(String email) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: markMobileVerified
+  Signature: public void markMobileVerified(String mobile) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+- Method: updatePassword
+  Signature: public void updatePassword(Long userId, String newPasswordEncoded) {
+  Theory: Implements a piece of business logic and may call one or more repositories.
+  Annotations: No specific annotations on this method.
+
+File: src/test/java/com/example/demo/ScrsApplicationTests.java
+Role: Test
+Class: ScrsApplicationTests
+Class Annotations and Meaning:
+- (none detected or not applicable)
+Summary (Plain English):
+- Verifies application behavior with automated tests.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/test/java/com/example/demo/TestSupportConfig.java
+Role: Test
+Class: TestSupportConfig
+Class Annotations and Meaning:
+- @TestConfiguration: Framework annotation used for configuration/behavior in this class.
+Summary (Plain English):
+- Verifies application behavior with automated tests.
+Function Flow and Theory (Each Method):
+- Method: javaMailSender
+  Signature: public JavaMailSender javaMailSender() {
+  Theory: Sets up test data and asserts expected behavior.
+  Annotations: No specific annotations on this method.
+
+File: src/test/java/com/example/demo/web/AuthControllerWebTests.java
+Role: Test
+Class: AuthControllerWebTests
+Class Annotations and Meaning:
+- @AutoConfigureMockMvc: Framework annotation used for configuration/behavior in this class.
+- @Import: Framework annotation used for configuration/behavior in this class.
+Summary (Plain English):
+- Verifies application behavior with automated tests.
+Function Flow and Theory (Each Method):
+- (No methods detected)
+
+File: src/test/java/com/example/demo/web/ManualCaseAutomationWebTests.java
+Role: Test
+Class: ManualCaseAutomationWebTests
+Class Annotations and Meaning:
+- @AutoConfigureMockMvc: Framework annotation used for configuration/behavior in this class.
+- @Import: Framework annotation used for configuration/behavior in this class.
+Summary (Plain English):
+- Verifies application behavior with automated tests.
+Function Flow and Theory (Each Method):
+- Method: buildUser
+  Signature: private CustomUserDetails buildUser(String email, String role, String fullName, String department) {
+  Theory: Sets up test data and asserts expected behavior.
+  Annotations: No specific annotations on this method.
+- Method: sampleCourse
+  Signature: private Course sampleCourse(String code) {
+  Theory: Sets up test data and asserts expected behavior.
+  Annotations: No specific annotations on this method.

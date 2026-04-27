@@ -7,21 +7,32 @@
     <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
 </head>
 <body class="role-admin">
-<header class="dashboard-header">
-    <h1>Super User Management</h1>
-    <nav class="dashboard-nav">
-        <a th:href="@{/admin/dashboard}" class="nav-link">Dashboard</a>
-        <a th:href="@{/admin/enrollments}" class="nav-link">Enrollment Approval</a>
-        <a th:href="@{/admin/users}" class="nav-link active">Super Users</a>
-        <a th:href="@{/admin/departments}" class="nav-link">Departments</a>
-        <a th:href="@{/admin/reports}" class="nav-link">Financial Oversight</a>
-    </nav>
-</header>
 <div class="dashboard-layout">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h1>Admin Control Center</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a th:href="@{/admin/dashboard}" class="nav-link">Dashboard</a>
+            <a th:href="@{/admin/enrollments}" class="nav-link">Enrollment Approval</a>
+            <a th:href="@{/admin/users}" class="nav-link active">Super Users</a>
+            <a th:href="@{/admin/departments}" class="nav-link">Departments</a>
+            <a th:href="@{/admin/reports}" class="nav-link">Financial Oversight</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <span th:text="${userName}">Admin</span>
+                <form th:action="@{/auth/logout}" method="post"><button class="btn btn-outline btn-sm" type="submit">Logout</button></form>
+            </div>
+        </div>
+    </aside>
     <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h2>Super User Management</h2>
+        </header>
         <section class="dashboard-section">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-                <h2>Admin, Director, and Account Staff Accounts</h2>
+                <p>Admin, Director, and Account Staff Accounts</p>
                 <a th:href="@{/admin/users/new}" class="btn btn-primary">Add User</a>
             </div>
             <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
@@ -51,6 +62,7 @@
         </section>
     </main>
 </div>
+    <script src="/js/form-validation.js" defer></script>
 </body>
 </html>
 

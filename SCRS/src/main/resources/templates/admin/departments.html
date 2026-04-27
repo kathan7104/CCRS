@@ -1,59 +1,70 @@
 <!DOCTYPE html>
+
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>Department Management - KOR Institute</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}" href="/css/style.css"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Department Management - KOR Institute</title>
+<link href="/css/style.css" rel="stylesheet" th:href="@{/css/style.css}"/>
 </head>
 <body class="role-admin">
-<header class="dashboard-header">
-    <h1>Department Management</h1>
-    <nav class="dashboard-nav">
-        <a th:href="@{/admin/dashboard}" class="nav-link">Dashboard</a>
-        <a th:href="@{/admin/enrollments}" class="nav-link">Enrollment Approval</a>
-        <a th:href="@{/admin/users}" class="nav-link">Super Users</a>
-        <a th:href="@{/admin/departments}" class="nav-link active">Departments</a>
-        <a th:href="@{/admin/reports}" class="nav-link">Financial Oversight</a>
-    </nav>
-</header>
 <div class="dashboard-layout">
-    <main class="dashboard-main">
-        <section class="dashboard-section">
-            <h2>Add Department</h2>
-            <form th:action="@{/admin/departments}" method="post" class="form-row">
-                <div class="form-group">
-                    <label>Department Name</label>
-                    <input type="text" name="name" required/>
-                </div>
-                <div class="form-group">
-                    <label>&nbsp;</label>
-                    <button class="btn btn-primary" type="submit">Add</button>
-                </div>
-            </form>
-            <div th:if="${successMessage}" class="msg success" th:text="${successMessage}">Success</div>
-            <div th:if="${errorMessage}" class="msg error" th:text="${errorMessage}">Error</div>
-            <div class="table-wrap">
-                <table class="data-table">
-                    <thead><tr><th>Name</th><th>Status</th><th>Action</th></tr></thead>
-                    <tbody>
-                    <tr th:each="d : ${departments}">
-                        <td th:text="${d.name}">Department</td>
-                        <td th:text="${d.active ? 'Active' : 'Inactive'}">Active</td>
-                        <td>
-                            <form th:if="${d.active}" th:action="@{/admin/departments/{id}/deactivate(id=${d.id})}" method="post" class="inline-form">
-                                <button class="btn btn-sm btn-outline" type="submit">Deactivate</button>
-                            </form>
-                            <a th:if="${!d.active}" th:href="@{/admin/departments/{id}/activate(id=${d.id})}" class="btn btn-sm btn-primary">Activate</a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-header">
+            <h1>Admin Control Center</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a>
+            <a class="nav-link" th:href="@{/admin/enrollments}">Enrollment Approval</a>
+            <a class="nav-link" th:href="@{/admin/users}">Super Users</a>
+            <a class="nav-link active" th:href="@{/admin/departments}">Departments</a>
+            <a class="nav-link" th:href="@{/admin/reports}">Financial Oversight</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <span th:text="${userName}">Admin</span>
+                <form th:action="@{/auth/logout}" method="post"><button class="btn btn-outline btn-sm" type="submit">Logout</button></form>
             </div>
-        </section>
-    </main>
+        </div>
+    </aside>
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <h2>Department Management</h2>
+        </header>
+        <section class="dashboard-section">
+            <h3>Add Department</h3>
+<form class="form-row" method="post" th:action="@{/admin/departments}">
+<div class="form-group">
+<label class="required">Department Name</label>
+<input name="name" required="" type="text"/>
 </div>
+<div class="form-group">
+<label> </label>
+<button class="btn btn-primary" type="submit">Add</button>
+</div>
+</form>
+<div class="msg success" th:if="${successMessage}" th:text="${successMessage}">Success</div>
+<div class="msg error" th:if="${errorMessage}" th:text="${errorMessage}">Error</div>
+<div class="table-wrap">
+<table class="data-table">
+<thead><tr><th>Name</th><th>Status</th><th>Action</th></tr></thead>
+<tbody>
+<tr th:each="d : ${departments}">
+<td th:text="${d.name}">Department</td>
+<td th:text="${d.active ? 'Active' : 'Inactive'}">Active</td>
+<td>
+<form class="inline-form" method="post" th:action="@{/admin/departments/{id}/deactivate(id=${d.id})}" th:if="${d.active}">
+<button class="btn btn-sm btn-outline" type="submit">Deactivate</button>
+</form>
+<a class="btn btn-sm btn-primary" th:href="@{/admin/departments/{id}/activate(id=${d.id})}" th:if="${!d.active}">Activate</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</div>
+    <script src="/js/form-validation.js" defer></script>
 </body>
 </html>
-
-
